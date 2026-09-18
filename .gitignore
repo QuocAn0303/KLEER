@@ -23,3 +23,17 @@
 /app/Config/core.php
 /app/Config/database.php
 /vendors/*
+
+# File nhạy cảm & bảo mật (Tiêu chuẩn DoD bắt buộc)
+.env
+*.env.*
+*.sql
+*.log
+
+# Dữ liệu Docker & WP-Uploads cục bộ
+docker/data/
+wp-content/uploads/
+
+# Dependency & Vendor
+node_modules/
+vendor/
