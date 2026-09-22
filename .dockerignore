@@ -1,0 +1,49 @@
+# === Git ===
+.git
+.gitignore
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# === Environment ===
+.env
+.env.local
+
+# === Node.js ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# === PHP ===
+vendor/
+composer.lock
+
+# === WordPress ===
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/debug.log
+
+# === Docker ===
+docker-compose.override.yml
+.dockerignore
+
+# === Tests & CI ===
+.github/
+*.test.js
+*.spec.js
+coverage/
+
+# === Docs (not needed in build context) ===
+README.md
+HUONG_DAN_DOCKER.md
+*.md

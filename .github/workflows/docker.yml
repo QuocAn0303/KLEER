@@ -1,0 +1,41 @@
+name: Docker Build & Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build all services
+        run: docker compose build
+
+      - name: Test PHP-FPM
+        run: docker compose run --rm php php -v
+
+      - name: Test Nginx config
+        run: docker compose run --rm nginx nginx -t
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Check container status
+        run: docker compose ps
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
