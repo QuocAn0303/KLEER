@@ -1,12 +1,12 @@
 FROM php:8.2-fpm-alpine
 
-# Install system dependencies
+# Install system dependencies (Alpine package names)
 RUN apk add --no-cache \
     git \
     curl \
     libpng-dev \
-    libjpeg-turbo-dev \
-    libfreetype6-dev \
+    jpeg-turbo-dev \
+    freetype-dev \
     zip \
     unzip \
     tar \
@@ -14,7 +14,6 @@ RUN apk add --no-cache \
     oniguruma-dev \
     icu-dev \
     mariadb-client \
-    busybox-extras \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         mysqli \
@@ -32,7 +31,9 @@ RUN apk add --no-cache \
 RUN pecl install redis-5.3.7 && docker-php-ext-enable redis
 
 # Install Composer
-COPY --from=composer:2 /bin/composer /usr/local/bin/composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-path=/usr/local/bin/composer --filename=composer \
+    && php -r "unlink('composer-setup.php');"
 
 # Copy custom php.ini
 COPY php.ini /usr/local/etc/php/conf.d/99-kleer.ini

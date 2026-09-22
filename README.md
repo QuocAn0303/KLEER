@@ -3,7 +3,11 @@
 > **Đồ án môn EC312** | Hạ tầng nền tảng cho website TMĐT mỹ phẩm Unisex Skincare
 >
 > **Team:** 8 members | **Scrum Master & DevOps Lead:** You
+<<<<<<< HEAD
 >
+=======
+> 
+>>>>>>> 4977931 (Update README with correct URL)
 > **GitHub:** [https://github.com/QuocAn0303/KLEER](https://github.com/QuocAn0303/KLEER)
 
 ## Mục lục
@@ -35,7 +39,11 @@ Trước khi bắt đầu, đảm bảo bạn đã cài đặt:
 1. **Clone repo:**
    ```powershell
    git clone https://github.com/QuocAn0303/KLEER.git
+<<<<<<< HEAD
    cd KLEER
+=======
+   cd kleer
+>>>>>>> 4977931 (Update README with correct URL)
    ```
 
 2. **Chạy setup script:**
@@ -51,7 +59,11 @@ Trước khi bắt đầu, đảm bảo bạn đã cài đặt:
 
 ```bash
 git clone https://github.com/QuocAn0303/KLEER.git
+<<<<<<< HEAD
 cd KLEER
+=======
+cd kleer
+>>>>>>> 4977931 (Update README with correct URL)
 cp .env.example .env
 # Sửa file .env với thông tin của bạn
 docker compose up -d
