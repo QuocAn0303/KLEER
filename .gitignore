@@ -1,39 +1,70 @@
-# CakePHP 3
+# === WordPress Core ===
+wp-config.php
+wp-settings.php
+wp-config-sample.php
 
-/vendor/*
-/config/app.php
+# === Uploads ===
+wp-content/uploads/
+!wp-content/uploads/.gitkeep
 
-/tmp/cache/models/*
-!/tmp/cache/models/empty
-/tmp/cache/persistent/*
-!/tmp/cache/persistent/empty
-/tmp/cache/views/*
-!/tmp/cache/views/empty
-/tmp/sessions/*
-!/tmp/sessions/empty
-/tmp/tests/*
-!/tmp/tests/empty
+# === Plugins & Themes ===
+wp-content/plugins/*
+!wp-content/plugins/.gitkeep
+!wp-content/plugins/kleer-plugin/
+!wp-content/plugins/kleer-plugin/**
+wp-content/themes/*
+!wp-content/themes/kleer-theme/
+!wp-content/themes/kleer-theme/**
+wp-content/mu-plugins/*
+!wp-content/mu-plugins/.gitkeep
+wp-content/upgrade/
+wp-content/debug.log
 
-/logs/*
-!/logs/empty
+# === Vendor & Dependencies ===
+vendor/
+node_modules/
+composer.lock
+package-lock.json
+yarn.lock
 
-# CakePHP 2
-
-/app/tmp/*
-/app/Config/core.php
-/app/Config/database.php
-/vendors/*
-
-# File nhạy cảm & bảo mật (Tiêu chuẩn DoD bắt buộc)
+# === Environment ===
 .env
-*.env.*
-*.sql
+.env.local
+.env.*.local
+
+# === Cache & Temp ===
+cache/
+tmp/
 *.log
 
-# Dữ liệu Docker & WP-Uploads cục bộ
-docker/data/
-wp-content/uploads/
+# === IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 
-# Dependency & Vendor
-node_modules/
-vendor/
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Docker ===
+docker-compose.override.yml
+
+# === Secrets ===
+*.pem
+*.key
+*.p12
+*.pfx
+
+# === Git ===
+.git/
+.gitignore
+!.gitignore
+
+# === Logs ===
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

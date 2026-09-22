@@ -1,0 +1,22 @@
+# KLEER - WordPress/WooCommerce Unisex Skincare Store
+# Đồ án môn EC312
+
+## Hướng dẫn cài đặt nhanh
+
+### Yêu cầu
+- Docker Desktop 24.0+
+- Docker Compose 2.0+
+- Git 2.30+
+
+### Bắt đầu
+```bash
+git clone https://github.com/QuocAn0303/kleer.git
+cd kleer
+cp .env.example .env
+docker compose up -d
+```
+
+### Truy cập
+- WordPress: http://localhost:80
+- phpMyAdmin: http://localhost:8080
+```
