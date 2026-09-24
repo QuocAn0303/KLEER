@@ -52,34 +52,38 @@ New-Item -ItemType Directory -Force -Path "wp-content/themes/kleer-theme" | Out-
 New-Item -ItemType Directory -Force -Path "wp-content/plugins/kleer-plugin" | Out-Null
 Write-Host "[OK] Directories created." -ForegroundColor Green
 
-# --- Create wp-config.php if not exists ---
-if (-Not (Test-Path "wp-config.php")) {
-    Write-Host "[INFO] wp-config.php not found. Downloading WordPress..." -ForegroundColor Yellow
-    try {
-        Invoke-WebRequest -Uri "https://wordpress.org/latest.tar.gz" -OutFile "wordpress-latest.tar.gz"
-        tar -xf wordpress-latest.tar.gz
-        Copy-Item "wordpress/wp-config-sample.php" "wp-config.php" -Force
-        Remove-Item "wordpress-latest.tar.gz", "wordpress" -Recurse -Force
-        Write-Host "[OK] WordPress downloaded and wp-config.php created." -ForegroundColor Green
-    } catch {
-        Write-Host "[WARN] Could not download WordPress automatically." -ForegroundColor Yellow
-        Write-Host "        Please download WordPress manually from https://wordpress.org/latest.tar.gz" -ForegroundColor Yellow
-    }
-}
-
-# --- Download WordPress if missing ---
-if (-Not (Test-Path "wp-content/themes")) {
+# --- Download WordPress core if missing ---
+if (-Not (Test-Path "index.php")) {
     Write-Host "[INFO] WordPress core not found. Downloading..." -ForegroundColor Yellow
     try {
         Invoke-WebRequest -Uri "https://wordpress.org/latest.tar.gz" -OutFile "wordpress-latest.tar.gz"
         tar -xf wordpress-latest.tar.gz
         Copy-Item "wordpress\*" "." -Recurse -Force
         Remove-Item "wordpress-latest.tar.gz", "wordpress" -Recurse -Force
-        Write-Host "[OK] WordPress downloaded." -ForegroundColor Green
+        Write-Host "[OK] WordPress core downloaded." -ForegroundColor Green
     } catch {
         Write-Host "[ERROR] Failed to download WordPress." -ForegroundColor Red
         exit 1
     }
+}
+
+# --- Create wp-config.php if not exists ---
+if (-Not (Test-Path "wp-config.php") -and (Test-Path "wp-config-sample.php")) {
+    $envValues = @{}
+    Get-Content ".env" | Where-Object { $_ -match '^\s*[A-Z0-9_]+=' -and $_ -notmatch '^\s*#' } | ForEach-Object {
+        $key, $value = $_ -split '=', 2
+        $envValues[$key.Trim()] = $value.Trim()
+    }
+
+    $dbName = if ($envValues.ContainsKey('WORDPRESS_DB_NAME')) { $envValues['WORDPRESS_DB_NAME'] } else { 'kleer_db' }
+    $dbUser = if ($envValues.ContainsKey('WORDPRESS_DB_USER')) { $envValues['WORDPRESS_DB_USER'] } else { 'kleer_user' }
+    $dbPassword = if ($envValues.ContainsKey('WORDPRESS_DB_PASSWORD')) { $envValues['WORDPRESS_DB_PASSWORD'] } else { 'kleer_password_here_change_me' }
+    $dbHost = if ($envValues.ContainsKey('WORDPRESS_DB_HOST')) { $envValues['WORDPRESS_DB_HOST'] } else { 'mariadb:3306' }
+    $config = Get-Content "wp-config-sample.php" -Raw
+    $config = $config.Replace("database_name_here", $dbName).Replace("username_here", $dbUser).Replace("password_here", $dbPassword).Replace("localhost", $dbHost)
+    $config = $config -replace "put your unique phrase here", [guid]::NewGuid().ToString()
+    Set-Content "wp-config.php" $config -Encoding UTF8
+    Write-Host "[OK] Created wp-config.php from the WordPress sample." -ForegroundColor Green
 }
 
 # --- Start Docker containers ---

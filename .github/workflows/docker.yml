@@ -24,6 +24,12 @@ jobs:
       - name: Test Nginx config
         run: docker compose run --rm nginx nginx -t
 
+      - name: Test PHP syntax
+        run: docker compose run --rm php sh -c "find wp-content/plugins/kleer-plugin -name '*.php' -print0 | xargs -0 -n1 php -l"
+
+      - name: Test crawler parser
+        run: python -m unittest discover -s tools/crawler -p 'test_*.py' -v
+
       - name: Start services
         run: docker compose up -d
 

@@ -3,11 +3,7 @@
 > **Đồ án môn EC312** | Hạ tầng nền tảng cho website TMĐT mỹ phẩm Unisex Skincare
 >
 > **Team:** 8 members | **Scrum Master & DevOps Lead:** You
-<<<<<<< HEAD
 >
-=======
-> 
->>>>>>> 4977931 (Update README with correct URL)
 > **GitHub:** [https://github.com/QuocAn0303/KLEER](https://github.com/QuocAn0303/KLEER)
 
 ## Mục lục
@@ -23,12 +19,12 @@
 
 Trước khi bắt đầu, đảm bảo bạn đã cài đặt:
 
-| Yêu cầu | Phiên bản tối thiểu | Tải về |
-|---------|---------------------|--------|
-| **Docker Desktop** | 24.0+ | [docker.com](https://www.docker.com/products/docker-desktop/) |
-| **Docker Compose** | 2.0+ (đi kèm Docker Desktop) | - |
-| **Git** | 2.30+ | [git-scm.com](https://git-scm.com/) |
-| **Node.js** *(nếu theme có build)* | 18+ | [nodejs.org](https://nodejs.org/) |
+| Yêu cầu                            | Phiên bản tối thiểu          | Tải về                                                        |
+| ---------------------------------- | ---------------------------- | ------------------------------------------------------------- |
+| **Docker Desktop**                 | 24.0+                        | [docker.com](https://www.docker.com/products/docker-desktop/) |
+| **Docker Compose**                 | 2.0+ (đi kèm Docker Desktop) | -                                                             |
+| **Git**                            | 2.30+                        | [git-scm.com](https://git-scm.com/)                           |
+| **Node.js** _(nếu theme có build)_ | 18+                          | [nodejs.org](https://nodejs.org/)                             |
 
 > **Kiểm tra phiên bản:** Chạy `docker compose version` và `docker version` trong terminal.
 
@@ -37,16 +33,14 @@ Trước khi bắt đầu, đảm bảo bạn đã cài đặt:
 ### Đối với Windows (Khuyến nghị)
 
 1. **Clone repo:**
+
    ```powershell
    git clone https://github.com/QuocAn0303/KLEER.git
-<<<<<<< HEAD
    cd KLEER
-=======
-   cd kleer
->>>>>>> 4977931 (Update README with correct URL)
    ```
 
 2. **Chạy setup script:**
+
    ```powershell
    powershell -ExecutionPolicy Bypass -File setup.ps1
    ```
@@ -59,11 +53,7 @@ Trước khi bắt đầu, đảm bảo bạn đã cài đặt:
 
 ```bash
 git clone https://github.com/QuocAn0303/KLEER.git
-<<<<<<< HEAD
 cd KLEER
-=======
-cd kleer
->>>>>>> 4977931 (Update README with correct URL)
 cp .env.example .env
 # Sửa file .env với thông tin của bạn
 docker compose up -d
@@ -96,13 +86,13 @@ KLEER/
 
 ## Dịch vụ (Services)
 
-| Service | Image | Port (Host) | Port (Container) | Mô tả |
-|---------|-------|-------------|------------------|-------|
-| **nginx** | `nginx:1.25-alpine` | `${NGINX_PORT}` (mặc định: 80) | 80 | Reverse proxy, xử lý static files |
-| **php** | `php:8.2-fpm` | - | 9000 | PHP-FPM với WordPress extensions |
-| **mariadb** | `mariadb:10.11` | 3307 | 3306 | Database, persist qua Docker volume |
-| **redis** | `redis:7-alpine` | - | 6379 | Object Cache cho WordPress |
-| **phpmyadmin** | `phpmyadmin/phpmyadmin` | `${PHPMYADMIN_PORT}` (mặc định: 8080) | 80 | Giao diện quản lý Database |
+| Service        | Image                   | Port (Host)                           | Port (Container) | Mô tả                               |
+| -------------- | ----------------------- | ------------------------------------- | ---------------- | ----------------------------------- |
+| **nginx**      | `nginx:1.25-alpine`     | `${NGINX_PORT}` (mặc định: 80)        | 80               | Reverse proxy, xử lý static files   |
+| **php**        | `php:8.2-fpm`           | -                                     | 9000             | PHP-FPM với WordPress extensions    |
+| **mariadb**    | `mariadb:10.11`         | 3307                                  | 3306             | Database, persist qua Docker volume |
+| **redis**      | `redis:7-alpine`        | -                                     | 6379             | Object Cache cho WordPress          |
+| **phpmyadmin** | `phpmyadmin/phpmyadmin` | `${PHPMYADMIN_PORT}` (mặc định: 8080) | 80               | Giao diện quản lý Database          |
 
 > **Chỉ nginx và phpmyadmin được map port ra host.** Các service còn lại giao tiếp qua internal docker network `kleer-net`.
 
@@ -117,7 +107,7 @@ KLEER/
 3. Bật các tùy chọn:
    - ✅ **Require a pull request before merging**
    - ✅ **Require approvals** → **Required approving reviews**: `1`
-   - ✅ **Require review from Code Owners** *(nếu có)*
+   - ✅ **Require review from Code Owners** _(nếu có)_
    - ✅ **Require conversation resolution before merging**
    - ✅ **Do not allow bypassing the above settings**
    - ✅ **Require status checks to pass before merging**
@@ -130,6 +120,7 @@ KLEER/
 3. Cấu hình tương tự branch `main`
 
 ### Tóm tắt:
+
 - **Không ai được push trực tiếp** vào `main` hoặc `develop`
 - **Phải tạo Pull Request** và có **ít nhất 1 reviewer** đồng ý trước khi merge
 - Đảm bảo mọi thay đổi đều được review và kiểm tra

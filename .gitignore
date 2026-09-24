@@ -23,6 +23,8 @@ wp-content/debug.log
 # === Vendor & Dependencies ===
 vendor/
 node_modules/
+__pycache__/
+*.pyc
 composer.lock
 package-lock.json
 yarn.lock
