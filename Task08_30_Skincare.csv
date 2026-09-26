@@ -1,0 +1,31 @@
+STT,Tên sản phẩm,Danh mục,Phân loại da,Giá bán (VNĐ),Thành phần chính,Công dụng chính,URL Hình ảnh,URL Trang gốc
+1,Sữa Rửa Mặt CeraVe Foaming Cleanser,Cleanser,"Dầu, Mụn",380000,"Ceramide, Niacinamide, Hyaluronic Acid","Làm sạch sâu, kiềm dầu, phục hồi màng bảo vệ",img_cerave_foaming.jpg,hasaki.vn/cerave-foaming
+2,Sữa Rửa Mặt CeraVe Hydrating Cleanser,Cleanser,"Khô, Nhạy cảm",380000,"Ceramide, Hyaluronic Acid, Glycerin","Làm sạch dịu nhẹ, cấp ẩm không khô căng",img_cerave_hydrating.jpg,hasaki.vn/cerave-hydrating
+3,Sữa Rửa Mặt Cetaphil Gentle Skin Cleanser,Cleanser,Mọi loại da,330000,"Niacinamide, Panthenol, Glycerin","Sạch nhẹ nhàng, làm dịu da kích ứng",img_cetaphil_gentle.jpg,hasaki.vn/cetaphil-gentle
+4,Gel Rửa Mặt La Roche-Posay Effaclar,Cleanser,"Dầu, Mụn",450000,"Zinc PCA, Nước khoáng LRP","Giảm mụn, kiểm soát bã nhờn tiết ra",img_lrp_effaclar.jpg,hasaki.vn/lrp-effaclar
+5,Sữa Rửa Mặt Cosrx Low pH Good Morning,Cleanser,Mọi loại da,250000,"BHA, Tinh dầu tràm trà (Tea Tree)","Tẩy da chết nhẹ, chuẩn độ pH 5.5",img_cosrx_lowph.jpg,hasaki.vn/cosrx-lowph
+6,Sữa Rửa Mặt Simple Refreshing Facial Wash,Cleanser,Nhạy cảm,150000,"Pro-Vitamin B5, Vitamin E","Làm sạch lành tính, không chứa xà phòng",img_simple_wash.jpg,hasaki.vn/simple-wash
+7,Gel Rửa Mặt SVR Sebiaclear Moussant,Cleanser,"Dầu, Mụn",400000,"Gluconolactone, Niacinamide 4%","Sạch sâu lỗ chân lông, giảm viêm sưng",img_svr_moussant.jpg,hasaki.vn/svr-moussant
+8,Sữa Rửa Mặt Innisfree Green Tea,Cleanser,Hỗn hợp,220000,Chiết xuất trà xanh 16 amino acid,"Làm sạch bã nhờn, chống oxy hóa",img_innisfree_greentea.jpg,hasaki.vn/innisfree-greentea
+9,Nước Hoa Hồng Klairs Supple Preparation,Toner,Nhạy cảm,300000,"Phyto-Oligo, Axit Amin lúa mì, Centella","Cấp ẩm sâu, làm dịu vùng da mẩn đỏ",img_klairs_toner.jpg,hasaki.vn/klairs-toner
+10,Toner Thayers Witch Hazel Aloe Vera,Toner,Mọi loại da,250000,"Chiết xuất cây phỉ, Lô hội (Aloe)","Cân bằng pH, hỗ trợ se khít lỗ chân lông",img_thayers_toner.jpg,hasaki.vn/thayers-toner
+11,Dung Dịch Tẩy Da Chết Paula's Choice 2% BHA,Toner,"Dầu, Mụn",850000,"2% Salicylic Acid, Green Tea Extract","Đẩy mụn ẩn, thu nhỏ lỗ chân lông",img_paulaschoice_bha.jpg,hasaki.vn/paulaschoice-bha
+12,Nước Cân Bằng COSRX AHA/BHA,Toner,Hỗn hợp,320000,"Nước vỏ táo, BHA, AHA","Tẩy tế bào chết bề mặt, giảm sần sùi",img_cosrx_ahabha.jpg,hasaki.vn/cosrx-ahabha
+13,Nước Hoa Hồng Mamonde Rose Water,Toner,Khô,280000,Chiết xuất hoa hồng Damask 90.97%,"Cấp ẩm, làm dịu tức thì màng ẩm",img_mamonde_rose.jpg,hasaki.vn/mamonde-rose
+14,Toner Hada Labo Gokujyun Hydrating,Toner,Khô,200000,Super Hyaluronic Acid (SHA),"Cấp nước đa tầng, giúp da căng mọng",img_hadalabo_toner.jpg,hasaki.vn/hadalabo-toner
+15,Toner Some By Mi AHA-BHA-PHA 30 Days,Toner,"Dầu, Mụn",350000,"AHA, BHA, PHA, Chiết xuất tràm trà","Hỗ trợ giảm mụn, kháng viêm hiệu quả",img_somebymi_toner.jpg,hasaki.vn/somebymi-toner
+16,Tinh Chất The Ordinary Niacinamide 10%,Serum,"Dầu, Mụn",250000,"Niacinamide 10%, Zinc 1%","Giảm thâm mụn, kiềm dầu, sáng da",img_to_niacinamide.jpg,hasaki.vn/to-niacinamide
+17,Tinh Chất La Roche-Posay Hyalu B5,Serum,Nhạy cảm,850000,"Hyaluronic Acid 2 kích thước, Vitamin B5","Phục hồi da tổn thương, cấp ẩm sâu",img_lrp_hyalub5.jpg,hasaki.vn/lrp-hyalub5
+18,Dưỡng Chất Vichy Mineral 89,Serum,Mọi loại da,650000,"89% Nước khoáng núi lửa, Hyaluronic Acid","Củng cố hàng rào bảo vệ, da rạng rỡ",img_vichy_89.jpg,hasaki.vn/vichy-89
+19,Tinh Chất Klairs Freshly Juiced Vitamin Drop,Serum,Mọi loại da,350000,"5% Vitamin C tươi, Centella Asiatica","Mờ thâm mụn, làm đều màu da tự nhiên",img_klairs_vitc.jpg,hasaki.vn/klairs-vitc
+20,Tinh Chất L'Oreal Revitalift 1.5% HA,Serum,"Khô, Lão hóa",450000,1.5% Hyaluronic Acid nguyên chất,"Cấp ẩm làm căng bóng, giảm nếp nhăn",img_loreal_ha.jpg,hasaki.vn/loreal-ha
+21,Tinh Chất Skin1004 Madagascar Centella,Serum,Nhạy cảm,400000,100% Chiết xuất rau má Madagascar,"Làm dịu kích ứng, phục hồi da mỏng",img_skin1004_centella.jpg,hasaki.vn/skin1004-centella
+22,Tinh Chất Kiehl's Clearly Corrective,Serum,Mọi loại da,1500000,"Vitamin C thế hệ mới, Chiết xuất mẫu đơn","Trị thâm nám, dưỡng trắng sáng da",img_kiehls_darkspot.jpg,hasaki.vn/kiehls-darkspot
+23,Tinh Chất balance Active Formula Vitamin C,Serum,"Khô, Hỗn hợp",180000,"6% Illumiscin, 3% Stay-C 50","Làm sáng da, mờ thâm giá sinh viên",img_balance_vitc.jpg,hasaki.vn/balance-vitc
+24,Kem Chống Nắng La Roche-Posay Anthelios,Sunscreen,"Dầu, Mụn",450000,"Mexoryl SX/XL, Nước khoáng LRP","Chống nắng phổ rộng, kiềm dầu tốt",img_lrp_anthelios.jpg,hasaki.vn/lrp-anthelios
+25,Sữa Chống Nắng Anessa Perfect UV,Sunscreen,Mọi loại da,550000,"Zinc Oxide, Titanium Dioxide, Collagen","Chống UV tối ưu, công nghệ chống nước",img_anessa_perfectuv.jpg,hasaki.vn/anessa-perfectuv
+26,Tinh Chất Chống Nắng Skin Aqua Tone Up,Sunscreen,Hỗn hợp,180000,"Vitamin C, Pearl Powder, HA","Nâng tone da hồng hào, chống nắng",img_skinaqua_toneup.jpg,hasaki.vn/skinaqua-toneup
+27,Kem Chống Nắng Cell Fusion C Laser,Sunscreen,Nhạy cảm,600000,"Zinc Oxide, Collagen, Peptide","Bảo vệ và phục hồi da sau treatment",img_cellfusionc.jpg,hasaki.vn/cellfusionc
+28,Gel Chống Nắng Eucerin Sun Dry Touch,Sunscreen,"Dầu, Mụn",500000,"Licochalcone A, Carnitine","Kiểm soát bóng nhờn, ngừa sinh mụn",img_eucerin_drytouch.jpg,hasaki.vn/eucerin-drytouch
+29,Kem Chống Nắng Vichy Capital Soleil,Sunscreen,Hỗn hợp,480000,"Màng lọc Mexoryl, Nước khoáng Vichy","Bảo vệ da khỏi tia UV và bụi mịn",img_vichy_soleil.jpg,hasaki.vn/vichy-soleil
+30,Kem Chống Nắng Skin1004 Centella Air-Fit,Sunscreen,Nhạy cảm,350000,"Zinc Oxide, Chiết xuất rau má","Chống nắng vật lý, dịu nhẹ màng ẩm",img_skin1004_sunscreen.jpg,hasaki.vn/skin1004-sunscreen
