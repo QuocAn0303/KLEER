@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Kleer;
 
-use Kleer\Controllers\HealthController;
+use Kleer\Endpoints\HealthEndpoints;
 
 final class Plugin
 {
     public function register(): void
     {
-        (new HealthController())->register();
+        (new HealthEndpoints())->register();
     }
 }

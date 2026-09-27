@@ -9,8 +9,10 @@
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/src/Contracts/ProductRepositoryInterface.php';
+require_once __DIR__ . '/src/Models/Product.php';
 require_once __DIR__ . '/src/Services/ProductService.php';
 require_once __DIR__ . '/src/Controllers/HealthController.php';
+require_once __DIR__ . '/src/Endpoints/HealthEndpoints.php';
 require_once __DIR__ . '/src/Plugin.php';
 
 add_action('plugins_loaded', static function (): void {
