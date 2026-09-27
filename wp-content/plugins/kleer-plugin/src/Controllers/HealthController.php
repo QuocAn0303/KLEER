@@ -4,22 +4,36 @@ declare(strict_types=1);
 
 namespace Kleer\Controllers;
 
+use Kleer\Endpoints\HealthEndpoints;
+
+/**
+ * Request adapter for health check requests.
+ *
+ * Layer: Controllers
+ * Responsibility: Handle incoming requests, format responses, and isolate HTTP boundaries.
+ * Must not contain business logic or query the database directly.
+ */
 final class HealthController
 {
+    /**
+     * Backward-compatible route registration hook.
+     * Primary route registration is handled by HealthEndpoints.
+     */
     public function register(): void
     {
-        add_action('rest_api_init', function (): void {
-            register_rest_route('kleer/v1', '/health', [
-                'methods' => 'GET',
-                'callback' => [$this, 'health'],
-                'permission_callback' => '__return_true',
-            ]);
-        });
+        (new HealthEndpoints($this))->register();
     }
 
-    /** @return array{status: string, service: string} */
+    /**
+     * Return health status payload.
+     *
+     * @return array{status: string, service: string}
+     */
     public function health(): array
     {
-        return ['status' => 'ok', 'service' => 'kleer-plugin'];
+        return [
+            'status' => 'ok',
+            'service' => 'kleer-plugin',
+        ];
     }
 }
