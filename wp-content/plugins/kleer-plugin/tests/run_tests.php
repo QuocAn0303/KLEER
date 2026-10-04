@@ -723,6 +723,86 @@ assert_true(
     'Autoloader exposes the ValidatesJsonPayload trait to Controllers'
 );
 
+// Test 13: WooCommerce HPOS compatibility (Rubric 5.3)
+echo "\n13. Testing WooCommerce HPOS Compatibility...\n";
+use Kleer\Support\Cache\CacheInvalidation;
+use Kleer\Support\Cache\KleerCache;
+use Kleer\Support\Cache\WooCommerceCompatibility;
+
+$hpos = new WooCommerceCompatibility();
+assert_true(in_array('custom_order_tables', $hpos->features(), true), 'HPOS feature custom_order_tables is declared');
+assert_true(count($hpos->features()) >= 1, 'At least one compatibility feature is declared');
+assert_true(
+    in_array(['before_woocommerce_init', 'declareCompatibility'], $hpos->subscriptionMap(), true),
+    'Compatibility is declared on before_woocommerce_init'
+);
+assert_true(!$hpos->declareCompatibility(), 'declareCompatibility() is a no-op when WooCommerce is absent');
+assert_true(!$hpos->declareCartCheckoutCompatibility(), 'Cart/checkout declaration is a no-op when WooCommerce is absent');
+
+// Simulate WooCommerce FeaturesUtil to prove the declaration actually fires.
+if (!class_exists('Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+    $GLOBALS['kleer_hpos_declared'] = [];
+    eval('namespace Automattic\WooCommerce\Utilities; class FeaturesUtil { public static function declare_compatibility($feature, $file, $positive) { $GLOBALS["kleer_hpos_declared"][] = [$feature, $file, $positive]; return true; } }');
+}
+$GLOBALS['kleer_hpos_declared'] = [];
+$hposReal = new WooCommerceCompatibility([WooCommerceCompatibility::FEATURE_HPOS]);
+assert_true($hposReal->declareCompatibility(), 'declareCompatibility() succeeds when WooCommerce is present');
+assert_true(count($GLOBALS['kleer_hpos_declared']) === 1, 'Exactly one compatibility declaration is sent to WooCommerce');
+assert_true(($GLOBALS['kleer_hpos_declared'][0][0] ?? null) === 'custom_order_tables', 'HPOS is the feature declared to WooCommerce');
+assert_true(($GLOBALS['kleer_hpos_declared'][0][2] ?? null) === true, 'HPOS is declared as compatible (not merely experimental)');
+
+$cartCheckout = new WooCommerceCompatibility([WooCommerceCompatibility::FEATURE_CART, WooCommerceCompatibility::FEATURE_CHECKOUT]);
+$GLOBALS['kleer_hpos_declared'] = [];
+$cartCheckout->declareCartCheckoutCompatibility();
+assert_true(count($GLOBALS['kleer_hpos_declared']) === 2, 'Cart and checkout blocks are both declared');
+unset($GLOBALS['kleer_hpos_declared'], $GLOBALS['kleer_hpos_declared']);
+
+// Test 14: Cache invalidation wiring (Rubric 5.3)
+echo "\n14. Testing Cache Invalidation Hooks...\n";
+$cache = new KleerCache('127.0.0.1', 6379, 0.05, false, 0, 'unit:');
+$invalidation = new CacheInvalidation($cache);
+$invalidation->register();
+
+$requiredHooks = ['save_post_product', 'deleted_post', 'woocommerce_update_product', 'updated_option', 'deleted_option'];
+foreach ($requiredHooks as $hook) {
+    assert_true(!empty($registered_actions[$hook]), 'Cache invalidation hooks into ' . $hook);
+}
+assert_true(!empty($registered_actions['woocommerce_new_product']), 'Cache invalidation hooks into woocommerce_new_product');
+assert_true(!empty($registered_actions['woocommerce_delete_product']), 'Cache invalidation hooks into woocommerce_delete_product');
+
+assert_true($cache->key('sku_1', KleerCache::GROUP_PRODUCTS) === 'unit:kleer_products:sku_1', 'Cache key includes the group so groups can be flushed separately');
+assert_true($cache->key('a', KleerCache::GROUP_QUIZ) !== $cache->key('a', KleerCache::GROUP_PRODUCTS), 'Same key in different groups does not collide');
+assert_true($cache->key('x', 'grp') !== $cache->key('x/y', 'grp'), 'Slashes in keys are namespaced correctly');
+
+$cache->addGlobalGroup('kleer_products');
+$cache->addGlobalGroup('kleer_products');
+assert_true(count($cache->globalGroups()) === 1, 'Global groups are deduplicated');
+$cache->addNonPersistentGroup('counts');
+$cache->addIgnoredGroups(['plugins', 'theme_json']);
+assert_true(in_array('counts', $cache->ignoredGroups(), true), 'Non-persistent group is registered');
+assert_true(in_array('theme_json', $cache->ignoredGroups(), true), 'Multiple non-persistent groups can be registered at once');
+
+// A cache pointed at a closed port must degrade instead of throwing. Port 1 is used
+// because it is not bound anywhere in the compose network, unlike 6379 which is Redis.
+$offline = new KleerCache('127.0.0.1', 1, 0.05, false, 0, 'unit-offline:');
+assert_true($offline->set('k', 'v') === false, 'set() reports failure when Redis is unreachable');
+assert_true($offline->get('k') === false, 'get() returns a cache miss when Redis is unreachable');
+assert_true(!$offline->isAvailable(), 'Availability is reported as false when Redis is unreachable');
+assert_true($offline->unavailableReason() !== null, 'A reason is recorded for diagnostics');
+
+$isolated = new KleerCache('127.0.0.1', 1, 0.05, false, 0, 'unit-isolated:');
+$isolated->resetStats();
+assert_true($isolated->hitRate() === 0.0, 'Hit rate is zero before any traffic');
+assert_true($isolated->misses() === 0, 'Miss counter is zero before any traffic');
+
+// Each instance must resolve its own connection: one failed instance must not make
+// another instance look connected or disconnected.
+assert_true(!$isolated->isAvailable() && !$offline->isAvailable(), 'Instances do not share connection state');
+
+$activePlugin2 = Kleer\Plugin::getInstance();
+assert_true($activePlugin2->wooCommerceCompatibility() instanceof WooCommerceCompatibility, 'Plugin boots the HPOS compatibility layer');
+assert_true($activePlugin2->cacheInvalidation() instanceof CacheInvalidation, 'Plugin boots the cache invalidation layer');
+
 echo "\nSummary: {$tests} tests, {$failures} failures.\n";
 if ($failures > 0) {
     exit(1);

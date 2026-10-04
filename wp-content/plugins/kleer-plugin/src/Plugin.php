@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Kleer;
 
 use Kleer\Endpoints\HealthEndpoints;
+use Kleer\Support\Cache\CacheInvalidation;
+use Kleer\Support\Cache\KleerCache;
+use Kleer\Support\Cache\WooCommerceCompatibility;
 use Kleer\Support\Cors\CorsService;
 
 // Prevent direct file access (Security Case)
@@ -20,6 +23,10 @@ final class Plugin
     private static ?Plugin $instance = null;
 
     private ?CorsService $corsService = null;
+
+    private ?WooCommerceCompatibility $woocommerceCompatibility = null;
+
+    private ?CacheInvalidation $cacheInvalidation = null;
 
     /**
      * Get the singleton instance of the plugin.
@@ -122,6 +129,12 @@ final class Plugin
         $this->corsService = new CorsService();
         $this->corsService->register();
 
+        $this->woocommerceCompatibility = new WooCommerceCompatibility();
+        $this->woocommerceCompatibility->register();
+
+        $this->cacheInvalidation = new CacheInvalidation(KleerCache::fromEnvironment());
+        $this->cacheInvalidation->register();
+
         (new HealthEndpoints())->register();
     }
 
@@ -131,5 +144,15 @@ final class Plugin
     public function corsService(): ?CorsService
     {
         return $this->corsService;
+    }
+
+    public function wooCommerceCompatibility(): ?WooCommerceCompatibility
+    {
+        return $this->woocommerceCompatibility;
+    }
+
+    public function cacheInvalidation(): ?CacheInvalidation
+    {
+        return $this->cacheInvalidation;
     }
 }

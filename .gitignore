@@ -37,6 +37,9 @@ yarn.lock
 .env.production
 deploy/.env
 
+# Sinh ra lúc deploy tu deploy/nginx.https.conf.template
+deploy/nginx.https.conf
+
 # === Cache & Temp ===
 cache/
 tmp/

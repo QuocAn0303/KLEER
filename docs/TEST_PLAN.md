@@ -16,9 +16,12 @@ This first test plan covers Docker configuration, WordPress bootstrap, plugin lo
 | Suite | Command | Expected |
 | --- | --- | --- |
 | Plugin lint | `docker compose run --rm php sh -c "find wp-content/plugins/kleer-plugin -name '*.php' -print0 \| xargs -0 -n1 php -l"` | No syntax errors |
-| Plugin architecture + integration | `docker compose run --rm php php wp-content/plugins/kleer-plugin/tests/run_tests.php` | `135 tests, 0 failures` |
+| Plugin architecture + integration | `docker compose run --rm php php wp-content/plugins/kleer-plugin/tests/run_tests.php` | `167 tests, 0 failures` |
 | Runtime config gate | `docker compose run --rm php php wp-content/plugins/kleer-plugin/tests/verify_php_ini.php` | `php.ini applied and required extensions present` |
+| Redis object cache | `docker exec kleer-php php /var/www/html/wp-content/plugins/kleer-plugin/tests/verify_cache.php` | `Redis cache smoke test PASSED!` (needs the `redis` container running) |
+| Nginx config | `docker compose run --rm nginx nginx -t` | `test is successful` |
 | Crawler fixture | `python -m pytest tools/crawler` | Five products extracted |
+| Load test | `docker run --rm -i --network kleer_kleer-net -v "$PWD/tests/load:/scripts" -e BASE_URL=http://kleer-nginx grafana/k6 run /scripts/kleer-load.js` | p95 under 500 ms (needs WordPress installed) |
 
 The plugin suite covers the architecture layers plus the `L01-G6-01` integration layer:
 CORS whitelist decisions, preflight handling, JSON Schema validation, and the Controller
@@ -38,6 +41,10 @@ during `L01-G6-01`: a `php.ini` rejected for its comment syntax, and a missing b
 CI therefore smoke tests only the nginx-level `/health` endpoint. REST and CORS behaviour is
 covered by the CLI suites plus the manual checks below, which must be run against a real
 instance before accepting `L01-G6-01`.
+
+The load test has the same constraint. It runs on a machine with WordPress installed and
+self-reports when `/wp-json` returns 404, so a missing WordPress install is never mistaken for a
+performance regression.
 
 ### Manual CORS checks (frontend ↔ backend handshake)
 

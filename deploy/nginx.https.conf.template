@@ -1,36 +1,76 @@
 # ============================================
-# Nginx configuration for WordPress (KLEER) - LOCAL / HTTP
+# Nginx configuration for WordPress (KLEER) - PRODUCTION / HTTPS
 # ============================================
 #
-# File nay phuc vu HTTP o moi truong (ke ca CI) va KHONG can chung thu SSL,
-# nen `docker compose up` luon chay duoc.
+# File nay la TEMPLATE. deploy/deploy.sh thay __SERVER_NAME__ bang domain cua ban
+# va ghi ket qua ra deploy/nginx.https.conf, sau do docker-compose.prod.yml
+# mount file da render do vao container.
 #
-# Ban HTTPS cho VPS nam o deploy/nginx.https.conf.template, duoc render ra
-# deploy/nginx.https.conf boi deploy/deploy.sh roi mount vao container qua
-# docker-compose.prod.yml.
+# KHONG duoc sua file nay truc tiep tren VPS. Sua o day roi deploy lai.
 #
-# Do nginx KHONG tu thay the bien moi truong, ten domain duoc hard-code o
-# server_name. Khi doi domain, sua `server_name` o ca hai file.
+# Yeu cau: mDNS phai tro ve may chu truoc khi chay certbot.
 
 upstream kleer_php {
     server php:9000;
     keepalive 16;
 }
 
+# ============================================
+# HTTP -> chuyen huong HTTPS
+# ============================================
 server {
     listen 80;
     listen [::]:80;
-    server_name localhost;
+    server_name __SERVER_NAME__;
+
+    # ACME challenge phai chay qua HTTP, nen khong redirect o khu vuc nay.
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+        default_type "text/plain";
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# ============================================
+# HTTPS
+# ============================================
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name __SERVER_NAME__;
+
+    ssl_certificate     /etc/letsencrypt/live/__SERVER_NAME__/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/__SERVER_NAME__/privkey.pem;
+
+    # TLS 1.2 tro len. TLS 1.0/1.1 da bi loai bo khoi RFC 8996.
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off;
+
+    # OCSP stapling: giam thoi gian handshake.
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    resolver 127.0.0.11 valid=300s;
+    resolver_timeout 5s;
 
     root /var/www/html;
     index index.php index.html;
 
     # ============================================
-    # Security headers (ban HTTPS them HSTS o tren)
+    # Security headers
     # ============================================
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
 
     # ============================================
     # Upload size - Large images for products

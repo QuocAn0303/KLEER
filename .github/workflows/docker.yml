@@ -46,6 +46,12 @@ jobs:
       - name: Test plugin architecture and integration suite
         run: docker compose --env-file .env.ci run --rm php php wp-content/plugins/kleer-plugin/tests/run_tests.php
 
+      - name: Start Redis for cache tests
+        run: docker compose --env-file .env.ci up -d --wait redis
+
+      - name: Test Redis object cache against a real Redis
+        run: docker exec kleer-php php /var/www/html/wp-content/plugins/kleer-plugin/tests/verify_cache.php
+
       - name: Test crawler parser
         run: python -m unittest discover -s tools/crawler -p 'test_*.py' -v
 
