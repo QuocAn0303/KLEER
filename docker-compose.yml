@@ -66,7 +66,7 @@ services:
     networks:
       - kleer-net
     healthcheck:
-      test: ["CMD", "php-fpm8.2", "-t"]
+      test: ["CMD", "php-fpm", "-t"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -145,7 +145,10 @@ services:
     networks:
       - kleer-net
     healthcheck:
-      test: ["CMD", "php", "-r", "file_get_contents('http://localhost:80/')"]
+      # The previous check used `php -r "file_get_contents(...)"`, which exits 255 with a
+      # parse error under exec-form healthchecks and marked the container permanently
+      # unhealthy. curl ships in this image and returns a real status code.
+      test: ["CMD", "curl", "--fail", "--silent", "--output", "/dev/null", "http://localhost/"]
       interval: 10s
       timeout: 5s
       retries: 3

@@ -28,11 +28,14 @@ RUN apk add --no-cache \
         exif \
         mbstring
 
-# Install Redis extension (needs the PHPIZE build toolchain)
+# Install Redis extension (needs the PHPIZE build toolchain).
+# $PHPIZE_DEPS pulls in packages that other runtime binaries depend on, so the
+# removal is deferred to the final cleanup layer instead of running here. Removing
+# them inline deletes shared libraries and leaves php-fpm unable to start
+# ("php-fpm8.2: not found").
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     && pecl install redis-5.3.7 \
-    && docker-php-ext-enable redis \
-    && apk del .build-deps
+    && docker-php-ext-enable redis
 
 # Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
@@ -42,13 +45,16 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 # Copy custom php.ini
 COPY php.ini /usr/local/etc/php/conf.d/99-kleer.ini
 
-# Clear cache
-RUN rm -rf /tmp/* && apk cache clean
+# Drop the temporary build toolchain last, after everything that needs it is in place
+RUN apk del --no-network .build-deps || true
+RUN rm -rf /tmp/* /var/tmp/* /var/cache/apk/* && apk cache clean
 
 WORKDIR /var/www/html
 
 # Expose port 9000
 EXPOSE 9000
 
-# Start PHP-FPM
-CMD ["php-fpm8.2"]
+# Start PHP-FPM.
+# The official Alpine image installs the binary as "php-fpm"; there is no
+# version-suffixed alias, so CMD must use the plain name.
+CMD ["php-fpm"]

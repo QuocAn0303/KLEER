@@ -6,42 +6,121 @@ on:
   pull_request:
     branches: [main, develop]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COMPOSE_ENV_FILE: .env.ci
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      # docker compose can only resolve variables from ONE env file per invocation.
+      # CI uses its own committed-safe file so secrets are never required from a developer
+      # machine, while local developers keep using the untracked .env.
+      - name: Prepare CI environment file
+        run: cp .env.example .env.ci
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Build all services
-        run: docker compose build
+        run: docker compose --env-file .env.ci build
 
       - name: Test PHP-FPM
-        run: docker compose run --rm php php -v
+        run: docker compose --env-file .env.ci run --rm php php -v
 
       - name: Test Nginx config
-        run: docker compose run --rm nginx nginx -t
+        run: docker compose --env-file .env.ci run --rm nginx nginx -t
+
+      - name: Verify php.ini is actually applied
+        run: docker compose --env-file .env.ci run --rm php php wp-content/plugins/kleer-plugin/tests/verify_php_ini.php
 
       - name: Test PHP syntax
-        run: docker compose run --rm php sh -c "find wp-content/plugins/kleer-plugin -name '*.php' -print0 | xargs -0 -n1 php -l"
+        run: docker compose --env-file .env.ci run --rm php sh -c "find wp-content/plugins/kleer-plugin -name '*.php' -print0 | xargs -0 -n1 php -l"
+
+      - name: Test plugin architecture and integration suite
+        run: docker compose --env-file .env.ci run --rm php php wp-content/plugins/kleer-plugin/tests/run_tests.php
 
       - name: Test crawler parser
         run: python -m unittest discover -s tools/crawler -p 'test_*.py' -v
 
       - name: Start services
-        run: docker compose up -d
+        run: docker compose --env-file .env.ci up -d
 
       - name: Check container status
-        run: docker compose ps
+        run: docker compose --env-file .env.ci ps
+
+      # NOTE: WordPress core is intentionally NOT committed to this repository, so
+      # /wp-json/... is not reachable in CI. Only nginx-level endpoints are smoke tested
+      # here. The REST and CORS behaviour is covered by the plugin test suite (CLI) plus
+      # the manual checks in docs/TEST_PLAN.md against a running instance.
+      - name: Smoke test nginx health endpoint
+        run: |
+          port="$(grep -E '^NGINX_PORT=' .env.ci | cut -d= -f2)"
+          port="${port:-80}"
+          for attempt in $(seq 1 30); do
+            if curl -fsS "http://localhost:${port}/health" > /dev/null 2>&1; then
+              echo "nginx /health OK on port ${port}"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::nginx /health khong phan hoi sau 30 lan thu"
+          docker compose --env-file .env.ci logs --tail=50
+          exit 1
+
+      - name: Collect service logs on failure
+        if: failure()
+        run: docker compose --env-file .env.ci logs --tail=100
+
+  image-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare CI environment file
+        run: cp .env.example .env.ci
+
+      - name: Build PHP image
+        run: docker compose --env-file .env.ci build php
+
+      - name: Scan PHP image for critical and high vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: image
+          image-ref: kleer-php:latest
+          severity: CRITICAL,HIGH
+          exit-code: '1'
 
   security-scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Fail if a real secret is committed
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: .
+          base: HEAD
+          only-verified: true
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
           scan-ref: .
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+
+      - name: Scan Docker images for OS and library vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: image
+          image-ref: kleer-php:latest
+          severity: CRITICAL,HIGH
+          exit-code: '1'

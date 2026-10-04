@@ -452,8 +452,14 @@ assert_true(
     'X-KLEER-Session is allowed by default'
 );
 
-$envPolicy = CorsPolicy::fromEnvironment();
-assert_true($envPolicy->allowedOrigins() === [], 'Empty configuration denies every cross-origin request');
+// The test must not depend on whether the host or CI happens to export CORS variables,
+// so every case passes its defaults explicitly and drives configuration through putenv.
+$emptyPolicy = new CorsPolicy([]);
+assert_true($emptyPolicy->allowedOrigins() === [], 'Empty configuration denies every cross-origin request');
+assert_true($emptyPolicy->buildHeaders('http://localhost:5173') === [], 'Empty configuration emits no CORS headers');
+
+$envPolicyFromServer = CorsPolicy::fromEnvironment([], null, null, false, 86400);
+assert_true($envPolicyFromServer instanceof CorsPolicy, 'fromEnvironment() builds a policy without explicit configuration');
 
 putenv('KLEER_CORS_ALLOWED_ORIGINS=https://a.kleer.vn, https://b.kleer.vn');
 putenv('KLEER_CORS_ALLOW_CREDENTIALS=true');

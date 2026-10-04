@@ -16,6 +16,9 @@ desktop.ini
 # === Environment ===
 .env
 .env.local
+.env.ci
+.env.production
+deploy/.env
 
 # === Node.js ===
 node_modules/
