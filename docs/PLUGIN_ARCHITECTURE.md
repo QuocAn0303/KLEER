@@ -305,6 +305,10 @@ Toàn bộ API được phát triển trong `kleer-plugin` phải tuân thủ c�
    ```text
    kleer/v1
    ```
+   > **Đã chốt (`STT 1`, `2026-10-04`):** giữ nguyên `kleer/v1` cho toàn bộ luồng L01–L10.
+   > Sổ tay ghi `unisex-quiz-engine` / `unisex-theme` là tên gọi giai đoạn thiết kế ban đầu,
+   > đã bị thay thế khi chốt thương hiệu KLEER (`STT 7`). Chi tiết:
+   > `docs/flows/L01-quiz-integration/namespace-decision-stt1.md`.
 2. **Định dạng URI (Route style):** Chữ thường (lowercase), danh từ số nhiều hướng tài nguyên (RESTful resources):
    - Hợp lệ: `/kleer/v1/products`, `/kleer/v1/categories`, `/kleer/v1/skin-profiles`
    - Không hợp lệ: `/kleer/v1/getProducts`, `/kleer/v1/Product_List`
@@ -337,6 +341,9 @@ Toàn bộ API được phát triển trong `kleer-plugin` phải tuân thủ c�
 ## 10. Quy ước đặt tên và Namespaces (Naming Conventions)
 
 Mã nguồn áp dụng tiêu chuẩn chuẩn hóa **PSR-4** với Root Namespace: `Kleer\`.
+
+> **Đã chốt (`STT 1`, `2026-10-04`):** giữ nguyên tên thư mục `kleer-plugin` / `kleer-theme`
+> và Root Namespace `Kleer\`. Endpoint mới **không** được dùng `unisex-*`.
 
 ### 10.1. Bảng quy ước Namespaces
 

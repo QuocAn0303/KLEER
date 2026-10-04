@@ -4,7 +4,7 @@
 - **Người đề xuất:** Lê Nguyễn Quốc An (đã được giao chốt trước `2026-11-01`)
 - **Hạn chốt:** `2026-11-01`
 - **Mốc:** phải chốt **trước khi** Nhân (L01) bắt đầu viết endpoint ở Tuần 07.
-- **Trạng thái:** Đề xuất — chờ Nguyễn Tấn Phát phê duyệt.
+- **Trạng thái:** ✅ **ĐÃ CHỐT — giữ nguyên `kleer/*`**
 
 ---
 
@@ -70,13 +70,25 @@ Không cần đụng vào tên thư mục/kỹ thuật.
 
 ---
 
-## 5. Đề xuất quyết định (cần Nguyễn Tấn Phát phê duyệt)
+## 5. QUYẾT ĐỊNH ĐÃ CHỐT
 
 > **Chốt STT 1:** Giữ nguyên thư mục `kleer-plugin` / `kleer-theme`, PHP namespace `Kleer\`,
 > REST namespace `kleer/v1`. Sổ tay cập nhật theo repo, không sửa repo theo sổ tay.
 > Sổ tay ghi `unisex-theme` / `unisex-quiz-engine` được hiểu là **tên gọi dự án trong giai đoạn
 > thiết kế ban đầu**, đã bị thay thế khi chốt thương hiệu KLEER (STT 7).
+>
+> - **Quyết định:** Lê Nguyễn Quốc An — `2026-10-04`
+> - **Căn cứ:** STT 7 đã chốt thương hiệu **KLEER** (`2026-10-11` hạn); code đã merge vào
+>   cả `main` và `develop` đều dùng `kleer/*` nhất quán.
+> - **Phạm vi áp dụng:** tất cả endpoint L01–L10. Endpoint mới **bắt buộc** dùng `kleer/v1`.
 
-Việc cần làm sau khi chốt:
-- [ ] Cập nhật `docs/PLUGIN_ARCHITECTURE.md` mục 9 và 10 ghi rõ "đã chốt ngày 2026-11-01".
-- [ ] Thông báo lại L01 (Nhân) và L00 để dùng namespace `kleer/v1`.
+### Việc cần làm sau khi chốt
+
+- [x] Cập nhật `docs/PLUGIN_ARCHITECTURE.md` mục 9 và 10 ghi rõ quyết định.
+- [x] Nhân (L01) và các luồng sau dùng `kleer/v1`.
+- [ ] PO (Nguyễn Tấn Phát) xác nhận trong sheet `Cần chốt` (STT 1) để đóng hạn `2026-11-01`.
+
+### Lưu ý vận hành
+
+Vì namespace không đổi, **Frontend đã viết trước đó không cần sửa URL**. Ngược lại, nếu
+một thành viên đã viết endpoint theo `unisex/v1` thì phải đổi lại `kleer/v1` trước khi merge.
