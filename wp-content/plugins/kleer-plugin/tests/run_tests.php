@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Lightweight test suite to verify KLEER Plugin Architecture & Layers.
+ * Lightweight test suite to verify KLEER Plugin Architecture, Autoloader, Lifecycle & Layers.
  *
  * Runs without requiring an active WordPress database or web server.
  * Can be executed via CLI: php wp-content/plugins/kleer-plugin/tests/run_tests.php
@@ -24,19 +24,39 @@ function assert_true(bool $condition, string $message): void
     }
 }
 
-// 1. Mock minimal WordPress functions if not defined
+// 1. Mock minimal WordPress functions and environment if not defined
 if (!defined('ABSPATH')) {
     define('ABSPATH', __DIR__ . '/../../../../');
 }
 
 $registered_actions = [];
 $registered_routes = [];
+$registered_activation_hooks = [];
+$registered_deactivation_hooks = [];
+$flushed_rewrite_rules_count = 0;
+$deleted_transients = [];
 
 if (!function_exists('add_action')) {
     function add_action(string $hook, callable $callback): void
     {
         global $registered_actions;
         $registered_actions[$hook][] = $callback;
+    }
+}
+
+if (!function_exists('register_activation_hook')) {
+    function register_activation_hook(string $file, callable $callback): void
+    {
+        global $registered_activation_hooks;
+        $registered_activation_hooks[$file] = $callback;
+    }
+}
+
+if (!function_exists('register_deactivation_hook')) {
+    function register_deactivation_hook(string $file, callable $callback): void
+    {
+        global $registered_deactivation_hooks;
+        $registered_deactivation_hooks[$file] = $callback;
     }
 }
 
@@ -59,18 +79,41 @@ if (!function_exists('__return_true')) {
     }
 }
 
+if (!function_exists('flush_rewrite_rules')) {
+    function flush_rewrite_rules(): void
+    {
+        global $flushed_rewrite_rules_count;
+        $flushed_rewrite_rules_count++;
+    }
+}
+
+if (!function_exists('delete_transient')) {
+    function delete_transient(string $transient): bool
+    {
+        global $deleted_transients;
+        $deleted_transients[] = $transient;
+        return true;
+    }
+}
+
 echo "Running KLEER Plugin Architecture Tests...\n\n";
 
-// 2. Load plugin classes
-require_once __DIR__ . '/../src/Contracts/ProductRepositoryInterface.php';
-require_once __DIR__ . '/../src/Models/Product.php';
-require_once __DIR__ . '/../src/Services/ProductService.php';
-require_once __DIR__ . '/../src/Controllers/HealthController.php';
-require_once __DIR__ . '/../src/Endpoints/HealthEndpoints.php';
-require_once __DIR__ . '/../src/Plugin.php';
+// 2. Load plugin bootstrap file (tests constants, autoloader, and hook registrations)
+require_once __DIR__ . '/../kleer-plugin.php';
 
-// Test 1: Model layer
-echo "1. Testing Model Layer (Product)...\n";
+// Test 0: Plugin Constants & Hooks Registration
+echo "0. Testing Plugin Bootstrap, Constants & Lifecycle Hooks...\n";
+assert_true(defined('KLEER_PLUGIN_VERSION') && KLEER_PLUGIN_VERSION === '0.1.0', 'KLEER_PLUGIN_VERSION is 0.1.0');
+assert_true(defined('KLEER_MIN_PHP_VERSION') && KLEER_MIN_PHP_VERSION === '8.2', 'KLEER_MIN_PHP_VERSION is 8.2');
+assert_true(defined('KLEER_PLUGIN_FILE'), 'KLEER_PLUGIN_FILE is defined');
+assert_true(defined('KLEER_PLUGIN_DIR'), 'KLEER_PLUGIN_DIR is defined');
+assert_true(isset($registered_activation_hooks[KLEER_PLUGIN_FILE]), 'Activation hook is registered for plugin file');
+assert_true(isset($registered_deactivation_hooks[KLEER_PLUGIN_FILE]), 'Deactivation hook is registered for plugin file');
+assert_true(!empty($registered_actions['plugins_loaded']), 'plugins_loaded hook is registered');
+
+// Test 1: Autoloader & Model layer
+echo "\n1. Testing Autoloader & Model Layer (Product)...\n";
+assert_true(class_exists(Kleer\Models\Product::class), 'Autoloader successfully loads Kleer\Models\Product');
 $product = new Kleer\Models\Product(101, 'Hydrating Gentle Cleanser', 250000);
 assert_true($product->id === 101, 'Product id is 101');
 assert_true($product->name === 'Hydrating Gentle Cleanser', 'Product name matches');
@@ -80,6 +123,7 @@ assert_true($array['id'] === 101 && $array['name'] === 'Hydrating Gentle Cleanse
 
 // Test 2: Controller layer
 echo "\n2. Testing Controller Layer (HealthController)...\n";
+assert_true(class_exists(Kleer\Controllers\HealthController::class), 'Autoloader successfully loads Kleer\Controllers\HealthController');
 $controller = new Kleer\Controllers\HealthController();
 $response = $controller->health();
 assert_true(isset($response['status']) && $response['status'] === 'ok', 'Health status is ok');
@@ -87,6 +131,9 @@ assert_true(isset($response['service']) && $response['service'] === 'kleer-plugi
 
 // Test 3: Service layer with Contract abstraction
 echo "\n3. Testing Service & Contract Layer (ProductService)...\n";
+assert_true(interface_exists(Kleer\Contracts\ProductRepositoryInterface::class), 'Autoloader successfully loads ProductRepositoryInterface');
+assert_true(class_exists(Kleer\Services\ProductService::class), 'Autoloader successfully loads ProductService');
+
 $mockRepo = new class implements Kleer\Contracts\ProductRepositoryInterface {
     public function findFeatured(int $limit = 5): array
     {
@@ -108,6 +155,7 @@ assert_true(count($clampedZero) === 1, 'ProductService clamps limit to minimum 1
 
 // Test 4: Endpoints layer
 echo "\n4. Testing Endpoints Layer (HealthEndpoints)...\n";
+assert_true(class_exists(Kleer\Endpoints\HealthEndpoints::class), 'Autoloader successfully loads HealthEndpoints');
 $endpoints = new Kleer\Endpoints\HealthEndpoints($controller);
 $endpoints->register();
 assert_true(!empty($registered_actions['rest_api_init']), 'HealthEndpoints hooks into rest_api_init');
@@ -130,11 +178,33 @@ assert_true($healthRoute['args']['permission_callback'] === '__return_true', 'Pe
 $endpointOutput = call_user_func($healthRoute['args']['callback']);
 assert_true($endpointOutput['status'] === 'ok', 'Endpoint callback returns status ok');
 
-// Test 5: Plugin bootstrap layer
-echo "\n5. Testing Plugin Bootstrap Layer (Plugin)...\n";
-$plugin = new Kleer\Plugin();
-$plugin->register();
-assert_true(true, 'Plugin::register() completes without error');
+// Test 5: Plugin Singleton & Lifecycle Methods
+echo "\n5. Testing Plugin Singleton & Lifecycle Methods...\n";
+assert_true(class_exists(Kleer\Plugin::class), 'Autoloader successfully loads Kleer\Plugin');
+$pluginInstance1 = Kleer\Plugin::getInstance();
+$pluginInstance2 = Kleer\Plugin::getInstance();
+assert_true($pluginInstance1 === $pluginInstance2, 'Plugin::getInstance() implements Singleton pattern');
+
+$reflection = new ReflectionClass(Kleer\Plugin::class);
+$constructor = $reflection->getConstructor();
+assert_true($constructor !== null && $constructor->isPrivate(), 'Plugin constructor is private (enforces singleton)');
+
+// Test activation hook execution
+$flushedBefore = $flushed_rewrite_rules_count;
+Kleer\Plugin::activate();
+assert_true($flushed_rewrite_rules_count === $flushedBefore + 1, 'Plugin::activate() flushes rewrite rules');
+
+// Test deactivation hook execution
+$flushedBeforeDeact = $flushed_rewrite_rules_count;
+Kleer\Plugin::deactivate();
+assert_true($flushed_rewrite_rules_count === $flushedBeforeDeact + 1, 'Plugin::deactivate() flushes rewrite rules');
+assert_true(in_array('kleer_plugin_cache', $deleted_transients, true), 'Plugin::deactivate() cleans temporary transient cache');
+
+// Test plugins_loaded execution
+foreach ($registered_actions['plugins_loaded'] as $cb) {
+    $cb();
+}
+assert_true(true, 'plugins_loaded callback registers Plugin without error');
 
 // Test 6: Theme independence
 echo "\n6. Testing Theme Independence...\n";
@@ -155,6 +225,12 @@ if (preg_match('/wp-content\/themes|kleer-theme/i', $entryContent)) {
     $themeFound = true;
 }
 assert_true(!$themeFound, 'Plugin production code has zero references to theme');
+
+// Test 7: Direct File Access Security Check
+echo "\n7. Testing Security Case (defined ABSPATH || exit)...\n";
+assert_true(strpos($entryContent, "defined('ABSPATH') || exit;") !== false, 'kleer-plugin.php contains defined ABSPATH || exit;');
+$pluginClassContent = file_get_contents($pluginDir . '/src/Plugin.php');
+assert_true(strpos($pluginClassContent, "defined('ABSPATH') || exit;") !== false, 'src/Plugin.php contains defined ABSPATH || exit;');
 
 echo "\nSummary: {$tests} tests, {$failures} failures.\n";
 if ($failures > 0) {
