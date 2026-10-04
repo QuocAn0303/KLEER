@@ -5,12 +5,13 @@ RUN apk add --no-cache \
     git \
     curl \
     libpng-dev \
-    jpeg-turbo-dev \
+    libjpeg-turbo-dev \
     freetype-dev \
     zip \
     unzip \
     tar \
     libzip-dev \
+    libxml2-dev \
     oniguruma-dev \
     icu-dev \
     mariadb-client \
@@ -27,8 +28,11 @@ RUN apk add --no-cache \
         exif \
         mbstring
 
-# Install Redis extension
-RUN pecl install redis-5.3.7 && docker-php-ext-enable redis
+# Install Redis extension (needs the PHPIZE build toolchain)
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+    && pecl install redis-5.3.7 \
+    && docker-php-ext-enable redis \
+    && apk del .build-deps
 
 # Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \

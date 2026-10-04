@@ -4,7 +4,8 @@
 > **Học phần:** EC312 — Thiết kế hệ thống Thương mại Điện tử  
 > **Chủ sở hữu Task (Task Owner):** Bùi Hiếu Nhân  
 > **Giai đoạn:** Tuần 1 — Nền tảng kiến trúc (Architecture Foundations)  
-> **Phiên bản tài liệu:** 1.0.0  
+> **Phiên bản tài liệu:** 1.1.0  
+> **Cập nhật gần nhất:** `L01-G6-01` — bổ sung tầng `Support` (CORS + JSON Schema validation)  
 > **Yêu cầu môi trường:** PHP 8.2+ | WordPress 6.x+ | WooCommerce 8.x+
 
 ---
@@ -148,6 +149,18 @@ wp-content/plugins/kleer-plugin/
 │   └── Repositories/                        # TẦNG 6: Data Access Implementations (Persistence)
 │       └── (Dành cho việc hiện thực hóa kết nối WooCommerce/DB ở các sprint sau)
 │
+│   └── Support/                             # TẦNG 7: Hạ tầng dùng chung (Cross-cutting)
+│       ├── Cors/
+│       │   ├── CorsPolicy.php               # [Implemented] Quyết định CORS thuần (whitelist, header)
+│       │   └── CorsService.php              # [Implemented] Gép CORS vào REST API của WordPress
+│       └── Validation/
+│           ├── JsonSchema.php               # [Implemented] Bộ kiểm tra JSON Schema (không thu viện ngoài)
+│           └── ValidationResult.php         # [Implemented] Kết quả kiểm tra + danh sách lỗi theo JSON Pointer
+│
+├── schemas/                                 # HỢP ĐỒNG JSON dùng chung Frontend & Backend (L01-G6-01)
+│   ├── quiz-submission.schema.json          # Contract request cho POST /kleer/v1/skin-quiz
+│   └── quiz-submission-response.schema.json # Contract response cho endpoint trên
+│
 └── tests/                                   # Kiểm thử kiến trúc độc lập
     └── run_tests.php                        # [Implemented] Architecture & Unit Verification Suite
 ```
@@ -166,6 +179,7 @@ Mỗi tầng trong hệ thống tuân thủ nghiêm ngặt nguyên lý **Đơn t
 | **Models** | - Biểu diễn cấu trúc dữ liệu miền (Domain State/Attributes)<br>- Khai báo các thuộc tính kiểu dữ liệu mạnh (strong typing, PHP 8.2 readonly)<br>- Cung cấp hàm chuyển đổi định dạng cơ bản (`toArray()`) | - **CẤM** thực hiện I/O (Database, Network, File system)<br>- **CẤM** gọi HTTP APIs<br>- **CẤM** đăng ký routes hoặc phụ thuộc WordPress globals |
 | **Contracts** | - Định nghĩa Interface trừu tượng cho tầng dữ liệu<br>- Cho phép thay thế (mocking) dữ liệu khi viết Unit Test<br>- Tạo ranh giới phân tách (Decoupling Boundary) | - **CẤM** chứa mã thực thi cụ thể (concrete implementation)<br>- **CẤM** gắn chặt với một cơ chế lưu trữ cố định |
 | **Repositories** | - Truy xuất và lưu trữ dữ liệu từ WordPress, WooCommerce, Database, hoặc Remote APIs<br>- Hiện thực hóa các interface trong `Contracts` | - **CẤM** chứa quy trình nghiệp vụ của toàn bộ ứng dụng<br>- **CẤM** xử lý request HTTP hoặc sinh giao diện UI |
+| **Support** | - Cung cấp hạ tầng dùng chung cho các tầng phía trên: CORS policy, kiểm tra JSON Schema<br>- Chứa **logic thuần** (không phụ thuộc WordPress) để kiểm thử được độc lập | - **CẤM** chứa business logic của domain<br>- **CẤM** truy vấn database<br>- **CẤM** đăng ký REST route cụ thể của domain |
 
 ---
 
@@ -177,14 +191,18 @@ Mỗi tầng trong hệ thống tuân thủ nghiêm ngặt nguyên lý **Đơn t
 - **`Controllers`** chỉ được phép phụ thuộc vào **`Services`** (và các DTO/Models nếu cần để format response).
 - **`Services`** chỉ được phép phụ thuộc vào **`Models`** và **`Contracts` (Interfaces)**.
 - **`Repositories`** hiện thực hóa (implements) **`Contracts`**, phụ thuộc vào WordPress Core/WooCommerce APIs/Database.
-- **`Plugin.php`** chịu trách nhiệm khởi tạo và điều phối các `Endpoints`.
+- **`Support`** được phép phụ thuộc vào **không có tầng nào** (hạ tầng dùng chung), nhưng chỉ phụ thuộc ngược lại từ `Endpoints` và `Controllers`.
+- **`Plugin.php`** chịu trách nhiệm khởi tạo và điều phối các `Endpoints` và hạ tầng `Support`.
 - **`kleer-plugin.php`** nạp mã nguồn theo đúng thứ tự phụ thuộc và hook vào `plugins_loaded`.
 
 ```text
 [Endpoints] ──> [Controllers] ──> [Services] ──> [Contracts] <── [Repositories]
-                                       │
-                                       ▼
-                                   [Models]
+      │               │                │
+      │               │                └──> [Models]
+      └───────────────┴────────────────┘
+                      │ đọc (CORS · JSON Schema)
+                      ▼
+                 [Support]
 ```
 
 ### 6.2. Các mối phụ thuộc bị NGHIÊM CẤM (Forbidden Anti-Patterns)
@@ -327,10 +345,13 @@ Mã nguồn áp dụng tiêu chuẩn chuẩn hóa **PSR-4** với Root Namespace
 | **Root** | `Kleer` | `src/` | — | `Plugin.php` |
 | **Endpoints** | `Kleer\Endpoints` | `src/Endpoints/` | `...Endpoints.php` | `HealthEndpoints.php`, `ProductEndpoints.php` |
 | **Controllers** | `Kleer\Controllers` | `src/Controllers/` | `...Controller.php` | `HealthController.php`, `ProductController.php` |
+| **Controllers (Concerns)** | `Kleer\Controllers\Concerns` | `src/Controllers/Concerns/` | Trait dùng chung | `ValidatesJsonPayload.php` |
 | **Services** | `Kleer\Services` | `src/Services/` | `...Service.php` | `ProductService.php`, `OrderService.php` |
 | **Models** | `Kleer\Models` | `src/Models/` | Danh từ số ít | `Product.php`, `Customer.php` |
 | **Contracts** | `Kleer\Contracts` | `src/Contracts/` | `...Interface.php` | `ProductRepositoryInterface.php` |
 | **Repositories** | `Kleer\Repositories` | `src/Repositories/` | `...Repository.php` | `WooCommerceProductRepository.php` |
+| **Support (Cors)** | `Kleer\Support\Cors` | `src/Support/Cors/` | `...Policy.php` / `...Service.php` | `CorsPolicy.php`, `CorsService.php` |
+| **Support (Validation)** | `Kleer\Support\Validation` | `src/Support/Validation/` | `...Schema.php` / `...Result.php` | `JsonSchema.php`, `ValidationResult.php` |
 
 ### 10.2. Quy chuẩn viết code (Coding Standards)
 - Khai báo nghiêm ngặt kiểu dữ liệu: `declare(strict_types=1);` trên đầu mọi file PHP.
@@ -349,10 +370,12 @@ Tình trạng thực tế của các endpoints trong hệ thống (phân định
 | **GET** | `/kleer/v1/products` | `ProductEndpoints` | `ProductController` | `ProductService` | **Planned** | Lấy danh sách sản phẩm nổi bật/phân trang |
 | **GET** | `/kleer/v1/products/{id}` | `ProductEndpoints` | `ProductController` | `ProductService` | **Planned** | Lấy chi tiết thông tin sản phẩm Skincare |
 | **POST** | `/kleer/v1/cart/items` | `CartEndpoints` | `CartController` | `CartService` | **Future** | Thêm sản phẩm vào giỏ hàng WooCommerce |
-| **POST** | `/kleer/v1/skin-quiz` | `SkinQuizEndpoints` | `SkinQuizController` | `SkinQuizService` | **Future** | Bài trắc nghiệm gợi ý sản phẩm phù hợp loại da |
+| **POST** | `/kleer/v1/skin-quiz` | `SkinQuizEndpoints` | `SkinQuizController` | `SkinQuizService` | **Future** | Bài trắc nghiệm gợi ý sản phẩm phù hợp loại da. Contract: `schemas/quiz-submission.schema.json` |
 
 > [!NOTE]
-> Chỉ có endpoint `/kleer/v1/health` là **Implemented** trong code hiện tại. Các endpoint khác ở trạng thái **Planned** hoặc **Future** sẽ được phát triển theo đúng tài liệu này.
+> > Chỉ có endpoint `/kleer/v1/health` là **Implemented** trong code hiện tại. Các endpoint khác ở trạng thái **Planned** hoặc **Future** sẽ được phát triển theo đúng tài liệu này.
+>
+> **Hạ tầng tích hợp đã có sẵn (`L01-G6-01`):** CORS áp dụng cho **toàn bộ** route `/kleer/v1/...` và bộ kiểm tra JSON Schema trong `Kleer\Support\Validation`. Endpoint mới **không cần** tự viết lại CORS hay tự định nghĩa lại payload — chỉ cần khai báo route và dùng trait `ValidatesJsonPayload`. Chi tiết: `docs/flows/L01-quiz-integration/flow-card.md`.
 
 ---
 
@@ -535,20 +558,30 @@ Chạy script kiểm thử kiến trúc độc lập (không cần khởi độn
 php wp-content/plugins/kleer-plugin/tests/run_tests.php
 ```
 
-Bộ test tự động xác nhận 6 tiêu chí:
+Bộ test tự động xác nhận 12 tiêu chí:
 1. **Model Layer:** Khởi tạo `Product`, kiểm tra readonly properties và format `toArray()`.
 2. **Controller Layer:** `HealthController::health()` trả về đúng payload `['status' => 'ok', 'service' => 'kleer-plugin']`.
 3. **Service & Contract Layer:** `ProductService` tích hợp mock interface, thực thi logic clamp dữ liệu `[1, 20]`.
 4. **Endpoints Layer:** `HealthEndpoints` đăng ký đúng hook `rest_api_init`, namespace `kleer/v1`, route `/health`, method `GET`.
 5. **Bootstrap Layer:** `Plugin::register()` chạy hoàn chỉnh không phát sinh lỗi runtime.
 6. **Theme Independence:** Quét toàn bộ mã nguồn `src/` và `kleer-plugin.php`, cam kết không có tham chiếu nào tới Theme.
+7. **Security Case:** Mọi file trong `src/` đều có `defined('ABSPATH') || exit;`.
+8. **CORS Policy:** Origin ngoài whitelist không nhận header CORS; `Vary: Origin` luôn có mặt; wildcard + credentials không bao giờ echo `*`.
+9. **CORS Service:** Hook đúng `rest_pre_serve_request` / `rest_pre_dispatch` / `rest_allowed_cors_headers`; preflight trả HTTP 204 và lọc `Access-Control-Request-Headers`.
+10. **JSON Schema Validation:** Đủ các trường bắt buộc, sai kiểu dữ liệu, `pattern`, `enum`, `oneOf`, giới hạn độ dài, `additionalProperties: false`; lỗi trả về kèm **JSON Pointer** chính xác.
+11. **Controller Boundary:** Trait `ValidatesJsonPayload` trả `WP_Error` với code `kleer_invalid_payload` và HTTP 400.
+12. **Fail-closed:** Schema chứa từ khoá chưa hỗ trợ hoặc kiểu dữ liệu lạ → ném exception thay vì âm thầm cho qua.
+
+> **Kết quả hiện tại:** `130 tests, 0 failures`.
 
 ### 14.3. Tiêu chuẩn chấp nhận (Acceptance Criteria / Definition of Done)
 - [x] Cú pháp toàn bộ file PHP đạt 100% không có lỗi (`php -l`).
-- [x] Tách biệt hoàn toàn Endpoints, Controllers, Services, Models, Contracts.
+- [x] Tách biệt hoàn toàn Endpoints, Controllers, Services, Models, Contracts, Support.
 - [x] Plugin không chứa bất kỳ dòng mã nào phụ thuộc vào Theme (`kleer-theme`).
 - [x] Endpoint `GET /wp-json/kleer/v1/health` giữ nguyên response chuẩn `{ "status": "ok", "service": "kleer-plugin" }`.
-- [x] Bộ test kiến trúc chạy thành công với 18/18 test cases pass.
+- [x] Bộ test kiến trúc chạy thành công với **130/130** test cases pass.
+- [x] CORS dùng whitelist, có preflight, không dùng wildcard kèm credentials.
+- [x] JSON Schema dùng chung cho Frontend & Backend nằm trong `schemas/`.
 - [x] Tài liệu `docs/PLUGIN_ARCHITECTURE.md` được cập nhật toàn diện, giải đáp tất cả câu hỏi kiến trúc.
 
 ---

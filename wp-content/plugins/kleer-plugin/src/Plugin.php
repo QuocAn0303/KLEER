@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kleer;
 
 use Kleer\Endpoints\HealthEndpoints;
+use Kleer\Support\Cors\CorsService;
 
 // Prevent direct file access (Security Case)
 defined('ABSPATH') || exit;
@@ -17,6 +18,8 @@ defined('ABSPATH') || exit;
 final class Plugin
 {
     private static ?Plugin $instance = null;
+
+    private ?CorsService $corsService = null;
 
     /**
      * Get the singleton instance of the plugin.
@@ -116,6 +119,17 @@ final class Plugin
      */
     public function register(): void
     {
+        $this->corsService = new CorsService();
+        $this->corsService->register();
+
         (new HealthEndpoints())->register();
+    }
+
+    /**
+     * CORS handler dang active, dung chokiem thu va cho tien ich noi bo.
+     */
+    public function corsService(): ?CorsService
+    {
+        return $this->corsService;
     }
 }

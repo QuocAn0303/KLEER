@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kleer.local/schemas/quiz-submission-response.schema.json",
+  "title": "KLEER Skin Quiz Submission Response",
+  "description": "Contract duy duong cho phan hoi thanh cong cua POST /wp-json/kleer/v1/skin-quiz. Frontend dung file nay de kiem tra du lieu nhan ve truoc khi ve man hinh ket qua.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "data"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok"
+      ],
+      "description": "Khoa thanh cong. Luon bang chuoi \"ok\" khi HTTP status la 2xx."
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "submission_id",
+        "skin_profile",
+        "recommended_products"
+      ],
+      "properties": {
+        "submission_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Khoa dinh danh ban giao, dung de doi soat va mo lai lich su Quiz."
+        },
+        "skin_profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "label"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Ma ho so da. Vi du: oily_acne.",
+              "pattern": "^[a-z0-9_]{1,64}$"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 120,
+              "description": "Ten ho so da ban giao cho nguoi dung."
+            },
+            "concerns": {
+              "type": "array",
+              "maxItems": 10,
+              "items": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "description": "Danh sach van de da duoc phat hien. Tuy chon."
+            }
+          }
+        },
+        "recommended_products": {
+          "type": "array",
+          "description": "Danh sach san pham goi y theo thu tu uu tien.",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "name",
+              "routine_step"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "price": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Gia tien dang VND. Tuy chon."
+              },
+              "routine_step": {
+                "type": "string",
+                "enum": [
+                  "cleanser",
+                  "treatment",
+                  "moisturizer",
+                  "sunscreen"
+                ],
+                "description": "Buoc phac doRoutine, dung cho combobox L03."
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 255,
+                "description": "Ly do goi y ngan. Tuy chon."
+              }
+            }
+          }
+        },
+        "disclaimer": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Canh bao nghe nghiep. Tuy chon."
+        }
+      }
+    }
+  }
+}
