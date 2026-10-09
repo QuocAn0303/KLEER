@@ -118,11 +118,15 @@ Lấy trong mục *Thông tin thẻ test* tại `sandbox.vnpayment.vn/apis` (Vis
 
 | Dịch vụ | Bước đăng ký | Trạng thái |
 |---|---|---|
-| VNPay | Đăng ký tại `sandbox.vnpayment.vn/devreg` (email + thông tin website) → nhận `vnp_TmnCode` + `vnp_HashSecret` qua email/portal | ⬜ Chờ đăng ký |
-| Momo | Portal `developers.momo.vn` → Đăng ký hồ sơ doanh nghiệp → chọn mô hình Test → nhận `partnerCode` + `accessKey` + `secretKey` | ⬜ Chờ đăng ký |
-| COD | Không cần — bật trong WooCommerce settings | ⬜ Chờ bật |
-| VietQR | Đăng ký tài khoản tại trung gian (vietqr.com / api.vietqr.vn / vietqr.io) → lấy API token + tích hợp webhook | ⬜ Chờ đăng ký |
+| VNPay | Đăng ký tại `sandbox.vnpayment.vn/devreg` (email + thông tin website) → nhận `vnp_TmnCode` + `vnp_HashSecret` qua email/portal | ⬜ Chưa đăng ký — **không chặn Tuần 2** |
+| Momo | Portal `developers.momo.vn` → Đăng ký hồ sơ doanh nghiệp → chọn mô hình Test → nhận `partnerCode` + `accessKey` + `secretKey` | ⬜ Chưa đăng ký — cần hồ sơ doanh nghiệp được duyệt |
+| COD | Không cần tài khoản — bật trong WooCommerce settings | ✅ **Đã triển khai** |
+| BACS + VietQR | Không cần tài khoản — QR sinh tại chỗ theo spec Napas | ✅ **Đã triển khai** |
 
+> **Kết luận phụ thuộc tài khoản:** COD, BACS và VietQR QR tĩnh **không cần đăng ký sandbox nào**.
+> Cả ba đã hoàn thành và kiểm thử thực tế trên shop. Hai cổng API (VNPay/Momo) là
+> phạm vi các tuần sau — nên đăng ký VNPay sớm vì chỉ mất một form, nhưng **không để nó chặn tiến độ**.
+>
 > Lưu ý bảo mật: toàn bộ `TmnCode/HashSecret/accessKey/secretKey` để ở `.env` (đã có `.env.example`), **không commit lên git**; `.gitignore` đã bỏ qua `.env`.
 
 ---
@@ -134,3 +138,119 @@ Lấy trong mục *Thông tin thẻ test* tại `sandbox.vnpayment.vn/apis` (Vis
 3. Nhập credentials sandbox vào `.env` → plugin đọc từ biến môi trường.
 4. Checkout thử: mong đợi `vnp_ResponseCode=00` / `resultCode=0` → order chuyển `processing`, log IPN tại `wp-content/debug.log`.
 5. Kịch bản test bắt buộc: thanh toán thành công, khách hủy (code 24), chữ ký sai (97), IPN gọi lại 2 lần (idempotent), khách đóng tab trước khi return (đơn vẫn phải cập nhật qua IPN).
+
+---
+
+## 7. Đã triển khai — plugin `kleer-payments`
+
+Mã nguồn: `wp-content/plugins/kleer-payments/` trong repo này.
+
+### 7.1. Phạm vi đã hoàn thành
+
+| Hạng mục | Trạng thái |
+|---|---|
+| COD (cash on delivery) | ✅ Bật, nhãn tiếng Việt |
+| BACS (chuyển khoản ngân hàng) | ✅ Bật, nhãn tiếng Việt |
+| QR VietQR sinh theo từng đơn | ✅ Nhúng ở Thank You page |
+| Đối soát nội dung chuyển khoản | ✅ `TIEŃTỐ + mã đơn`, ví dụ `KLEER 243` |
+| QR tự hủy nếu đơn COD | ✅ |
+
+### 7.2. Vì sao không dùng dịch vụ trung gian
+
+VietQR được sinh **tại chỗ** theo đúng spec EMVCo/NAPAS 247, không gọi API bên thứ ba:
+
+- Không cần đăng ký tài khoản, không mất phí.
+- Payload (chứa số tài khoản + số tiền) **không rời khỏi máy chủ** — không rò rỉ sang dịch vụ QR bên thứ ba.
+- Hoạt động offline trong mạng nội bộ.
+
+Chuỗi QR sinh ra (ví dụ đơn 4.770.000đ, mã đơn 243):
+
+```text
+0002010102122639001097043600000106970436020402080303000520459925303704540747700005802VN5905KLEER6006HA NOI6207010324363045EAB
+```
+
+| Tag | Ý nghĩa | Giá trị |
+|---|---|---|
+| `00` | Payload Format Indicator | `01` |
+| `01` | Point of Initiation Method | `12` (dynamic theo đơn) |
+| `26` | Merchant Account (GUID `9704360000` + BIN + vùng + loại TK) | `970436` / `0208` / `000` |
+| `52` | Merchant Category Code | `5992` |
+| `53` | Transaction Currency | `704` (VND) |
+| `54` | Transaction Amount | `4770000` (VND, không dấu thập phân) |
+| `58` | Country Code | `VN` |
+| `59` | Merchant Name (≤25) | `KLEER` |
+| `60` | City (≤15) | `HA NOI` |
+| `62` | Additional Data → mã đơn | `243` |
+| `63` | CRC-16/XMODEM | `045EAB`… (4 hex) |
+
+### 7.3. Cấu trúc mã nguồn
+
+| File | Vai trò |
+|---|---|
+| `kleer-payments.php` | Bootstrap, đăng ký plugin, kích hoạt 1 lần |
+| `includes/class-qr-payload.php` | **Logic thuần**: TLV + CRC-16/XMODEM + chuẩn hóa tiếng Việt. Không I/O |
+| `includes/class-bank-account.php` | Cấu hình tài khoản nhận tiền trong WooCommerce Settings |
+| `includes/class-gateways.php` | Bật COD + BACS, đăng ký mục cấu hình VietQR |
+| `includes/class-thankyou-qr.php` | Quyết định đơn nào được vẽ QR và xuất HTML |
+| `assets/qrcode.min.js` | Thư viện QR (Kazuhiko Arase, MIT) — sinh SVG, không cần GD |
+| `assets/kleer-qr.js` | Vẽ QR từ `data-kleer-qr` |
+
+Lớp `QR_Payload` cố tình **không phụ thuộc WordPress** để kiểm thử độc lập.
+
+### 7.4. ⚠️ Vấn đề quan trọng: WooCommerce Blocks không chạy `woocommerce_thankyou`
+
+Từ WooCommerce 8.3, trang thanh toán mặc định dùng **block checkout**. Trang xác nhận đơn
+khi đó được render bằng block `woocommerce/order-confirmation`, **không** kích hoạt hook
+`woocommerce_thankyou` — nên plugin gắn vào hook cũ sẽ không bao giờ chạy.
+
+Plugin xử lý **cả hai** đường:
+
+| Kiểu checkout | Cơ chế |
+|---|---|
+| Block (mặc định WC ≥ 8.3) | Bộ lọc `render_block`, nhận diện block `woocommerce/order-confirmation` |
+| Cổ điển (shortcode) | Hook `woocommerce_thankyou` |
+
+Một cờ `self::$rendered_order` chặn in trùng khi cả hai hook cùng khớp.
+
+### 7.5. Cấu hình trong quản trị
+
+`WooCommerce → Settings → Payments → KLEER VietQR (QR theo đơn hàng)`
+
+| Trường | Bắt buộc | Ví dụ |
+|---|---|---|
+| Số tài khoản nhận tiền | ✅ | `0123456789` |
+| Bank BIN (6 số) | ✅ | `970436` (VietinBank) |
+| Mã vùng ngân hàng (4 số) | ✅ | `0208` |
+| Tên chủ tài khoản | | `NGUYEN VAN A` |
+| Tên hiển thị trong QR | | `KLEER` (≤25, không dấu) |
+| Thành phố trong QR | | `HA NOI` (≤15, không dấu) |
+| Tiền tố nội dung CK | | `KLEER` |
+
+Thiếu 3 trường bắt buộc → plugin hiện cảnh báo và **không** vẽ QR, thay vì vẽ ra mã không quét được.
+
+### 7.6. Kiểm thử
+
+```bash
+# Lỗi cú pháp PHP (chạy bằng image có sẵn, không cần cài PHP trên máy)
+docker run --rm -v "D:\KLEER:/app" -w /app --entrypoint sh wordpress:6.4-php8.1-apache \
+  -c 'for f in wp-content/plugins/kleer-payments/*.php wp-content/plugins/kleer-payments/includes/*.php; do php -l $f; done'
+
+# 40 test: payload, CRC, chuẩn hóa tiếng Việt, từ chối số tiền sai
+docker run --rm -v "D:\KLEER:/app" -w /app --entrypoint php wordpress:6.4-php8.1-apache \
+  wp-content/plugins/kleer-payments/tests/test-qr-payload.php
+
+# 11 test: payload thật có encode thành QR hợp lệ ở phía trình duyệt
+node wp-content/plugins/kleer-payments/tests/test-qr-render.js
+```
+
+Kết quả: **40/40** (PHP) và **11/11** (Node), gồm kiểm tra CRC-16/XMODEM với giá trị
+kiểm chuẩn `123456789 → 31C3`.
+
+### 7.7. Giới hạn đã biết
+
+- **QR tĩnh, chưa tự động đối soát.** Đơn `on-hold` chỉ chuyển `processing`/`completed` khi
+  admin xác nhận thủ công trong `WooCommerce → Orders`. Tự động đối soát cần webhook biến động
+  số dư từ ngân hàng — chính là phạm vi giai đoạn sau.
+- **Tiền tệ phải là VND.** Bộ chuyển đổi giả định WooCommerce dùng VND (0 chữ số thập phân).
+- **Chưa có kiểm tra phía máy chủ về QR** — QR chỉ mang thông tin hiển thị, không phải bằng chứng
+  thanh toán. Không dùng QR làm căn cứ đối soát tự động.

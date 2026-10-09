@@ -60,6 +60,12 @@ Nếu xây dựng theo phong cách WordPress truyền thống (nhồi nhét toà
 
 ### Ngoài phạm vi (Out-of-Scope - Dành cho các sprint tiếp theo):
 - Tích hợp cổng thanh toán thực tế (VNPay, MoMo, Stripe Sandbox/Live).
+
+> **Lưu ý về thanh toán:** COD, BACS và QR VietQR **không nằm trong `kleer-plugin`** mà được
+> cài riêng thành plugin `kleer-payments` (`wp-content/plugins/kleer-payments/`), vì đây là
+> tích hợp WooCommerce chứ không phải REST API của KLEER. Chi tiết: `docs/PAYMENT_GATEWAYS.md` §7.
+> `kleer-plugin` giữ nguyên vai trò nguồn sự thật cho nghiệp vụ và REST API, không bị phụ thuộc
+> vào plugin thanh toán.
 - Hệ thống xác thực người dùng hoàn chỉnh (JWT/OAuth2/Customer Authentication).
 - Toàn bộ nghiệp vụ CRUD sản phẩm, giỏ hàng, đặt hàng (sẽ triển khai khi có tài liệu phân tích nghiệp vụ chính thức).
 - Tối ưu hóa hiệu năng production (Redis caching nâng cao, CDN configuration).

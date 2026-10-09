@@ -12,6 +12,8 @@ wp-content/plugins/*
 !wp-content/plugins/.gitkeep
 !wp-content/plugins/kleer-plugin/
 !wp-content/plugins/kleer-plugin/**
+!wp-content/plugins/kleer-payments/
+!wp-content/plugins/kleer-payments/**
 wp-content/themes/*
 !wp-content/themes/kleer-theme/
 !wp-content/themes/kleer-theme/**
