@@ -41,7 +41,7 @@ deploy/.env
 deploy/nginx.https.conf
 
 # === Cache & Temp ===
-cache/
+/cache/
 tmp/
 *.log
 
