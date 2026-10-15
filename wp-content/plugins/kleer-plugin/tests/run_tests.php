@@ -803,6 +803,99 @@ $activePlugin2 = Kleer\Plugin::getInstance();
 assert_true($activePlugin2->wooCommerceCompatibility() instanceof WooCommerceCompatibility, 'Plugin boots the HPOS compatibility layer');
 assert_true($activePlugin2->cacheInvalidation() instanceof CacheInvalidation, 'Plugin boots the cache invalidation layer');
 
+// Test 15: Skin Quiz Questions, Engine, Safe Fallback & REST Endpoints (L01-G5-03, L01-G5-05, L01-G5-06)
+echo "\n15. Testing Skin Quiz Engine, Safe Fallback & Endpoints...\n";
+use Kleer\Config\QuizQuestions;
+use Kleer\Controllers\SkinQuizController;
+use Kleer\Endpoints\SkinQuizEndpoints;
+use Kleer\Services\QuizEngineService;
+
+// 15.1. Quiz Questions configuration
+$questions = QuizQuestions::getQuestions();
+assert_true(count($questions) === 5, 'QuizQuestions defines exactly 5 core questions');
+assert_true(isset($questions['q1_skin_feeling'], $questions['q2_pore_sebum'], $questions['q3_sensitivity'], $questions['q4_main_concern'], $questions['q5_routine_goal']), 'All 5 question keys exist');
+$defaultCatalog = QuizQuestions::getDefaultCatalog();
+assert_true(count($defaultCatalog) >= 15, 'Default catalog contains at least 15 skincare products');
+
+// 15.2. QuizEngineService: Happy Path (Oily & Acne -> Intensive 4-step routine)
+$quizService = new QuizEngineService();
+$oilyPayload = [
+    'session_id' => '11111111-2222-4333-8444-555555555555',
+    'consent' => ['policy_accepted' => true, 'marketing_opt_in' => false],
+    'answers' => [
+        ['question_id' => 'q1_skin_feeling', 'answer' => 'greasy_all'],
+        ['question_id' => 'q2_pore_sebum', 'answer' => 'large_pores'],
+        ['question_id' => 'q3_sensitivity', 'answer' => 'rarely_never'],
+        ['question_id' => 'q4_main_concern', 'answer' => 'acne_blemish'],
+        ['question_id' => 'q5_routine_goal', 'answer' => 'intensive'],
+    ],
+];
+
+$oilyResult = $quizService->processSubmission($oilyPayload);
+assert_true($oilyResult['status'] === 'ok', 'QuizEngineService returns status ok');
+assert_true($oilyResult['data']['skin_profile']['code'] === 'oily_acne', 'Oily + Acne answers map to code oily_acne');
+assert_true(count($oilyResult['data']['recommended_products']) === 4, 'Intensive routine recommends 4 products');
+$stepsFound = array_column($oilyResult['data']['recommended_products'], 'routine_step');
+assert_true($stepsFound === ['cleanser', 'treatment', 'moisturizer', 'sunscreen'], '4 steps follow cleanser -> treatment -> moisturizer -> sunscreen');
+
+// 15.3. QuizEngineService: Happy Path (Dry & Sensitive -> Minimal 3-step routine)
+$dryPayload = [
+    'session_id' => '22222222-3333-4444-8555-666666666666',
+    'consent' => ['policy_accepted' => true, 'marketing_opt_in' => true],
+    'answers' => [
+        ['question_id' => 'q1_skin_feeling', 'answer' => 'tight_dry'],
+        ['question_id' => 'q2_pore_sebum', 'answer' => 'flaky_rough'],
+        ['question_id' => 'q3_sensitivity', 'answer' => 'very_often'],
+        ['question_id' => 'q4_main_concern', 'answer' => 'dehydration'],
+        ['question_id' => 'q5_routine_goal', 'answer' => 'minimal'],
+    ],
+];
+$dryResult = $quizService->processSubmission($dryPayload);
+assert_true($dryResult['data']['skin_profile']['code'] === 'sensitive_hydration', 'Sensitive + Dehydration maps to sensitive_hydration');
+assert_true(count($dryResult['data']['recommended_products']) === 3, 'Minimal routine recommends exactly 3 products');
+$drySteps = array_column($dryResult['data']['recommended_products'], 'routine_step');
+assert_true($drySteps === ['cleanser', 'moisturizer', 'sunscreen'], 'Minimal routine omits treatment step');
+
+// 15.4. QuizEngineService: Safe Fallback Mechanism (L01-G5-06)
+// Test with restrictive catalog containing only 1 generic product per step
+$minimalCatalog = [
+    ['id' => 991, 'name' => 'Fallback Cleanser', 'price' => 100000, 'routine_step' => 'cleanser', 'skin_types' => ['all_skin_types'], 'is_gentle_fallback' => true],
+    ['id' => 992, 'name' => 'Fallback Treatment', 'price' => 200000, 'routine_step' => 'treatment', 'skin_types' => ['all_skin_types'], 'is_gentle_fallback' => true],
+    ['id' => 993, 'name' => 'Fallback Moisturizer', 'price' => 150000, 'routine_step' => 'moisturizer', 'skin_types' => ['all_skin_types'], 'is_gentle_fallback' => true],
+    ['id' => 994, 'name' => 'Fallback Sunscreen', 'price' => 180000, 'routine_step' => 'sunscreen', 'skin_types' => ['all_skin_types'], 'is_gentle_fallback' => true],
+];
+$fallbackService = new QuizEngineService($minimalCatalog);
+$fallbackResult = $fallbackService->processSubmission($oilyPayload);
+assert_true(count($fallbackResult['data']['recommended_products']) === 4, 'Safe Fallback ensures 4 products even with no exact tag match');
+assert_true($fallbackResult['data']['recommended_products'][0]['id'] === 991, 'Fallback product id is returned correctly');
+
+// Validate the output conforms to quiz-submission-response.schema.json
+$responseValidation = \Kleer\Support\Validation\JsonSchema::validate(
+    $oilyResult,
+    \Kleer\Support\Validation\JsonSchema::fromFile('quiz-submission-response.schema.json')
+);
+assert_true($responseValidation->isValid(), 'Generated quiz output passes quiz-submission-response.schema.json');
+
+// 15.5. SkinQuizController HTTP boundary testing
+$quizController = new SkinQuizController($quizService);
+$validRequest = new WP_REST_Request('POST', json_encode($oilyPayload, JSON_THROW_ON_ERROR));
+$response = $quizController->handleSubmission($validRequest);
+assert_true($response instanceof WP_REST_Response, 'Valid submission returns WP_REST_Response');
+assert_true($response->get_status() === 200, 'Valid submission responds HTTP 200');
+
+$invalidRequest = new WP_REST_Request('POST', json_encode(['session_id' => 'not-a-uuid'], JSON_THROW_ON_ERROR));
+$badResponse = $quizController->handleSubmission($invalidRequest);
+assert_true(is_wp_error($badResponse), 'Invalid submission returns WP_Error');
+assert_true($badResponse->get_error_code() === 'kleer_invalid_payload', 'Error code is kleer_invalid_payload');
+assert_true($badResponse->get_error_data()['status'] === 400, 'Error status is 400');
+
+// 15.6. SkinQuizEndpoints route registration
+$quizEndpoints = new SkinQuizEndpoints($quizController);
+$quizEndpoints->register();
+assert_true(!empty($registered_actions['rest_api_init']), 'SkinQuizEndpoints hooks into rest_api_init');
+$fakeRequest = new WP_REST_Request('POST', '/kleer/v1/skin-quiz');
+assert_true($quizEndpoints->checkPermission($fakeRequest) === true, 'Public access permission callback returns true');
+
 echo "\nSummary: {$tests} tests, {$failures} failures.\n";
 if ($failures > 0) {
     exit(1);

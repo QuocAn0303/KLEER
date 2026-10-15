@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kleer;
 
 use Kleer\Endpoints\HealthEndpoints;
+use Kleer\Endpoints\SkinQuizEndpoints;
 use Kleer\Support\Cache\CacheInvalidation;
 use Kleer\Support\Cache\KleerCache;
 use Kleer\Support\Cache\WooCommerceCompatibility;
@@ -136,6 +137,7 @@ final class Plugin
         $this->cacheInvalidation->register();
 
         (new HealthEndpoints())->register();
+        (new SkinQuizEndpoints())->register();
     }
 
     /**
