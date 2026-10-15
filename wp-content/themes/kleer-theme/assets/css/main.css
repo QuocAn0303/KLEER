@@ -1,0 +1,33 @@
+:root {
+    --color-primary: #1C3322;
+    --font-primary: system-ui, -apple-system, sans-serif;
+    --container-padding: 16px;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-primary);
+    line-height: 1.5;
+    color: #222;
+}
+
+.container {
+    width: 100%;
+    padding: 0 var(--container-padding);
+    margin: 0 auto;
+}
+
+@media (min-width: 992px) {
+    :root {
+        --container-padding: 32px;
+    }
+
+    .container {
+        max-width: 1440px;
+    }
+}
