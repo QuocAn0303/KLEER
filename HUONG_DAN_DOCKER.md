@@ -82,17 +82,36 @@ WordPress:  http://localhost:80
 phpMyAdmin: http://localhost:8080
 ```
 
-### Bước 5: Hoàn tất cài đặt WordPress
+### Bước 5: Hoàn tất cài đặt WordPress (tài khoản chuẩn của team)
+
+> **Quy ước team: 1 tài khoản duy nhất `admin / admin` cho mọi máy.**
+> Không tự đặt password riêng — DB của mỗi máy nằm trong Docker volume riêng
+> (không qua Git), nên password riêng là lý do team có 5+ tài khoản rời rạc
+> và không ai đăng nhập được máy của nhau.
 
 1. Truy cập `http://localhost:80`
 2. Chọn ngôn ngữ → **Continue**
 3. Điền thông tin:
    - **Site Title:** KLEER Store
    - **Username:** admin
-   - **Password:** *(tự đặt)*
-   - **Your Email:** *(email của bạn)*
+   - **Password:** admin
+   - **Your Email:** admin@kleer.local
 4. Nhấn **Install WordPress**
-5. Đăng nhập bằng tài khoản vừa tạo
+5. Đăng nhập tại `http://localhost/wp-login.php` bằng `admin / admin`
+
+#### Đồng bộ lại máy cũ (đã có nhiều tài khoản / quên password)
+
+Sau `git pull` + `docker compose up -d`, chạy script reset — script sẽ tạo mới
+(hoặc reset) user `admin / admin`, xóa mọi tài khoản thừa (bài viết được
+chuyển về cho admin) và flush cache:
+
+```powershell
+# Windows:
+powershell -ExecutionPolicy Bypass -File tools/reset-admin.ps1
+
+# Linux / macOS / VPS:
+bash tools/reset-admin.sh
+```
 
 ---
 
