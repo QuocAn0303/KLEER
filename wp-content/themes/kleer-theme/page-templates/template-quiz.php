@@ -192,7 +192,18 @@ get_header();
             </div>
           </fieldset>
 
-          <!-- Điều hướng trong form -->
+          <!-- Điều hướng trong form và Đồng ý chính sách bảo mật -->
+          <div class="quiz-consent-wrapper" style="margin: 20px 0 10px; padding-top: 15px; border-top: 1px solid #f0ede8;">
+            <label class="quiz-consent-label" style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #555; cursor: pointer; line-height: 1.4;">
+              <input type="checkbox" id="quiz-policy-consent" name="policy_accepted" style="margin-top: 2px;" />
+              <span>Tôi đồng ý với <a href="<?php echo esc_url( home_url( '/chinh-sach-bao-mat/' ) ); ?>" target="_blank" rel="noopener noreferrer" style="color: #c25e2e; text-decoration: underline;">Chính sách bảo mật</a> của KLEER để nhận phác đồ da cá nhân hóa. <strong style="color: #c25e2e;">*</strong></span>
+            </label>
+            <label class="quiz-consent-label" style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #777; cursor: pointer; line-height: 1.4; margin-top: 8px;">
+              <input type="checkbox" id="quiz-marketing-consent" name="marketing_opt_in" style="margin-top: 2px;" />
+              <span>Đăng ký nhận hướng dẫn chăm sóc da khoa học và ưu đãi độc quyền qua email (tùy chọn).</span>
+            </label>
+          </div>
+
           <div class="quiz-actions-row">
             <button type="button" id="btn-quiz-prev" class="btn-quiz-outline" disabled>QUAY LẠI</button>
             <button type="button" id="btn-quiz-next" class="btn-quiz-primary" style="display: none;">

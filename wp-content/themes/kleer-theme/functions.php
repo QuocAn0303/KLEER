@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 declare(strict_types=1);
 
@@ -9,7 +8,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('KLEER_THEME_VERSION', '1.0.0');
+if (!defined('KLEER_THEME_VERSION')) {
+    define('KLEER_THEME_VERSION', '1.0.0');
+}
 
 /**
  * Thiết lập các tính năng nền tảng cho theme và WooCommerce
@@ -57,17 +58,6 @@ function enqueue_assets(): void
     ]);
 }
 add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets');
-=======
-/**
- * KLEER Theme functions and definitions
- *
- * @package KLEER
- */
-
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
 
 // Nạp file đăng ký script & style cho Quiz SPA
 require_once get_template_directory() . '/inc/quiz-assets.php';
->>>>>>> 5813a4f08ee107a0d4f269b0e1ae814aa74a2575

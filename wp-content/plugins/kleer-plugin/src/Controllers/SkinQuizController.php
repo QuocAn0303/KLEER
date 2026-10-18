@@ -49,15 +49,34 @@ class SkinQuizController
 
         // 2. Chuyển tiếp sang tầng Service xử lý thuật toán phân loại và gợi ý sản phẩm
         try {
-            $result = $this->quizEngineService->processSubmission($validatedPayload);
+            $version = 'v1';
+            if (method_exists($request, 'get_param')) {
+                $paramVersion = $request->get_param('version');
+                if (is_string($paramVersion) && $paramVersion !== '') {
+                    $version = $paramVersion;
+                }
+            }
+            if ($version === 'v1' && isset($validatedPayload['version']) && is_string($validatedPayload['version'])) {
+                $version = $validatedPayload['version'];
+            }
+
+            $result = $this->quizEngineService->processSubmission($validatedPayload, $version);
             return new WP_REST_Response($result, 200);
+        } catch (\InvalidArgumentException $e) {
+            return new WP_Error(
+                'kleer_invalid_payload',
+                $e->getMessage(),
+                [
+                    'status' => 400,
+                ]
+            );
         } catch (\Throwable $e) {
+            // Không lộ exception/SQL/credentials ra response public
             return new WP_Error(
                 'kleer_quiz_engine_error',
                 __('Đã xảy ra lỗi nội bộ trong quá trình phân tích phác đồ da.', 'kleer-plugin'),
                 [
                     'status' => 500,
-                    'error' => $e->getMessage(),
                 ]
             );
         }
