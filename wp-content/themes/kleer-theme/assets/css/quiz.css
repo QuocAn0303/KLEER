@@ -1,26 +1,29 @@
 @charset "UTF-8";
 
 /* ==========================================================================
-   0. GOOGLE FONTS (Đầy đủ ký tự tiếng Việt Unicode, chống tách dấu)
+   0. GOOGLE FONTS
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 /* ==========================================================================
-   1. DESIGN TOKENS & CSS VARIABLES (Chuẩn phong cách Unisex Minimalist Earthy)
+   1. DESIGN TOKENS & CSS VARIABLES
    ========================================================================== */
 :root {
   --kleer-font-serif: "Playfair Display", "Times New Roman", Georgia, serif;
   --kleer-font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Bảng màu gradient chính xác 100% từ Figma: 0% #2B5A36 -> 60% #4F7F48 -> 100% #D3C993 */
-  --kleer-bg-gradient: linear-gradient(135deg, #2B5A36 0%, #4F7F48 60%, #D3C993 100%);
+  --kleer-bg-gradient: linear-gradient(
+    135deg,
+    #2b5a36 0%,
+    #4f7f48 60%,
+    #d3c993 100%
+  );
 
   --kleer-card-bg: #e5ece2;
   --kleer-card-border: #ccd7c8;
 
-  /* Màu Option chuẩn từ Selection colors Figma */
-  --kleer-option-bg: #3A5C3B;
-  --kleer-option-text: #F4EFE6;
+  --kleer-option-bg: #3a5c3b;
+  --kleer-option-text: #f4efe6;
   --kleer-option-border: rgba(255, 255, 255, 0.25);
   --kleer-dark-green-hover: #2f4b30;
 
@@ -28,7 +31,7 @@
   --kleer-text-muted: #637165;
   --kleer-text-light: #ffffff;
 
-  --kleer-orange: #cb6b3f; /* Màu nhấn Terracotta cho tiến trình, badge, viền */
+  --kleer-orange: #cb6b3f;
   --kleer-orange-hover: #b55b32;
 
   --kleer-radius-sm: 6px;
@@ -39,7 +42,7 @@
 }
 
 /* ==========================================================================
-   2. RESET & LAYOUT CƠ BẢN
+   2. RESET & BASE LAYOUT
    ========================================================================== */
 body.page-template-template-quiz,
 body.page-template-page-quiz {
@@ -66,10 +69,10 @@ body.page-template-page-quiz {
    3. BREADCRUMB
    ========================================================================== */
 .quiz-breadcrumb {
+  margin-bottom: 28px;
+  color: rgba(255, 255, 255, 0.85);
   font-size: 13px;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 28px;
 }
 
 .quiz-breadcrumb a {
@@ -84,7 +87,7 @@ body.page-template-page-quiz {
 }
 
 /* ==========================================================================
-   4. BỐ CỤC CHÍNH (2 CỘT: SIDEBAR & MAIN CARD)
+   4. QUIZ LAYOUT & SIDEBAR
    ========================================================================== */
 .quiz-layout {
   display: grid;
@@ -93,33 +96,32 @@ body.page-template-page-quiz {
   align-items: start;
 }
 
-/* --- SIDEBAR TIẾN TRÌNH --- */
 .quiz-sidebar {
   user-select: none;
 }
 
 .quiz-sidebar .quiz-main-title {
+  margin: 0 0 32px;
+  color: #ffffff;
   font-family: var(--kleer-font-serif);
   font-size: 40px;
   font-weight: 500;
   line-height: 1.2;
-  margin: 0 0 32px 0;
-  color: #ffffff;
 }
 
 .quiz-sidebar-heading {
+  margin: 0 0 18px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin: 0 0 18px 0;
   opacity: 0.85;
 }
 
 .quiz-step-indicator {
-  list-style: none;
+  margin: 0 0 40px;
   padding: 0;
-  margin: 0 0 40px 0;
+  list-style: none;
 }
 
 .quiz-step-indicator .step-item {
@@ -133,78 +135,75 @@ body.page-template-page-quiz {
 }
 
 .quiz-step-indicator .step-item.active {
-  opacity: 1;
   font-weight: 600;
+  opacity: 1;
 }
 
 .quiz-step-indicator .step-item.completed {
   opacity: 1;
 }
 
-/* Nút tròn số thứ tự: Không chèn dấu tick, giữ nguyên số 1, 2, 3, 4, 5 */
 .quiz-step-indicator .step-badge {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.8);
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  color: #ffffff;
   font-size: 12px;
   font-weight: 600;
-  flex-shrink: 0;
-  color: #ffffff;
   transition: var(--kleer-transition);
 }
 
-/* Đã trả lời xong: Đổi nền cam, viền cam, số thứ tự giữ nguyên */
 .quiz-step-indicator .step-item.completed .step-badge {
-  background-color: var(--kleer-orange);
   border-color: var(--kleer-orange);
+  background-color: var(--kleer-orange);
   color: #ffffff;
 }
 
 .quiz-sidebar-note {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 12px;
   line-height: 1.5;
   opacity: 0.75;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 20px;
 }
 
 /* ==========================================================================
-   5. KHUNG CARD QUIZ CHÍNH (COLOR: BEIGE/CREAM)
+   5. MAIN QUIZ CARD
    ========================================================================== */
 .quiz-content-card {
-  background-color: var(--kleer-card-bg);
-  color: var(--kleer-text-dark);
-  border-radius: var(--kleer-radius-lg);
-  padding: 36px 42px;
-  min-height: 540px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  min-height: 540px;
+  padding: 36px 42px;
+  border-radius: var(--kleer-radius-lg);
+  background-color: var(--kleer-card-bg);
+  color: var(--kleer-text-dark);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
 
-/* Header tiến trình trong Card */
 .card-header .header-top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--kleer-text-muted);
   font-size: 13px;
   font-weight: 600;
-  color: var(--kleer-text-muted);
-  margin-bottom: 10px;
 }
 
 .quiz-progress-track {
   width: 100%;
   height: 4px;
-  background-color: var(--kleer-card-border);
-  border-radius: 2px;
   margin-bottom: 28px;
   overflow: hidden;
+  border-radius: 2px;
+  background-color: var(--kleer-card-border);
 }
 
 .quiz-progress-bar {
@@ -214,19 +213,19 @@ body.page-template-page-quiz {
 }
 
 /* ==========================================================================
-   6. CÁC PANEL CÂU HỎI & NỘI DUNG FORM
+   6. QUESTION PANELS
    ========================================================================== */
 .quiz-form {
-  flex-grow: 1;
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
 }
 
 .quiz-step-panel {
   display: none;
-  border: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  border: none;
   animation: fadeIn 0.3s ease;
 }
 
@@ -235,39 +234,38 @@ body.page-template-page-quiz {
 }
 
 .quiz-question-title {
+  margin: 0 0 8px;
+  color: var(--kleer-text-dark);
   font-family: var(--kleer-font-serif);
   font-size: 30px;
   font-weight: 600;
   line-height: 1.35;
-  margin: 0 0 8px 0;
-  color: var(--kleer-text-dark);
 }
 
 .quiz-question-hint {
-  font-size: 13px;
+  margin: 0 0 20px;
   color: var(--kleer-text-muted);
-  margin: 0 0 20px 0;
+  font-size: 13px;
 }
 
-/* Khung ảnh bài trắc nghiệm */
 .quiz-media-wrapper {
   width: 100%;
   height: 150px;
-  border-radius: var(--kleer-radius-md);
-  overflow: hidden;
   margin-bottom: 24px;
+  overflow: hidden;
+  border-radius: var(--kleer-radius-md);
   background-color: #cbd7ca;
 }
 
 .quiz-media-wrapper img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 /* ==========================================================================
-   7. LƯỚI ĐÁP ÁN (OPTIONS GRID & BUTTONS CHUẨN MÀU FIGMA)
+   7. ANSWER OPTIONS
    ========================================================================== */
 .quiz-options-grid {
   display: grid;
@@ -275,30 +273,31 @@ body.page-template-page-quiz {
 }
 
 .quiz-options-grid.cols-2 {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .quiz-option-button {
-  background-color: var(--kleer-option-bg); /* #3A5C3B */
-  color: var(--kleer-option-text);         /* #F4EFE6 */
-  border: 1px solid var(--kleer-option-border); /* rgba(255, 255, 255, 0.25) */
-  border-radius: var(--kleer-radius-sm);
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 54px;
   padding: 16px 20px;
-  cursor: pointer;
+  border: 1px solid var(--kleer-option-border);
+  border-radius: var(--kleer-radius-sm);
+  background-color: var(--kleer-option-bg);
+  color: var(--kleer-option-text);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
-  display: flex;
-  align-items: center;
-  position: relative;
+  cursor: pointer;
   user-select: none;
-  box-sizing: border-box;
   transition: var(--kleer-transition);
 }
 
 .quiz-option-button:hover {
-  background-color: var(--kleer-dark-green-hover);
   border-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--kleer-dark-green-hover);
   transform: translateY(-1px);
 }
 
@@ -308,7 +307,6 @@ body.page-template-page-quiz {
   pointer-events: none;
 }
 
-/* Trạng thái đáp án đang được chọn */
 .quiz-option-button.is-selected {
   border: 2px solid var(--kleer-orange);
   background-color: var(--kleer-dark-green-hover);
@@ -316,67 +314,64 @@ body.page-template-page-quiz {
 }
 
 /* ==========================================================================
-   8. THANH ĐIỀU HƯỚNG NÚT BẤM (QUAY LẠI / XEM KẾT QUẢ)
+   8. CONSENT & QUIZ ACTIONS
    ========================================================================== */
 .quiz-actions-row {
-  margin-top: auto;
-  padding-top: 32px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
 }
 
+.btn-quiz-primary,
 .btn-quiz-outline {
-  background: transparent;
-  border: 1px solid #738375;
-  color: #38463a;
-  padding: 11px 24px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  min-height: 44px;
+  padding: 12px 22px;
   border-radius: 4px;
+  font-family: var(--kleer-font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   cursor: pointer;
   transition: var(--kleer-transition);
-}
-
-.btn-quiz-outline:hover:not(:disabled) {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-color: #38463a;
-}
-
-.btn-quiz-outline:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
 }
 
 .btn-quiz-primary {
-  background-color: #f1f3ed;
+  border: 1px solid #294c38;
+  background-color: #294c38;
+  color: #ffffff;
+}
+
+.btn-quiz-primary:hover:not(:disabled) {
+  border-color: #1f3b2b;
+  background-color: #1f3b2b;
+}
+
+.btn-quiz-outline {
   border: 1px solid #738375;
-  color: #1f3b2b;
-  padding: 11px 26px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: var(--kleer-transition);
+  background-color: transparent;
+  color: var(--kleer-text-dark);
 }
 
-.btn-quiz-primary:hover {
-  background-color: #ffffff;
+.btn-quiz-outline:hover:not(:disabled) {
   border-color: var(--kleer-orange);
-  color: var(--kleer-orange);
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.btn-quiz-primary:disabled,
+.btn-quiz-outline:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* ==========================================================================
-   9. CÁC MÀN HÌNH CHỜ (FIGMA FRAME 07: ĐANG PHÂN TÍCH)
+   9. LOADING & ERROR STATES
    ========================================================================== */
-
-/* Trạng thái khi đang phân tích: ẩn sidebar, thu gọn card loading vào giữa */
 .quiz-layout.is-loading-view {
   display: flex !important;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   min-height: 65vh;
 }
 
@@ -389,26 +384,26 @@ body.page-template-page-quiz {
   max-width: 580px;
   min-height: auto;
   padding: 48px 40px;
-  background-color: var(--kleer-card-bg); /* Giữ lại màu be #e5ece2 */
   border-radius: var(--kleer-radius-lg);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+  background-color: var(--kleer-card-bg);
   text-align: center;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
 }
 
 .quiz-state-card {
-  text-align: center;
-  padding: 10px 0;
   margin: auto;
+  padding: 10px 0;
+  text-align: center;
 }
 
 .state-subtitle {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  color: var(--kleer-orange);
-  font-weight: 700;
-  text-transform: uppercase;
   display: block;
   margin-bottom: 14px;
+  color: var(--kleer-orange);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
 
 .state-subtitle.text-orange {
@@ -416,122 +411,42 @@ body.page-template-page-quiz {
 }
 
 .state-title {
+  max-width: 500px;
+  margin: 0 auto 24px;
+  color: var(--kleer-text-dark);
   font-family: var(--kleer-font-serif);
   font-size: 30px;
   font-weight: 600;
   line-height: 1.35;
-  color: var(--kleer-text-dark);
-  margin: 0 auto 24px;
 }
 
 .state-desc {
-  font-size: 14px;
-  color: var(--kleer-text-muted);
   max-width: 460px;
-  margin: 0 auto;
-  line-height: 1.5;
+  margin: 0 auto 16px;
+  color: var(--kleer-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .loading-line-indicator {
-  height: 3px;
   width: 100%;
   max-width: 320px;
-  background: var(--kleer-orange);
+  height: 3px;
   margin: 0 auto 24px;
   border-radius: 2px;
+  background: var(--kleer-orange);
   animation: pulseWidth 1.5s infinite ease-in-out;
 }
 
 .state-mock-note {
-  font-size: 12px;
+  display: block;
   color: #7b887d;
-  display: block;
-}
-/* ==========================================================================
-   9. CÁC MÀN HÌNH CHỜ (FIGMA FRAME 07: ĐANG PHÂN TÍCH)
-   ========================================================================== */
-
-/* Trạng thái khi đang phân tích: ẩn sidebar, thu gọn card loading vào giữa */
-.quiz-layout.is-loading-view {
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  min-height: 65vh;
-}
-
-.quiz-layout.is-loading-view .quiz-sidebar {
-  display: none !important;
-}
-
-.quiz-layout.is-loading-view .quiz-content-card {
-  width: 100%;
-  max-width: 580px;
-  min-height: auto;
-  padding: 48px 40px;
-  background-color: var(--kleer-card-bg); /* Giữ lại màu be #e5ece2 */
-  border-radius: var(--kleer-radius-lg);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
-  text-align: center;
-}
-
-.quiz-state-card {
-  text-align: center;
-  padding: 10px 0;
-  margin: auto;
-}
-
-.state-subtitle {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  color: var(--kleer-orange);
-  font-weight: 700;
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 14px;
-}
-
-.state-subtitle.text-orange {
-  color: var(--kleer-orange);
-}
-
-.state-title {
-  font-family: var(--kleer-font-serif);
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--kleer-text-dark);
-  margin: 0 auto 24px;
-}
-
-.state-desc {
-  font-size: 14px;
-  color: var(--kleer-text-muted);
-  max-width: 460px;
-  margin: 0 auto;
-  line-height: 1.5;
-}
-
-.loading-line-indicator {
-  height: 3px;
-  width: 100%;
-  max-width: 320px;
-  background: var(--kleer-orange);
-  margin: 0 auto 24px;
-  border-radius: 2px;
-  animation: pulseWidth 1.5s infinite ease-in-out;
-}
-
-.state-mock-note {
   font-size: 12px;
-  color: #7b887d;
-  display: block;
 }
 
 /* ==========================================================================
-   10. MÀN HÌNH 08: KẾT QUẢ ROUTINE (CHUẨN 100% THEO FIGMA FRAME 08)
+   10. ROUTINE RESULT
    ========================================================================== */
-
-/* Trạng thái hiển thị kết quả: ẩn Sidebar, bung rộng toàn màn hình */
 .quiz-layout.is-result-view {
   display: block;
 }
@@ -541,141 +456,201 @@ body.page-template-page-quiz {
 }
 
 .quiz-layout.is-result-view .quiz-content-card {
-  background: transparent;
-  padding: 0;
-  box-shadow: none;
   min-height: auto;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
-/* Dòng tiêu đề lớn: "Phác đồ dành cho bạn" */
 .routine-page-title {
+  margin: 0 0 28px;
+  color: #ffffff;
   font-family: var(--kleer-font-serif);
   font-size: 38px;
   font-weight: 400;
-  color: #ffffff;
-  margin: 0 0 28px 0;
 }
 
-/* Lưới hiển thị 2 cột chính */
 .routine-grid-container {
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 28px;
   align-items: stretch;
 }
 
-/* --- CỘT TRÁI: CARD TÓM TẮT CHẨN ĐOÁN --- */
+/* Summary */
 .routine-summary-box {
-  background-color: var(--kleer-card-bg);
-  border-radius: var(--kleer-radius-md);
-  padding: 36px 32px;
   display: flex;
   flex-direction: column;
+  padding: 36px 32px;
+  border-radius: var(--kleer-radius-md);
+  background-color: var(--kleer-card-bg);
 }
 
 .routine-tag-label {
+  display: block;
+  margin-bottom: 14px;
+  color: var(--kleer-orange);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
-  color: var(--kleer-orange);
   text-transform: uppercase;
-  margin-bottom: 14px;
-  display: block;
 }
 
 .routine-skin-heading {
+  margin: 0 0 20px;
+  color: var(--kleer-text-dark);
   font-family: var(--kleer-font-serif);
   font-size: 28px;
   font-style: italic;
   font-weight: 600;
-  color: var(--kleer-text-dark);
-  margin: 0 0 20px 0;
   line-height: 1.25;
 }
 
-.routine-skin-description {
-  font-family: var(--kleer-font-serif);
-  font-size: 22px;
-  line-height: 1.45;
+.routine-concerns-list {
+  margin: 0 0 20px;
+  padding-left: 18px;
+  color: var(--kleer-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.routine-concerns-list li + li {
+  margin-top: 4px;
+}
+
+.routine-meta {
+  margin: 0 0 20px;
+  color: var(--kleer-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.routine-meta strong {
   color: var(--kleer-text-dark);
-  margin: 0 0 32px 0;
 }
 
-.routine-discount-badge {
-  margin-top: auto;
-  align-self: flex-start;
-  background-color: #d19a7e;
-  color: #ffffff;
+/* Backend v4 warnings */
+.routine-warning-box {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(203, 107, 63, 0.45);
+  border-radius: var(--kleer-radius-sm);
+  background: rgba(203, 107, 63, 0.08);
+  color: var(--kleer-text-dark);
   font-size: 12px;
-  font-weight: 500;
-  padding: 8px 18px;
-  border-radius: 20px;
+  line-height: 1.55;
 }
 
-/* --- CỘT PHẢI: DANH SÁCH CÁC BƯỚC ROUTINE --- */
+.routine-warning-box strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--kleer-orange);
+}
+
+.routine-warning-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.routine-warning-box li + li {
+  margin-top: 4px;
+}
+
+.routine-missing-note {
+  margin: 0 0 16px;
+  color: var(--kleer-text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.routine-disclaimer-box {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--kleer-card-border);
+  color: var(--kleer-text-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* Routine products */
 .routine-steps-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.routine-products-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .routine-item-card {
-  background-color: var(--kleer-card-bg);
-  border-radius: var(--kleer-radius-md);
-  padding: 22px 28px;
   display: flex;
   align-items: center;
   gap: 20px;
+  padding: 22px 28px;
+  border-radius: var(--kleer-radius-md);
+  background-color: var(--kleer-card-bg);
 }
 
-/* Ô vuông màu cam nâu nhỏ bên cạnh ảnh */
 .routine-color-indicator {
+  flex-shrink: 0;
   width: 18px;
   height: 18px;
   border-radius: 4px;
   background-color: #d19a7e;
-  flex-shrink: 0;
-}
-
-/* Khối thumbnail ảnh sản phẩm màu đen */
-.routine-product-thumbnail {
-  width: 64px;
-  height: 64px;
-  background-color: #17241a;
-  border-radius: 6px;
-  flex-shrink: 0;
 }
 
 .routine-item-details {
   display: flex;
+  min-width: 0;
   flex-direction: column;
 }
 
 .routine-step-label {
+  margin-bottom: 4px;
+  color: #556859;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: #556859;
   text-transform: uppercase;
-  margin-bottom: 4px;
 }
 
 .routine-step-title {
+  margin: 0 0 4px;
+  color: var(--kleer-text-dark);
   font-family: var(--kleer-font-serif);
   font-size: 24px;
   font-weight: 500;
-  color: var(--kleer-text-dark);
-  margin: 0 0 4px 0;
   line-height: 1.2;
 }
 
 .routine-step-desc {
-  font-size: 12px;
-  color: var(--kleer-text-muted);
   margin: 0;
+  color: var(--kleer-text-muted);
+  font-size: 12px;
+  line-height: 1.55;
 }
 
-/* Hàng nút bấm hành động (CTA) bên dưới */
+.routine-product-price {
+  display: block;
+  margin-top: 8px;
+  color: var(--kleer-text-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.routine-empty-state {
+  padding: 28px;
+  border-radius: var(--kleer-radius-md);
+  background-color: var(--kleer-card-bg);
+  color: var(--kleer-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Routine CTA */
 .routine-footer-actions {
   grid-column: 2;
   display: flex;
@@ -685,48 +660,43 @@ body.page-template-page-quiz {
 }
 
 .btn-routine-cart {
-  background: #ffffff;
+  padding: 12px 22px;
   border: 1px solid #738375;
+  border-radius: 4px;
+  background: #ffffff;
   color: var(--kleer-text-dark);
-  padding: 12px 22px;
+  font-family: var(--kleer-font-sans);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  border-radius: 4px;
   cursor: pointer;
   transition: var(--kleer-transition);
 }
 
-.btn-routine-cart:hover {
-  background: #f1f3ed;
+.btn-routine-cart:hover:not(:disabled) {
   border-color: var(--kleer-orange);
+  background: #f1f3ed;
 }
 
-.btn-routine-save {
-  background: #294c38;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #ffffff;
-  padding: 12px 22px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: var(--kleer-transition);
+.btn-routine-cart:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
-.btn-routine-save:hover {
-  background: #1f3b2b;
+.btn-routine-cart:disabled:hover {
+  border-color: #738375;
+  background: #ffffff;
 }
 
 /* ==========================================================================
-   11. KEYFRAME ANIMATIONS & RESPONSIVE (MOBILE-FIRST 375PX & TABLET)
+   11. ANIMATIONS
    ========================================================================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -734,17 +704,21 @@ body.page-template-page-quiz {
 }
 
 @keyframes pulseWidth {
-  0%, 100% {
-    transform: scaleX(0.3);
+  0%,
+  100% {
     opacity: 0.5;
+    transform: scaleX(0.3);
   }
+
   50% {
-    transform: scaleX(1);
     opacity: 1;
+    transform: scaleX(1);
   }
 }
 
-/* Responsive Tablet & Mobile (<= 860px) */
+/* ==========================================================================
+   12. RESPONSIVE - TABLET & MOBILE
+   ========================================================================== */
 @media (max-width: 860px) {
   .kleer-quiz-container {
     padding: 16px 16px 40px;
@@ -755,18 +729,51 @@ body.page-template-page-quiz {
     gap: 24px;
   }
 
+  .quiz-sidebar .quiz-main-title {
+    margin-bottom: 22px;
+    font-size: 34px;
+  }
+
+  .quiz-step-indicator {
+    margin-bottom: 24px;
+  }
+
   .quiz-content-card {
+    min-height: auto;
     padding: 24px 20px;
+  }
+
+  .quiz-question-title {
+    font-size: 26px;
   }
 
   .quiz-options-grid.cols-2 {
     grid-template-columns: 1fr;
   }
 
-  /* Routine Result Mobile */
+  .quiz-actions-row {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .btn-quiz-primary,
+  .btn-quiz-outline {
+    width: 100%;
+  }
+
+  /* Loading */
+  .quiz-layout.is-loading-view {
+    min-height: 55vh;
+  }
+
+  .quiz-layout.is-loading-view .quiz-content-card {
+    padding: 36px 24px;
+  }
+
+  /* Routine result */
   .routine-page-title {
-    font-size: 30px;
     margin-bottom: 20px;
+    font-size: 30px;
   }
 
   .routine-grid-container {
@@ -774,24 +781,97 @@ body.page-template-page-quiz {
     gap: 20px;
   }
 
+  .routine-summary-box {
+    padding: 26px 22px;
+  }
+
+  .routine-item-card {
+    align-items: flex-start;
+    padding: 18px 20px;
+  }
+
+  .routine-step-title {
+    font-size: 21px;
+  }
+
   .routine-footer-actions {
     grid-column: 1;
     flex-direction: column;
+    margin-top: 0;
   }
 
-  .btn-routine-cart,
-  .btn-routine-save {
+  .btn-routine-cart {
     width: 100%;
     text-align: center;
   }
 }
 
-/* Đảm bảo trạng thái Loading hiển thị độc lập, sạch sẽ ở giữa card */
-.quiz-content-card > #quiz-loading-state:not([hidden]) {
-  display: flex !important;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 420px;
-  width: 100%;
+/* ==========================================================================
+   13. SMALL MOBILE
+   ========================================================================== */
+@media (max-width: 480px) {
+  .kleer-quiz-container {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .quiz-breadcrumb {
+    margin-bottom: 20px;
+  }
+
+  .quiz-sidebar .quiz-main-title {
+    font-size: 30px;
+  }
+
+  .quiz-step-indicator .step-item {
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+
+  .quiz-content-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .quiz-question-title {
+    font-size: 23px;
+  }
+
+  .quiz-media-wrapper {
+    height: 130px;
+  }
+
+  .quiz-option-button {
+    min-height: 50px;
+    padding: 14px 16px;
+    font-size: 13px;
+  }
+
+  .state-title {
+    font-size: 25px;
+  }
+
+  .routine-page-title {
+    font-size: 27px;
+  }
+
+  .routine-skin-heading {
+    font-size: 25px;
+  }
+
+  .routine-item-card {
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .routine-color-indicator {
+    width: 14px;
+    height: 14px;
+    margin-top: 3px;
+  }
+
+  .routine-step-title {
+    font-size: 19px;
+  }
 }
