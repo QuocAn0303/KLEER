@@ -247,6 +247,12 @@ if (!class_exists('WP_REST_Request')) {
 
             return is_array($decoded) ? $decoded : null;
         }
+
+        public function get_param(string $key): mixed
+        {
+            $json = $this->get_json_params();
+            return $json[$key] ?? null;
+        }
     }
 }
 
@@ -802,6 +808,409 @@ assert_true(!$isolated->isAvailable() && !$offline->isAvailable(), 'Instances do
 $activePlugin2 = Kleer\Plugin::getInstance();
 assert_true($activePlugin2->wooCommerceCompatibility() instanceof WooCommerceCompatibility, 'Plugin boots the HPOS compatibility layer');
 assert_true($activePlugin2->cacheInvalidation() instanceof CacheInvalidation, 'Plugin boots the cache invalidation layer');
+
+// Test 15: Skin Quiz Questions, Engine, Safe Fallback & REST Endpoints (L01-G5-03, L01-G5-05, L01-G5-06)
+echo "\n15. Testing Skin Quiz Engine, Safe Fallback & Endpoints...\n";
+use Kleer\Config\QuizQuestions;
+use Kleer\Controllers\SkinQuizController;
+use Kleer\Endpoints\SkinQuizEndpoints;
+use Kleer\Services\QuizEngineService;
+
+// 15.1. Quiz Questions configuration
+$questions = QuizQuestions::getQuestions();
+assert_true(count($questions) === 5, 'QuizQuestions defines exactly 5 core questions');
+assert_true(isset($questions['q1_skin_feeling'], $questions['q2_pore_sebum'], $questions['q3_sensitivity'], $questions['q4_main_concern'], $questions['q5_routine_goal']), 'All 5 question keys exist');
+$defaultCatalog = QuizQuestions::getDefaultCatalog();
+assert_true(count($defaultCatalog) >= 15, 'Default catalog contains at least 15 skincare products');
+
+// 15.2. QuizEngineService: Happy Path (Oily & Acne -> Intensive 4-step routine)
+$quizService = new QuizEngineService();
+$oilyPayload = [
+    'session_id' => '11111111-2222-4333-8444-555555555555',
+    'consent' => ['policy_accepted' => true, 'marketing_opt_in' => false],
+    'answers' => [
+        ['question_id' => 'q1_skin_feeling', 'answer' => 'greasy_all'],
+        ['question_id' => 'q2_pore_sebum', 'answer' => 'large_pores'],
+        ['question_id' => 'q3_sensitivity', 'answer' => 'rarely_never'],
+        ['question_id' => 'q4_main_concern', 'answer' => 'acne_blemish'],
+        ['question_id' => 'q5_routine_goal', 'answer' => 'intensive'],
+    ],
+];
+
+$oilyResult = $quizService->processSubmission($oilyPayload);
+assert_true($oilyResult['status'] === 'ok', 'QuizEngineService returns status ok');
+assert_true($oilyResult['data']['skin_profile']['code'] === 'oily_acne', 'Oily + Acne answers map to code oily_acne');
+assert_true(count($oilyResult['data']['recommended_products']) === 4, 'Intensive routine recommends 4 products');
+$stepsFound = array_column($oilyResult['data']['recommended_products'], 'routine_step');
+assert_true($stepsFound === ['cleanser', 'treatment', 'moisturizer', 'sunscreen'], '4 steps follow cleanser -> treatment -> moisturizer -> sunscreen');
+
+// 15.3. QuizEngineService: Happy Path (Dry & Sensitive -> Minimal 3-step routine)
+$dryPayload = [
+    'session_id' => '22222222-3333-4444-8555-666666666666',
+    'consent' => ['policy_accepted' => true, 'marketing_opt_in' => true],
+    'answers' => [
+        ['question_id' => 'q1_skin_feeling', 'answer' => 'tight_dry'],
+        ['question_id' => 'q2_pore_sebum', 'answer' => 'flaky_rough'],
+        ['question_id' => 'q3_sensitivity', 'answer' => 'very_often'],
+        ['question_id' => 'q4_main_concern', 'answer' => 'dehydration'],
+        ['question_id' => 'q5_routine_goal', 'answer' => 'minimal'],
+    ],
+];
+$dryResult = $quizService->processSubmission($dryPayload);
+assert_true($dryResult['data']['skin_profile']['code'] === 'sensitive_hydration', 'Sensitive + Dehydration maps to sensitive_hydration');
+assert_true(count($dryResult['data']['recommended_products']) === 3, 'Minimal routine recommends exactly 3 products');
+$drySteps = array_column($dryResult['data']['recommended_products'], 'routine_step');
+assert_true($drySteps === ['cleanser', 'moisturizer', 'sunscreen'], 'Minimal routine omits treatment step');
+
+// 15.4. QuizEngineService: Safe Fallback Mechanism (L01-G5-06)
+// Test with restrictive catalog containing only 1 generic product per step
+$minimalCatalog = [
+    ['id' => 991, 'name' => 'Fallback Cleanser', 'price' => 100000, 'routine_step' => 'cleanser', 'skin_types' => ['all_skin_types'], 'is_gentle_fallback' => true],
+    ['id' => 992, 'name' => 'Fallback Treatment', 'price' => 200000, 'routine_step' => 'treatment', 'skin_types' => ['all_skin_types'], 'is_gentle_fallback' => true],
+    ['id' => 993, 'name' => 'Fallback Moisturizer', 'price' => 150000, 'routine_step' => 'moisturizer', 'skin_types' => ['all_skin_types'], 'is_gentle_fallback' => true],
+    ['id' => 994, 'name' => 'Fallback Sunscreen', 'price' => 180000, 'routine_step' => 'sunscreen', 'skin_types' => ['all_skin_types'], 'is_gentle_fallback' => true],
+];
+$fallbackService = new QuizEngineService($minimalCatalog);
+$fallbackResult = $fallbackService->processSubmission($oilyPayload);
+assert_true(count($fallbackResult['data']['recommended_products']) === 4, 'Safe Fallback ensures 4 products even with no exact tag match');
+assert_true($fallbackResult['data']['recommended_products'][0]['id'] === 991, 'Fallback product id is returned correctly');
+
+// Validate the output conforms to quiz-submission-response.schema.json
+$responseValidation = \Kleer\Support\Validation\JsonSchema::validate(
+    $oilyResult,
+    \Kleer\Support\Validation\JsonSchema::fromFile('quiz-submission-response.schema.json')
+);
+assert_true($responseValidation->isValid(), 'Generated quiz output passes quiz-submission-response.schema.json');
+
+// 15.5. SkinQuizController HTTP boundary testing
+$quizController = new SkinQuizController($quizService);
+$validRequest = new WP_REST_Request('POST', json_encode($oilyPayload, JSON_THROW_ON_ERROR));
+$response = $quizController->handleSubmission($validRequest);
+assert_true($response instanceof WP_REST_Response, 'Valid submission returns WP_REST_Response');
+assert_true($response->get_status() === 200, 'Valid submission responds HTTP 200');
+
+$invalidRequest = new WP_REST_Request('POST', json_encode(['session_id' => 'not-a-uuid'], JSON_THROW_ON_ERROR));
+$badResponse = $quizController->handleSubmission($invalidRequest);
+assert_true(is_wp_error($badResponse), 'Invalid submission returns WP_Error');
+assert_true($badResponse->get_error_code() === 'kleer_invalid_payload', 'Error code is kleer_invalid_payload');
+assert_true($badResponse->get_error_data()['status'] === 400, 'Error status is 400');
+
+// 15.6. SkinQuizEndpoints route registration
+$quizEndpoints = new SkinQuizEndpoints($quizController);
+$quizEndpoints->register();
+assert_true(!empty($registered_actions['rest_api_init']), 'SkinQuizEndpoints hooks into rest_api_init');
+$fakeRequest = new WP_REST_Request('POST', '/kleer/v1/skin-quiz');
+assert_true($quizEndpoints->checkPermission($fakeRequest) === true, 'Public access permission callback returns true');
+
+// 16. Testing TaxonomyRegistry Idempotency & Schema Mapping (TASK-19 / L08-G5-02)
+echo "\n16. Testing TaxonomyRegistry Idempotency & Schema Mapping...\n";
+$taxRegistry = new \Kleer\Taxonomy\TaxonomyRegistry();
+$taxSlugs = \Kleer\Taxonomy\TaxonomyRegistry::getTaxonomySlugs();
+assert_true(count($taxSlugs) === 3, 'TaxonomyRegistry defines exactly 3 taxonomy slugs');
+assert_true(in_array('pa_skin_type', $taxSlugs, true), 'pa_skin_type taxonomy is defined');
+assert_true(in_array('pa_skin_concern', $taxSlugs, true), 'pa_skin_concern taxonomy is defined');
+assert_true(in_array('pa_routine_step', $taxSlugs, true), 'pa_routine_step taxonomy is defined');
+
+$schemaMap = $taxRegistry->dryRunSchemaMap();
+assert_true($schemaMap['status'] === 'dry_run_ready', 'dryRunSchemaMap returns status dry_run_ready');
+assert_true(count($schemaMap['taxonomies']) === 3, 'dryRunSchemaMap maps all 3 taxonomies');
+assert_true($schemaMap['taxonomies']['pa_skin_type']['show_in_rest'] === true, 'pa_skin_type has show_in_rest enabled');
+assert_true($schemaMap['taxonomies']['pa_skin_type']['terms_count'] === 6, 'pa_skin_type contains 6 default terms');
+assert_true($schemaMap['taxonomies']['pa_skin_concern']['terms_count'] === 6, 'pa_skin_concern contains 6 default terms');
+assert_true($schemaMap['taxonomies']['pa_routine_step']['terms_count'] === 6, 'pa_routine_step contains 6 default terms');
+
+// Test registration hooks
+$taxRegistry->register();
+assert_true(!empty($registered_actions['init']), 'TaxonomyRegistry registers into init hook');
+assert_true(!empty($registered_actions['admin_notices']), 'TaxonomyRegistry registers admin notices hook');
+
+// 17. Testing QuizEngineService v4 Draft Scoring & All 11 Workbook Test Cases
+echo "\n17. Testing QuizEngineService v4 Draft Scoring & All 11 Workbook Test Cases...\n";
+$v4Questions = QuizQuestions::getV4Questions();
+assert_true(count($v4Questions) === 6, 'v4 questions define exactly 6 questions (Q1..Q6)');
+$totalV4Options = 0;
+foreach ($v4Questions as $q) {
+    $totalV4Options += count($q['options']);
+}
+assert_true($totalV4Options === 27, 'v4 questions define exactly 27 options in total');
+
+$v4Catalog = QuizQuestions::getV4Catalog();
+assert_true(count($v4Catalog) === 30, 'v4 catalog contains exactly 30 reference SKUs');
+
+$v4Service = new QuizEngineService();
+
+// TC01: Oily, not sensitive, Acne, 4 steps, Q6=6B
+$tc01 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc01-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1C'],
+        ['question_id' => 'q2', 'answer' => '2A'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+        ['question_id' => 'q4', 'answer' => '4A'],
+        ['question_id' => 'q5', 'answer' => '5C'],
+        ['question_id' => 'q6', 'answer' => '6B'],
+    ],
+]);
+assert_true($tc01['data']['skin_profile']['primary_type'] === 'oily', 'TC01 primary skin type is oily');
+assert_true($tc01['data']['skin_profile']['is_sensitive'] === false, 'TC01 sensitivity flag is false');
+assert_true($tc01['data']['skin_profile']['primary_concern'] === 'acne', 'TC01 primary concern is acne');
+$tc01ProdIds = array_column($tc01['data']['recommended_products'], 'id');
+assert_true($tc01ProdIds === [1, 15, 28], 'TC01 recommends Cleanser #1, Toner #15, Sunscreen #28');
+assert_true(in_array('makeup_remover', $tc01['data']['missing_steps'], true), 'TC01 marks makeup_remover as missing SKU');
+
+// TC02: Dry, not sensitive, Aging, 3 steps, Q6=6C (Aging retains sunscreen/makeup remover)
+$tc02 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc02-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1A'],
+        ['question_id' => 'q2', 'answer' => '2D'],
+        ['question_id' => 'q3', 'answer' => '3C'],
+        ['question_id' => 'q4', 'answer' => '4C'],
+        ['question_id' => 'q5', 'answer' => '5B'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+assert_true($tc02['data']['skin_profile']['primary_type'] === 'dry', 'TC02 primary skin type is dry');
+assert_true($tc02['data']['skin_profile']['primary_concern'] === 'aging', 'TC02 primary concern is aging');
+$tc02ProdIds = array_column($tc02['data']['recommended_products'], 'id');
+assert_true($tc02ProdIds === [2, 25], 'TC02 retains Sunscreen #25 despite Q6=6C because concern is aging');
+
+// TC03: Sensitive, sensitive flag ON, None, 3 steps, Q6=6C (drops sunscreen/remover)
+$tc03 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc03-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1E'],
+        ['question_id' => 'q2', 'answer' => '2E'],
+        ['question_id' => 'q3', 'answer' => '3A'],
+        ['question_id' => 'q4', 'answer' => '4E'],
+        ['question_id' => 'q5', 'answer' => '5B'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+assert_true($tc03['data']['skin_profile']['primary_type'] === 'sensitive', 'TC03 primary skin type is sensitive');
+assert_true($tc03['data']['skin_profile']['is_sensitive'] === true, 'TC03 sensitivity flag is true');
+$tc03ProdIds = array_column($tc03['data']['recommended_products'], 'id');
+assert_true($tc03ProdIds === [6, 9, 21], 'TC03 recommends Cleanser #6, Toner #9, Serum #21');
+
+// TC04: Combination, not sensitive, Dark spots, 5 steps, Q6=6A
+$tc04 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc04-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1D'],
+        ['question_id' => 'q2', 'answer' => '2B'],
+        ['question_id' => 'q3', 'answer' => '3C'],
+        ['question_id' => 'q4', 'answer' => '4B'],
+        ['question_id' => 'q5', 'answer' => '5D'],
+        ['question_id' => 'q6', 'answer' => '6A'],
+    ],
+]);
+assert_true($tc04['data']['skin_profile']['primary_type'] === 'combination', 'TC04 primary skin type is combination');
+$tc04ProdIds = array_column($tc04['data']['recommended_products'], 'id');
+assert_true($tc04ProdIds === [8, 12, 23, 26], 'TC04 recommends Cleanser #8, Toner #12, Serum #23, Sunscreen #26');
+
+// TC05: Normal, not sensitive, None, 4 steps, Q6=6C
+$tc05 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc05-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1B'],
+        ['question_id' => 'q2', 'answer' => '2C'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+        ['question_id' => 'q4', 'answer' => '4E'],
+        ['question_id' => 'q5', 'answer' => '5C'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+assert_true($tc05['data']['skin_profile']['primary_type'] === 'normal', 'TC05 primary skin type is normal');
+$tc05ProdIds = array_column($tc05['data']['recommended_products'], 'id');
+assert_true($tc05ProdIds === [5, 10, 19], 'TC05 recommends Cleanser #5, Toner #10, Serum #19');
+
+// TC06: Oily, sensitive flag ON, Acne, 5 steps, Q6=6B
+$tc06 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc06-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1C'],
+        ['question_id' => 'q2', 'answer' => '2A'],
+        ['question_id' => 'q3', 'answer' => '3A'],
+        ['question_id' => 'q4', 'answer' => '4A'],
+        ['question_id' => 'q5', 'answer' => '5D'],
+        ['question_id' => 'q6', 'answer' => '6B'],
+    ],
+]);
+assert_true($tc06['data']['skin_profile']['is_sensitive'] === true, 'TC06 sensitivity flag is true');
+$tc06ProdIds = array_column($tc06['data']['recommended_products'], 'id');
+assert_true($tc06ProdIds === [1, 10, 16, 28], 'TC06 excludes Some By Mi (#15) with strong actives and chooses safe Thayers (#10)');
+
+// TC07: Dry (tie break Dry vs Oily -> Dry wins), not sensitive, Pores, 3 steps, Q6=6C
+$tc07 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc07-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1C'],
+        ['question_id' => 'q2', 'answer' => '2D'],
+        ['question_id' => 'q3', 'answer' => '3C'],
+        ['question_id' => 'q4', 'answer' => '4D'],
+        ['question_id' => 'q5', 'answer' => '5B'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+assert_true($tc07['data']['skin_profile']['primary_type'] === 'dry', 'TC07 tie-break prioritises Dry over Oily');
+$tc07ProdIds = array_column($tc07['data']['recommended_products'], 'id');
+assert_true($tc07ProdIds === [5, 10, 23], 'TC07 recommends Cleanser #5, Toner #10, Serum #23');
+
+// TC08: Sensitive, sensitive flag ON, Dark spots, 6 steps, Q6=6C (Dark spots retains sunscreen)
+$tc08 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc08-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1E'],
+        ['question_id' => 'q2', 'answer' => '2E'],
+        ['question_id' => 'q3', 'answer' => '3B'],
+        ['question_id' => 'q4', 'answer' => '4B'],
+        ['question_id' => 'q5', 'answer' => '5E'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+assert_true($tc08['data']['skin_profile']['is_sensitive'] === true, 'TC08 sensitivity flag is true');
+$tc08ProdIds = array_column($tc08['data']['recommended_products'], 'id');
+assert_true($tc08ProdIds === [6, 9, 21, 30], 'TC08 falls back to safe Serum #21 when all dark spots serums have strong actives');
+
+// TC09: Oily, not sensitive, Acne, 6 steps, Q6=6A
+$tc09 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc09-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1C'],
+        ['question_id' => 'q2', 'answer' => '2A'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+        ['question_id' => 'q4', 'answer' => '4A'],
+        ['question_id' => 'q5', 'answer' => '5E'],
+        ['question_id' => 'q6', 'answer' => '6A'],
+    ],
+]);
+$tc09ProdIds = array_column($tc09['data']['recommended_products'], 'id');
+assert_true($tc09ProdIds === [1, 15, 16, 28], 'TC09 recommends Cleanser #1, Toner #15, Serum #16, Sunscreen #28');
+
+// TC10: Oily, not sensitive, Acne, 6 steps, Q6=6C (drops sunscreen/remover)
+$tc10 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc10-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1C'],
+        ['question_id' => 'q2', 'answer' => '2A'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+        ['question_id' => 'q4', 'answer' => '4A'],
+        ['question_id' => 'q5', 'answer' => '5E'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+$tc10ProdIds = array_column($tc10['data']['recommended_products'], 'id');
+assert_true($tc10ProdIds === [1, 15, 16], 'TC10 drops sunscreen when Q6=6C and concern is acne');
+
+// TC11: Normal, not sensitive, None, 2 steps, Q6=6C
+$tc11 = $v4Service->processSubmissionV4([
+    'session_id' => 'tc11-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1B'],
+        ['question_id' => 'q2', 'answer' => '2C'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+        ['question_id' => 'q4', 'answer' => '4E'],
+        ['question_id' => 'q5', 'answer' => '5A'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+$tc11ProdIds = array_column($tc11['data']['recommended_products'], 'id');
+assert_true($tc11ProdIds === [5, 19], 'TC11 minimal 2-step routine selects Cleanser #5 and Serum #19');
+
+// 18. Testing Business Validation & Error Handling (L01-G5-03)
+echo "\n18. Testing Business Validation & Machine-Readable Errors...\n";
+// 18.1. Missing question in v1
+$missingV1Payload = [
+    'session_id' => '11111111-2222-4333-8444-555555555555',
+    'answers' => [
+        ['question_id' => 'q1_skin_feeling', 'answer' => 'greasy_all'],
+        ['question_id' => 'q2_pore_sebum', 'answer' => 'large_pores'],
+    ],
+];
+$v1MissingCaught = false;
+try {
+    $quizService->processSubmission($missingV1Payload, 'v1');
+} catch (\InvalidArgumentException $e) {
+    $v1MissingCaught = true;
+    assert_true(str_contains($e->getMessage(), 'Thiếu câu hỏi bắt buộc'), 'Missing v1 question error message is clear');
+}
+assert_true($v1MissingCaught, 'Missing question in v1 payload throws InvalidArgumentException');
+
+// 18.2. Duplicate question
+$dupV1Payload = [
+    'session_id' => '11111111-2222-4333-8444-555555555555',
+    'answers' => [
+        ['question_id' => 'q1_skin_feeling', 'answer' => 'greasy_all'],
+        ['question_id' => 'q1_skin_feeling', 'answer' => 'tight_dry'],
+        ['question_id' => 'q2_pore_sebum', 'answer' => 'large_pores'],
+        ['question_id' => 'q3_sensitivity', 'answer' => 'rarely_never'],
+        ['question_id' => 'q4_main_concern', 'answer' => 'acne_blemish'],
+        ['question_id' => 'q5_routine_goal', 'answer' => 'intensive'],
+    ],
+];
+$dupCaught = false;
+try {
+    $quizService->processSubmission($dupV1Payload, 'v1');
+} catch (\InvalidArgumentException $e) {
+    $dupCaught = true;
+    assert_true(str_contains($e->getMessage(), 'bị lặp lại'), 'Duplicate question error message explains 1 answer per question');
+}
+assert_true($dupCaught, 'Duplicate question in payload throws InvalidArgumentException');
+
+// 18.3. Invalid option
+$invalidOptPayload = [
+    'session_id' => '11111111-2222-4333-8444-555555555555',
+    'answers' => [
+        ['question_id' => 'q1_skin_feeling', 'answer' => 'alien_skin'],
+        ['question_id' => 'q2_pore_sebum', 'answer' => 'large_pores'],
+        ['question_id' => 'q3_sensitivity', 'answer' => 'rarely_never'],
+        ['question_id' => 'q4_main_concern', 'answer' => 'acne_blemish'],
+        ['question_id' => 'q5_routine_goal', 'answer' => 'intensive'],
+    ],
+];
+$invalidOptCaught = false;
+try {
+    $quizService->processSubmission($invalidOptPayload, 'v1');
+} catch (\InvalidArgumentException $e) {
+    $invalidOptCaught = true;
+    assert_true(str_contains($e->getMessage(), 'Lựa chọn không hợp lệ'), 'Invalid option error message names the invalid option');
+}
+assert_true($invalidOptCaught, 'Invalid option in payload throws InvalidArgumentException');
+
+// 18.4. Missing question in v4
+$missingV4Payload = [
+    'session_id' => '11111111-2222-4333-8444-555555555555',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1C'],
+        ['question_id' => 'q2', 'answer' => '2A'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+    ],
+];
+$v4MissingCaught = false;
+try {
+    $quizService->processSubmission($missingV4Payload, 'v4');
+} catch (\InvalidArgumentException $e) {
+    $v4MissingCaught = true;
+    assert_true(str_contains($e->getMessage(), 'Thiếu câu hỏi bắt buộc'), 'Missing v4 question error message is clear');
+}
+assert_true($v4MissingCaught, 'Missing question in v4 payload throws InvalidArgumentException');
+
+// 19. Testing QuizProductRepository & Product Model (L01-G5-05)
+echo "\n19. Testing QuizProductRepository & Product Model Architecture...\n";
+$wcRepo = new \Kleer\Repositories\WooCommerceProductRepository();
+assert_true($wcRepo instanceof \Kleer\Contracts\QuizProductRepositoryInterface, 'WooCommerceProductRepository implements QuizProductRepositoryInterface');
+assert_true($wcRepo instanceof \Kleer\Contracts\ProductRepositoryInterface, 'WooCommerceProductRepository preserves ProductRepositoryInterface hierarchy');
+assert_true(method_exists($wcRepo, 'findFeatured'), 'findFeatured() method is available');
+assert_true(method_exists($wcRepo, 'getQuizCatalog'), 'getQuizCatalog() method is available');
+
+$fallbackCatalog = $wcRepo->getQuizCatalog();
+assert_true(is_array($fallbackCatalog) && count($fallbackCatalog) >= 15, 'getQuizCatalog returns at least 15 skincare products in offline mode');
+
+$sampleProd = new \Kleer\Models\Product(1, 'Test Cleanser', 200000);
+assert_true($sampleProd->id === 1, 'Product model preserves ID');
+assert_true($sampleProd->name === 'Test Cleanser', 'Product model preserves name');
+assert_true($sampleProd->price === 200000, 'Product model preserves price');
+assert_true($sampleProd->toArray() === ['id' => 1, 'name' => 'Test Cleanser', 'price' => 200000], 'Product model toArray serialises correctly');
 
 echo "\nSummary: {$tests} tests, {$failures} failures.\n";
 if ($failures > 0) {

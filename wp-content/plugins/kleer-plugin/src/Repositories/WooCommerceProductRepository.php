@@ -1,0 +1,190 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Kleer\Repositories;
+
+use Kleer\Config\QuizQuestions;
+use Kleer\Contracts\QuizProductRepositoryInterface;
+use Kleer\Support\Cache\KleerCache;
+use Kleer\Taxonomy\TaxonomyRegistry;
+
+// Prevent direct file access
+defined('ABSPATH') || exit;
+
+/**
+ * Data Access Layer for WooCommerce Skincare Products.
+ *
+ * Layer: Repositories (Data Persistence)
+ * Responsibility: Truy vấn sản phẩm WooCommerce thực tế qua WC APIs (wc_get_products),
+ *                 ánh xạ 3 Custom Taxonomies (pa_skin_type, pa_skin_concern, pa_routine_step),
+ *                 tích hợp KleerCache và fallback an toàn khi WooCommerce chưa có dữ liệu.
+ */
+class WooCommerceProductRepository implements QuizProductRepositoryInterface
+
+{
+    private ?KleerCache $cache;
+
+    /**
+     * @var list<array<string, mixed>>|null
+     */
+    private ?array $fallbackCatalog;
+
+    /**
+     * @param KleerCache|null $cache Bộ đệm tầng hạ tầng (nếu null sẽ lấy từ môi trường)
+     * @param list<array<string, mixed>>|null $fallbackCatalog Danh mục dự phòng khi DB trống
+     */
+    public function __construct(?KleerCache $cache = null, ?array $fallbackCatalog = null)
+    {
+        $this->cache = $cache;
+        $this->fallbackCatalog = $fallbackCatalog;
+    }
+
+    /**
+     * Lấy danh sách sản phẩm nổi bật theo hợp đồng cũ.
+     *
+     * @return array<int, array{id: int, name: string}>
+     */
+    public function findFeatured(int $limit = 5): array
+    {
+        $catalog = $this->getQuizCatalog();
+        $sliced = array_slice($catalog, 0, $limit);
+
+        return array_map(static function (array $item): array {
+            return [
+                'id' => (int) ($item['id'] ?? 0),
+                'name' => (string) ($item['name'] ?? ''),
+            ];
+        }, $sliced);
+    }
+
+    /**
+     * Lấy toàn bộ danh mục sản phẩm cho Quiz Engine kèm cache và taxonomy mapping.
+     *
+     * @param array<string, mixed> $criteria
+     * @return list<array<string, mixed>>
+     */
+    public function getQuizCatalog(array $criteria = []): array
+    {
+        $cache = $this->cache ?? KleerCache::fromEnvironment();
+        $cacheKey = 'catalog_all_' . md5(serialize($criteria));
+
+        $cached = $cache->get($cacheKey, 'kleer_catalog');
+        if (is_array($cached) && !empty($cached)) {
+            /** @var list<array<string, mixed>> $cached */
+            return $cached;
+        }
+
+        $catalog = $this->fetchFromWooCommerce($criteria);
+
+        // Nếu WooCommerce không có sản phẩm hoặc chưa kích hoạt, dùng danh mục tiêu chuẩn
+        if (empty($catalog)) {
+            $catalog = $this->fallbackCatalog ?? QuizQuestions::getDefaultCatalog();
+        }
+
+        // Lưu cache 1 giờ (sẽ bị vô hiệu hóa khi có hook lưu sản phẩm)
+        $cache->set($cacheKey, $catalog, 'kleer_catalog', 3600);
+
+        return $catalog;
+    }
+
+    /**
+     * Truy vấn thực tế từ WooCommerce qua wc_get_products().
+     *
+     * @param array<string, mixed> $criteria
+     * @return list<array<string, mixed>>
+     */
+    private function fetchFromWooCommerce(array $criteria = []): array
+    {
+        if (!function_exists('wc_get_products')) {
+            return [];
+        }
+
+        $queryArgs = [
+            'status'       => 'publish',
+            'limit'        => $criteria['limit'] ?? 100,
+            'stock_status' => 'instock',
+            'return'       => 'objects',
+        ];
+
+        try {
+            /** @var list<\WC_Product> $wcProducts */
+            $wcProducts = wc_get_products($queryArgs);
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        if (empty($wcProducts)) {
+            return [];
+        }
+
+        $catalog = [];
+
+        foreach ($wcProducts as $p) {
+            $id = $p->get_id();
+
+            // Đọc 3 Taxonomies chuẩn
+            $skinTypes = $this->getTermsSlugs($id, TaxonomyRegistry::TAXONOMY_SKIN_TYPE);
+            $concerns  = $this->getTermsSlugs($id, TaxonomyRegistry::TAXONOMY_SKIN_CONCERN);
+            $steps     = $this->getTermsSlugs($id, TaxonomyRegistry::TAXONOMY_ROUTINE_STEP);
+
+            $step = !empty($steps) ? $steps[0] : 'cleanser';
+
+            // Đọc hình ảnh và link sản phẩm
+            $imageUrl = '';
+            if (function_exists('wp_get_attachment_image_url')) {
+                $imgId = $p->get_image_id();
+                $imageUrl = $imgId ? (string) wp_get_attachment_image_url($imgId, 'medium') : '';
+            }
+
+            $permalink = function_exists('get_permalink') ? (string) get_permalink($id) : '';
+
+            // Đọc cờ hoạt chất mạnh và gentle fallback từ meta hoặc thuộc tính
+            $hasStrongActive = false;
+            $activeIngredients = '';
+            if (function_exists('get_post_meta')) {
+                $activeIngredients = (string) get_post_meta($id, '_kleer_active_ingredients', true);
+                $hasStrongActive = (bool) get_post_meta($id, '_kleer_has_strong_actives', true);
+            }
+
+            $isGentleFallback = in_array('all_skin_types', $skinTypes, true)
+                || in_array('sensitive', $skinTypes, true)
+                || (function_exists('get_post_meta') && (bool) get_post_meta($id, '_kleer_gentle_fallback', true));
+
+            $catalog[] = [
+                'id'                 => $id,
+                'name'               => $p->get_name(),
+                'price'              => (int) $p->get_price(),
+                'routine_step'       => $step,
+                'skin_types'         => $skinTypes,
+                'concerns'           => $concerns,
+                'is_gentle_fallback' => $isGentleFallback,
+                'has_strong_actives' => $hasStrongActive,
+                'active_ingredients' => $activeIngredients,
+                'image_url'          => $imageUrl,
+                'permalink'          => $permalink,
+                'reason'             => sprintf('Sản phẩm chuẩn WooCommerce khớp với bước %s.', $step),
+            ];
+        }
+
+        return $catalog;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getTermsSlugs(int $productId, string $taxonomy): array
+    {
+        if (!function_exists('wp_get_post_terms')) {
+            return [];
+        }
+
+        $terms = wp_get_post_terms($productId, $taxonomy, ['fields' => 'slugs']);
+
+        if (is_array($terms) && !is_wp_error($terms)) {
+            return array_values(array_map('strval', $terms));
+        }
+
+        return [];
+    }
+}

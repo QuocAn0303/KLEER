@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Kleer;
 
 use Kleer\Endpoints\HealthEndpoints;
+use Kleer\Endpoints\SkinQuizEndpoints;
 use Kleer\Support\Cache\CacheInvalidation;
 use Kleer\Support\Cache\KleerCache;
 use Kleer\Support\Cache\WooCommerceCompatibility;
 use Kleer\Support\Cors\CorsService;
+use Kleer\Taxonomy\TaxonomyRegistry;
 
 // Prevent direct file access (Security Case)
 defined('ABSPATH') || exit;
@@ -27,6 +29,9 @@ final class Plugin
     private ?WooCommerceCompatibility $woocommerceCompatibility = null;
 
     private ?CacheInvalidation $cacheInvalidation = null;
+
+    private ?TaxonomyRegistry $taxonomyRegistry = null;
+
 
     /**
      * Get the singleton instance of the plugin.
@@ -135,7 +140,11 @@ final class Plugin
         $this->cacheInvalidation = new CacheInvalidation(KleerCache::fromEnvironment());
         $this->cacheInvalidation->register();
 
+        $this->taxonomyRegistry = new TaxonomyRegistry();
+        $this->taxonomyRegistry->register();
+
         (new HealthEndpoints())->register();
+        (new SkinQuizEndpoints())->register();
     }
 
     /**
@@ -146,7 +155,7 @@ final class Plugin
         return $this->corsService;
     }
 
-    public function wooCommerceCompatibility(): ?WooCommerceCompatibility
+    public function woocommerceCompatibility(): ?WooCommerceCompatibility
     {
         return $this->woocommerceCompatibility;
     }
@@ -154,5 +163,10 @@ final class Plugin
     public function cacheInvalidation(): ?CacheInvalidation
     {
         return $this->cacheInvalidation;
+    }
+
+    public function taxonomyRegistry(): ?TaxonomyRegistry
+    {
+        return $this->taxonomyRegistry;
     }
 }
