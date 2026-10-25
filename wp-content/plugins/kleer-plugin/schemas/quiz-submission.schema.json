@@ -27,7 +27,8 @@
       "properties": {
         "policy_accepted": {
           "type": "boolean",
-          "description": "Khach hang phai tick dong y chinh sach ban quyen."
+          "const": true,
+          "description": "Khach hang phai tick dong y chinh sach ban quyen. Bat buoc la true."
         },
         "marketing_opt_in": {
           "type": "boolean",

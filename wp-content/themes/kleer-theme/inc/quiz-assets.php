@@ -32,8 +32,13 @@ function kleer_enqueue_quiz_scripts() {
             [
                 'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
                 'restUrl'     => esc_url_raw( rest_url( 'kleer/v1/' ) ),
+                'submitUrl'   => esc_url_raw( rest_url( 'kleer/v1/skin-quiz' ) ),
                 'nonce'       => wp_create_nonce( 'wp_rest' ),
                 'resultUrl'   => esc_url_raw( home_url( '/ket-qua-chan-doan/' ) ),
+                // UI 6 câu và API phải cùng version; đổi cả hai khi có UI v1.
+                'version'     => 'v4',
+                // L03 sẽ bật cờ này khi handler add-to-cart được triển khai.
+                'cartEnabled' => (bool) apply_filters( 'kleer_quiz_cart_enabled', false ),
             ]
         );
     }

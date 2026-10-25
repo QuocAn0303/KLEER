@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kleer\Controllers;
 
 use Kleer\Controllers\Concerns\ValidatesJsonPayload;
+use Kleer\Repositories\WooCommerceProductRepository;
 use Kleer\Services\QuizEngineService;
 
 // Prevent direct file access
@@ -30,7 +31,8 @@ class SkinQuizController
 
     public function __construct(?QuizEngineService $quizEngineService = null)
     {
-        $this->quizEngineService = $quizEngineService ?? new QuizEngineService();
+        $this->quizEngineService = $quizEngineService
+            ?? new QuizEngineService(new WooCommerceProductRepository());
     }
 
     /**
@@ -47,17 +49,41 @@ class SkinQuizController
             return $validatedPayload; // Tự động trả HTTP 400 kèm danh sách lỗi có JSON Pointer
         }
 
-        // 2. Chuyển tiếp sang tầng Service xử lý thuật toán phân loại và gợi ý sản phẩm
+        // 2. Consent phải được xác nhận ở backend, không chỉ ở JavaScript.
+        $consent = is_array($validatedPayload['consent'] ?? null)
+            ? $validatedPayload['consent']
+            : [];
+
+        if (($consent['policy_accepted'] ?? null) !== true) {
+            return new WP_Error(
+                'kleer_consent_required',
+                __('Bạn cần đồng ý với Chính sách bảo mật của KLEER trước khi gửi bài Quiz.', 'kleer-plugin'),
+                [
+                    'status' => 400,
+                ]
+            );
+        }
+
+        // 3. Chuyển tiếp sang tầng Service xử lý thuật toán phân loại và gợi ý sản phẩm
         try {
             $version = 'v1';
+
             if (method_exists($request, 'get_param')) {
                 $paramVersion = $request->get_param('version');
+
                 if (is_string($paramVersion) && $paramVersion !== '') {
+                    if (!in_array($paramVersion, ['v1', 'v4'], true)) {
+                        return new WP_Error(
+                            'kleer_invalid_version',
+                            __('Phiên bản Quiz không hợp lệ. Chỉ chấp nhận "v1" hoặc "v4".', 'kleer-plugin'),
+                            [
+                                'status' => 400,
+                            ]
+                        );
+                    }
+
                     $version = $paramVersion;
                 }
-            }
-            if ($version === 'v1' && isset($validatedPayload['version']) && is_string($validatedPayload['version'])) {
-                $version = $validatedPayload['version'];
             }
 
             $result = $this->quizEngineService->processSubmission($validatedPayload, $version);

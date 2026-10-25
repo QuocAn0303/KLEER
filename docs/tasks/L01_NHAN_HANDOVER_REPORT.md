@@ -19,7 +19,7 @@
 | **L01-G4-01 & L01-G5-03 (Tuần 04)** | Cấu hình câu hỏi, ma trận điểm, validation chặt chẽ (reject thiếu/trùng/lạ HTTP 400), giữ v1 approved và cài đặt v4 draft | [`wp-content/plugins/kleer-plugin/src/Config/QuizQuestions.php`](file:///c:/Users/Lenovo/Documents/STUDY/HK%201%2026%20-%2027/EC312%20-%20Thi%E1%BA%BFt%20k%E1%BA%BF%20h%E1%BB%87%20th%E1%BB%91ng%20TM%C4%90T/Project/project/KLEER/wp-content/plugins/kleer-plugin/src/Config/QuizQuestions.php), [`QuizEngineService.php`](file:///c:/Users/Lenovo/Documents/STUDY/HK%201%2026%20-%2027/EC312%20-%20Thi%E1%BA%BFt%20k%E1%BA%BF%20h%E1%BB%87%20th%E1%BB%91ng%20TM%C4%90T/Project/project/KLEER/wp-content/plugins/kleer-plugin/src/Services/QuizEngineService.php) | **HOÀN THÀNH** (V1 giữ nguyên hợp đồng; V4 cài đặt đủ 11 ca thử TC01..TC11) |
 | **E. REST & Frontend (Tuần 04)** | Nối `quiz.js` với REST API thật thay cho `setTimeout` 2.5s, bổ sung checkbox GDPR consent, sinh UUID session, phát event giỏ hàng | [`wp-content/themes/kleer-theme/assets/js/quiz.js`](file:///c:/Users/Lenovo/Documents/STUDY/HK%201%2026%20-%2027/EC312%20-%20Thi%E1%BA%BFt%20k%E1%BA%BF%20h%E1%BB%87%20th%E1%BB%91ng%20TM%C4%90T/Project/project/KLEER/wp-content/themes/kleer-theme/assets/js/quiz.js), [`template-quiz.php`](file:///c:/Users/Lenovo/Documents/STUDY/HK%201%2026%20-%2027/EC312%20-%20Thi%E1%BA%BFt%20k%E1%BA%BF%20h%E1%BB%87%20th%E1%BB%91ng%20TM%C4%90T/Project/project/KLEER/wp-content/themes/kleer-theme/page-templates/template-quiz.php) | **HOÀN THÀNH** (Fetch thật POST `/wp-json/kleer/v1/skin-quiz`, xử lý loading/error/retry) |
 | **TASK-75 / L10-G8-01 (Tuần 10)** | Đặc tả chuẩn tài liệu OpenAPI 3.0.3 cho Skin Quiz REST API, mô tả rõ request, response, CORS, consent, nonces | [`docs/api/openapi.yaml`](file:///c:/Users/Lenovo/Documents/STUDY/HK%201%2026%20-%2027/EC312%20-%20Thi%E1%BA%BFt%20k%E1%BA%BF%20h%E1%BB%87%20th%E1%BB%91ng%20TM%C4%90T/Project/project/KLEER/docs/api/openapi.yaml) | **HOÀN THÀNH** (Chuẩn OpenAPI 3.0.3, phân biệt rõ với WC REST của Tuyền) |
-| **Kiểm thử kiến trúc** | Mở rộng suite kiểm thử từ 187 lên 243 test tự động, kiểm tra toàn bộ 11 ca thử workbook và các tầng biên | [`wp-content/plugins/kleer-plugin/tests/run_tests.php`](file:///c:/Users/Lenovo/Documents/STUDY/HK%201%2026%20-%2027/EC312%20-%20Thi%E1%BA%BFt%20k%E1%BA%BF%20h%E1%BB%87%20th%E1%BB%91ng%20TM%C4%90T/Project/project/KLEER/wp-content/plugins/kleer-plugin/tests/run_tests.php) | **243 TESTS PASSED / 0 FAILURES** (PHP 8.2.12 CLI offline) |
+| **Kiểm thử kiến trúc** | Mở rộng suite kiểm thử từ 187 lên 259 test tự động, kiểm tra toàn bộ 11 ca thử workbook và các tầng biên | [`wp-content/plugins/kleer-plugin/tests/run_tests.php`](file:///c:/Users/Lenovo/Documents/STUDY/HK%201%2026%20-%2027/EC312%20-%20Thi%E1%BA%BFt%20k%E1%BA%BF%20h%E1%BB%87%20th%E1%BB%91ng%20TM%C4%90T/Project/project/KLEER/wp-content/plugins/kleer-plugin/tests/run_tests.php) | **259 TESTS PASSED / 0 FAILURES** (PHP 8.2.12 CLI offline) |
 
 ---
 
@@ -46,7 +46,7 @@
 
 ---
 
-## 3. Kết quả kiểm thử thực tế (243/243 Tests Passed)
+## 3. Kết quả kiểm thử thực tế (259/259 Tests Passed)
 
 Toàn bộ suite kiểm thử kiến trúc tại [`run_tests.php`](file:///c:/Users/Lenovo/Documents/STUDY/HK%201%2026%20-%2027/EC312%20-%20Thi%E1%BA%BFt%20k%E1%BA%BF%20h%E1%BB%87%20th%E1%BB%91ng%20TM%C4%90T/Project/project/KLEER/wp-content/plugins/kleer-plugin/tests/run_tests.php) đã được chạy thành công với lệnh:
 ```powershell
@@ -100,9 +100,9 @@ Toàn bộ suite kiểm thử kiến trúc tại [`run_tests.php`](file:///c:/Us
 | **Quy mô Routine** | 3 hoặc 4 sản phẩm (Tối giản / Chuyên sâu) | 2 đến 6 sản phẩm (theo câu hỏi Q5) |
 | **Xử lý hoạt chất mạnh** | Chưa phân loại hoạt chất mạnh | Loại bỏ BHA, AHA, PHA, Vitamin C >= 5% khi cờ nhạy cảm BẬT |
 | **Xử lý thiếu SKU** | Fallback luôn trả về đủ 3-4 bước | Cho phép thiếu bước và thông báo cảnh báo (ít hơn 2 sản phẩm báo lỗi) |
-| **Cấu hình trên giao diện** | Mặc định kích hoạt trên Frontend UI | Chế độ opt-in qua tham số `version=v4` phục vụ nghiệm thu |
+| **Cấu hình trên giao diện** | API mặc định v1 khi không truyền `version`; UI 5 câu cũ không còn được render | Trang Quiz render UI 6 câu v4 từ commit `5b9ca37` và gửi `?version=v4`; version cấu hình tại `inc/quiz-assets.php` |
 
-> **Cam kết:** Không tự tiện thay thế v1 bằng v4 trên giao diện người dùng production khi chưa có chữ ký duyệt chính thức của Product Owner Nguyễn Tấn Phát.
+> **Cập nhật 2026-10-25:** Trang Quiz hiện dùng UI v4 để nghiệm thu, không còn là chế độ opt-in như mô tả ban đầu. Đây vẫn là bản nháp chờ Product Owner Nguyễn Tấn Phát ký duyệt; API vẫn mặc định v1 nếu client không truyền `version`. Trước khi coi là production, cần PO xác nhận và cập nhật lại mục này.
 
 ---
 
@@ -127,11 +127,11 @@ Toàn bộ suite kiểm thử kiến trúc tại [`run_tests.php`](file:///c:/Us
   - Sinh và chuẩn hóa các lớp `SkinQuizEndpoints`, `SkinQuizController`, `QuizEngineService`.
   - Tách repository `QuizProductRepositoryInterface` và `WooCommerceProductRepository`.
   - Nối thành công Frontend `quiz.js` vào REST API thật với GDPR consent và session UUID.
-  - Vượt qua toàn bộ 243 bài kiểm tra tự động với 0 lỗi.
+  - Vượt qua toàn bộ 254 bài kiểm tra tự động với 0 lỗi.
 
 ### 5.3. Trạng thái tài liệu Cổng G3 (`docs/flows/L01-quiz-routine/approval.md`)
 - File `L01_Quiz_Logic_Flowchart.drawio` cần được PO Nguyễn Tấn Phát đính kèm liên kết file Drive/Figma chính thức.
-- Bổ sung ghi chú: "Bản nháp v4 (6 câu / 27 lựa chọn) đang trong giai đoạn chạy thử nghiệm song song, chờ ký duyệt chính thức để chuyển giao sang Production".
+- Bổ sung ghi chú: "Bản nháp v4 (6 câu / 27 lựa chọn) đang được dùng trên giao diện Quiz để nghiệm thu, chờ ký duyệt chính thức để chuyển giao sang Production".
 
 ---
 
@@ -141,7 +141,7 @@ Toàn bộ suite kiểm thử kiến trúc tại [`run_tests.php`](file:///c:/Us
 - Hiện tại bảng kiểm thử QA có 25 ca (Account, Cart, Coupon, COD) nhưng chưa có ca kiểm thử cho thuật toán Quiz L01.
 - **Khuyến nghị phối hợp:**
   1. Sử dụng 11 ca thử chuẩn TC01 đến TC11 (đã cài đặt trong `run_tests.php`) làm kịch bản kiểm thử hộp đen (Black-box testing) trên giao diện Quiz.
-  2. Kiểm thử luồng giao điểm Quiz -> Cart: Kiểm tra custom event `kleer:addRoutineToCart` khi người dùng bấm "THÊM TRỌN BỘ ROUTINE VÀO GIỎ HÀNG" (liên kết với các ca CART-09..14 của Thảo Uyên).
+  2. Kiểm thử luồng giao điểm Quiz -> Cart sau khi L03 hoàn tất: bật filter `kleer_quiz_cart_enabled` rồi kiểm tra custom event `kleer:addRoutineToCart` khi người dùng bấm "THÊM TRỌN BỘ ROUTINE VÀO GIỎ HÀNG" (liên kết với các ca CART-09..14 của Thảo Uyên). Hiện tại CTA đang bị vô hiệu hóa vì handler L03 chưa có.
 
 ### 6.2. Dành cho Nguyễn Minh Trí (Plugin Dev 2 / Dữ liệu L08)
 - Kho dữ liệu 30 SKU mẫu hiện tại thiếu sản phẩm ở 2 bước:
@@ -151,10 +151,10 @@ Toàn bộ suite kiểm thử kiến trúc tại [`run_tests.php`](file:///c:/Us
 
 ### 6.3. Dành cho Nhã Uyên (Frontend / Theme Dev)
 - File `quiz.js` đã được kết nối hoàn chỉnh với REST API thật:
-  - Tự động lấy URL từ `window.kleerQuizConfig.restUrl`.
+  - Tự động lấy URL submit từ `window.kleerQuizConfig.submitUrl` (hỗ trợ cả pretty permalinks và plain permalinks) và gửi `version` từ config.
   - Tự động lấy Nonce bảo mật từ `window.kleerQuizConfig.nonce`.
   - Thu thập trạng thái tích chọn của checkbox `#quiz-policy-consent`.
-  - Phát sự kiện `kleer:quizCompleted` và `kleer:addRoutineToCart`.
+  - Phát sự kiện `kleer:quizCompleted`; sự kiện `kleer:addRoutineToCart` chỉ phát khi cờ `cartEnabled` được bật (hiện đang chờ L03).
 - Nhã Uyên có thể tiếp tục tinh chỉnh hiệu ứng CSS của các thẻ sản phẩm trong phác đồ mà không lo ảnh hưởng đến tầng dữ liệu.
 
 ---
@@ -172,4 +172,4 @@ Toàn bộ suite kiểm thử kiến trúc tại [`run_tests.php`](file:///c:/Us
 - [ ] Nghiệm thu Frontend/API/Cart và activation plugin trên WordPress thật.
 - [x] Đã biên soạn tài liệu kỹ thuật chuẩn OpenAPI 3.0.3 tại `docs/api/openapi.yaml`.
 - [x] Đã kiểm tra PHP syntax lint trên 100% tệp tin PHP của Plugin và Theme (0 syntax error).
-- [x] Đã chạy toàn bộ suite kiểm thử tự động: **243 tests passed, 0 failures**.
+- [x] Đã chạy toàn bộ suite kiểm thử tự động: **259 tests passed, 0 failures**.

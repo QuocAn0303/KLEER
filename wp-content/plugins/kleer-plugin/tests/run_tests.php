@@ -219,10 +219,17 @@ if (!class_exists('WP_REST_Request')) {
 
         private string $body;
 
-        public function __construct(string $method = 'GET', string $body = '')
+        /** @var array<string, mixed> */
+        private array $query;
+
+        /**
+         * @param array<string, mixed> $query
+         */
+        public function __construct(string $method = 'GET', string $body = '', array $query = [])
         {
             $this->method = $method;
             $this->body = $body;
+            $this->query = $query;
         }
 
         public function get_method(): string
@@ -250,6 +257,11 @@ if (!class_exists('WP_REST_Request')) {
 
         public function get_param(string $key): mixed
         {
+            // WordPress resolves URL params before JSON body params.
+            if (array_key_exists($key, $this->query)) {
+                return $this->query[$key];
+            }
+
             $json = $this->get_json_params();
             return $json[$key] ?? null;
         }
@@ -875,6 +887,17 @@ $fallbackResult = $fallbackService->processSubmission($oilyPayload);
 assert_true(count($fallbackResult['data']['recommended_products']) === 4, 'Safe Fallback ensures 4 products even with no exact tag match');
 assert_true($fallbackResult['data']['recommended_products'][0]['id'] === 991, 'Fallback product id is returned correctly');
 
+// A valid ProductRepositoryInterface (without getQuizCatalog) must not fatal.
+$baseRepository = new class implements \Kleer\Contracts\ProductRepositoryInterface {
+    public function findFeatured(int $limit = 5): array
+    {
+        return [];
+    }
+};
+$baseRepositoryService = new QuizEngineService($baseRepository);
+$baseRepositoryResult = $baseRepositoryService->processSubmission($oilyPayload);
+assert_true($baseRepositoryResult['status'] === 'ok', 'Base ProductRepositoryInterface falls back without calling getQuizCatalog()');
+
 // Validate the output conforms to quiz-submission-response.schema.json
 $responseValidation = \Kleer\Support\Validation\JsonSchema::validate(
     $oilyResult,
@@ -894,6 +917,37 @@ $badResponse = $quizController->handleSubmission($invalidRequest);
 assert_true(is_wp_error($badResponse), 'Invalid submission returns WP_Error');
 assert_true($badResponse->get_error_code() === 'kleer_invalid_payload', 'Error code is kleer_invalid_payload');
 assert_true($badResponse->get_error_data()['status'] === 400, 'Error status is 400');
+
+$declinedConsentPayload = $oilyPayload;
+$declinedConsentPayload['consent']['policy_accepted'] = false;
+$declinedConsentRequest = new WP_REST_Request('POST', json_encode($declinedConsentPayload, JSON_THROW_ON_ERROR));
+$declinedConsentResponse = $quizController->handleSubmission($declinedConsentRequest);
+assert_true(is_wp_error($declinedConsentResponse), 'Declined policy consent is rejected by the backend');
+assert_true($declinedConsentResponse->get_error_data()['status'] === 400, 'Declined consent returns HTTP 400');
+
+// Version comes from the query string, never the JSON body.
+$v4Payload = [
+    'session_id' => '44444444-5555-4666-8777-888888888888',
+    'consent' => ['policy_accepted' => true, 'marketing_opt_in' => false],
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1B'],
+        ['question_id' => 'q2', 'answer' => '2C'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+        ['question_id' => 'q4', 'answer' => '4E'],
+        ['question_id' => 'q5', 'answer' => '5A'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+];
+$v4QueryRequest = new WP_REST_Request('POST', json_encode($v4Payload, JSON_THROW_ON_ERROR), ['version' => 'v4']);
+$v4QueryResponse = $quizController->handleSubmission($v4QueryRequest);
+assert_true($v4QueryResponse instanceof WP_REST_Response, 'version=v4 query param is accepted');
+assert_true($v4QueryResponse->get_data()['data']['version'] === 'v4-draft', 'version=v4 query param routes to the v4 engine');
+
+$invalidVersionRequest = new WP_REST_Request('POST', json_encode($v4Payload, JSON_THROW_ON_ERROR), ['version' => 'v3']);
+$invalidVersionResponse = $quizController->handleSubmission($invalidVersionRequest);
+assert_true(is_wp_error($invalidVersionResponse), 'Unsupported version query param is rejected');
+assert_true($invalidVersionResponse->get_error_code() === 'kleer_invalid_version', 'Unsupported version returns kleer_invalid_version');
+assert_true($invalidVersionResponse->get_error_data()['status'] === 400, 'Unsupported version returns HTTP 400');
 
 // 15.6. SkinQuizEndpoints route registration
 $quizEndpoints = new SkinQuizEndpoints($quizController);
@@ -917,11 +971,14 @@ assert_true(count($schemaMap['taxonomies']) === 3, 'dryRunSchemaMap maps all 3 t
 assert_true($schemaMap['taxonomies']['pa_skin_type']['show_in_rest'] === true, 'pa_skin_type has show_in_rest enabled');
 assert_true($schemaMap['taxonomies']['pa_skin_type']['terms_count'] === 6, 'pa_skin_type contains 6 default terms');
 assert_true($schemaMap['taxonomies']['pa_skin_concern']['terms_count'] === 6, 'pa_skin_concern contains 6 default terms');
-assert_true($schemaMap['taxonomies']['pa_routine_step']['terms_count'] === 6, 'pa_routine_step contains 6 default terms');
+assert_true($schemaMap['taxonomies']['pa_routine_step']['terms_count'] === 7, 'pa_routine_step contains 7 default terms');
+assert_true($schemaMap['taxonomies']['pa_skin_type']['attribute_slug'] === 'skin_type', 'WooCommerce attribute slug keeps underscores so taxonomy stays pa_skin_type');
+assert_true($schemaMap['taxonomies']['pa_routine_step']['attribute_slug'] === 'routine_step', 'WooCommerce routine_step attribute slug stays pa_routine_step');
 
 // Test registration hooks
 $taxRegistry->register();
 assert_true(!empty($registered_actions['init']), 'TaxonomyRegistry registers into init hook');
+assert_true(!empty($registered_actions['admin_init']), 'TaxonomyRegistry registers admin_init hook');
 assert_true(!empty($registered_actions['admin_notices']), 'TaxonomyRegistry registers admin notices hook');
 
 // 17. Testing QuizEngineService v4 Draft Scoring & All 11 Workbook Test Cases
@@ -1116,6 +1173,81 @@ $tc11 = $v4Service->processSubmissionV4([
 ]);
 $tc11ProdIds = array_column($tc11['data']['recommended_products'], 'id');
 assert_true($tc11ProdIds === [5, 19], 'TC11 minimal 2-step routine selects Cleanser #5 and Serum #19');
+
+// v4 output must validate against the shared response schema (not only v1).
+$v4ResponseValidation = \Kleer\Support\Validation\JsonSchema::validate(
+    $tc11,
+    \Kleer\Support\Validation\JsonSchema::fromFile('quiz-submission-response.schema.json')
+);
+assert_true($v4ResponseValidation->isValid(), 'Generated v4 quiz output passes quiz-submission-response.schema.json');
+
+// v4 must use the injected repository catalog instead of the hardcoded 1..30 IDs.
+$injectedRepository = new class implements \Kleer\Contracts\QuizProductRepositoryInterface {
+    public function findFeatured(int $limit = 5): array
+    {
+        return [];
+    }
+
+    public function getQuizCatalog(array $criteria = []): array
+    {
+        return [
+            [
+                'id' => 901,
+                'name' => 'Real Cleanser',
+                'price' => 100000,
+                'routine_step' => 'cleanser',
+                'skin_types' => ['normal'],
+                'concerns' => [],
+                'has_strong_actives' => false,
+            ],
+            [
+                'id' => 902,
+                'name' => 'Real Serum',
+                'price' => 120000,
+                'routine_step' => 'serum',
+                'skin_types' => ['normal'],
+                'concerns' => [],
+                'has_strong_actives' => false,
+            ],
+        ];
+    }
+};
+$injectedService = new QuizEngineService($injectedRepository);
+$injectedResult = $injectedService->processSubmissionV4([
+    'session_id' => 'injected-repository-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1B'],
+        ['question_id' => 'q2', 'answer' => '2C'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+        ['question_id' => 'q4', 'answer' => '4E'],
+        ['question_id' => 'q5', 'answer' => '5A'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+$injectedIds = array_column($injectedResult['data']['recommended_products'], 'id');
+assert_true($injectedIds === [901, 902], 'v4 uses the injected repository catalog instead of hardcoded IDs');
+
+// v4 legitimately returns zero products when no SKU matches; the response
+// schema must allow that and the warnings must explain it.
+$emptyCatalogService = new QuizEngineService([]);
+$emptyCatalogResult = $emptyCatalogService->processSubmissionV4([
+    'session_id' => 'empty-catalog-session',
+    'answers' => [
+        ['question_id' => 'q1', 'answer' => '1B'],
+        ['question_id' => 'q2', 'answer' => '2C'],
+        ['question_id' => 'q3', 'answer' => '3D'],
+        ['question_id' => 'q4', 'answer' => '4E'],
+        ['question_id' => 'q5', 'answer' => '5A'],
+        ['question_id' => 'q6', 'answer' => '6C'],
+    ],
+]);
+assert_true($emptyCatalogResult['data']['recommended_products'] === [], 'v4 without matching SKUs returns an empty product list');
+assert_true(!empty($emptyCatalogResult['data']['warnings']), 'v4 without matching SKUs explains the gap in warnings');
+$emptyCatalogValidation = \Kleer\Support\Validation\JsonSchema::validate(
+    $emptyCatalogResult,
+    \Kleer\Support\Validation\JsonSchema::fromFile('quiz-submission-response.schema.json')
+);
+assert_true($emptyCatalogValidation->isValid(), 'v4 response with zero products passes the shared response schema');
 
 // 18. Testing Business Validation & Error Handling (L01-G5-03)
 echo "\n18. Testing Business Validation & Machine-Readable Errors...\n";

@@ -69,21 +69,40 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
         $cache = $this->cache ?? KleerCache::fromEnvironment();
         $cacheKey = 'catalog_all_' . md5(serialize($criteria));
 
-        $cached = $cache->get($cacheKey, 'kleer_catalog');
+        $cached = $cache->get($cacheKey, KleerCache::GROUP_PRODUCTS);
+
         if (is_array($cached) && !empty($cached)) {
             /** @var list<array<string, mixed>> $cached */
             return $cached;
+        }
+
+        if (is_string($cached) && $cached !== '') {
+            $decoded = json_decode($cached, true);
+
+            if (is_array($decoded) && !empty($decoded)) {
+                /** @var list<array<string, mixed>> $decoded */
+                return $decoded;
+            }
         }
 
         $catalog = $this->fetchFromWooCommerce($criteria);
 
         // Nếu WooCommerce không có sản phẩm hoặc chưa kích hoạt, dùng danh mục tiêu chuẩn
         if (empty($catalog)) {
-            $catalog = $this->fallbackCatalog ?? QuizQuestions::getDefaultCatalog();
+            $catalog = ($criteria['fallback_catalog'] ?? '') === 'v4'
+                ? QuizQuestions::getV4Catalog()
+                : ($this->fallbackCatalog ?? QuizQuestions::getDefaultCatalog());
         }
 
-        // Lưu cache 1 giờ (sẽ bị vô hiệu hóa khi có hook lưu sản phẩm)
-        $cache->set($cacheKey, $catalog, 'kleer_catalog', 3600);
+        // KleerCache chỉ nhận string, nên serialize catalog trước khi ghi cache.
+        // Cache group phải trùng với group mà CacheInvalidation flush khi sản phẩm thay đổi.
+        $encoded = function_exists('wp_json_encode')
+            ? wp_json_encode($catalog)
+            : json_encode($catalog);
+
+        if (is_string($encoded) && $encoded !== '') {
+            $cache->set($cacheKey, $encoded, KleerCache::GROUP_PRODUCTS, 3600);
+        }
 
         return $catalog;
     }
@@ -128,7 +147,28 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
             $concerns  = $this->getTermsSlugs($id, TaxonomyRegistry::TAXONOMY_SKIN_CONCERN);
             $steps     = $this->getTermsSlugs($id, TaxonomyRegistry::TAXONOMY_ROUTINE_STEP);
 
-            $step = !empty($steps) ? $steps[0] : 'cleanser';
+            // Không gán bừa sản phẩm chưa phân loại vào bước cleanser.
+            // Sản phẩm thiếu routine step sẽ không được đưa vào gợi ý.
+            if (empty($steps)) {
+                continue;
+            }
+
+            $stepOrder = array_flip([
+                'makeup_remover',
+                'cleanser',
+                'toner',
+                'serum',
+                'treatment',
+                'moisturizer',
+                'sunscreen',
+            ]);
+
+            usort($steps, static function (string $a, string $b) use ($stepOrder): int {
+                return ($stepOrder[$a] ?? 99) <=> ($stepOrder[$b] ?? 99);
+            });
+
+            $step = $steps[0];
+            $secondaryStep = $steps[1] ?? '';
 
             // Đọc hình ảnh và link sản phẩm
             $imageUrl = '';
@@ -156,6 +196,7 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
                 'name'               => $p->get_name(),
                 'price'              => (int) $p->get_price(),
                 'routine_step'       => $step,
+                'secondary_step'     => $secondaryStep,
                 'skin_types'         => $skinTypes,
                 'concerns'           => $concerns,
                 'is_gentle_fallback' => $isGentleFallback,

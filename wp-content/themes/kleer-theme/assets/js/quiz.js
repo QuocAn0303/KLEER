@@ -16,6 +16,9 @@ class KleerQuizEngine {
         this.isTransitioning = false;
         this.isSubmitting = false;
         this.lastResult = null;
+        this.version = window.kleerQuizConfig?.version || 'v4';
+        this.cartEnabled =
+            window.kleerQuizConfig?.cartEnabled === true;
 
         this.questionIds = [
             'q1',
@@ -375,12 +378,22 @@ class KleerQuizEngine {
 
         const payload = this.buildApiPayload();
 
-        const baseRestUrl =
-            window.kleerQuizConfig?.restUrl
-            || '/wp-json/kleer/v1/';
+        const submitUrl =
+            window.kleerQuizConfig?.submitUrl
+            || '/wp-json/kleer/v1/skin-quiz';
 
-        const endpoint =
-            `${baseRestUrl.replace(/\/?$/, '/')}skin-quiz?version=v4`;
+        // Dùng URL API để xử lý đúng cả pretty permalinks và plain permalinks
+        // (plain permalinks có sẵn ?rest_route=... trong submitUrl).
+        let endpoint;
+
+        try {
+            const url = new URL(submitUrl, window.location.origin);
+            url.searchParams.set('version', this.version);
+            endpoint = url.toString();
+        } catch (error) {
+            const separator = submitUrl.includes('?') ? '&' : '?';
+            endpoint = `${submitUrl}${separator}version=${encodeURIComponent(this.version)}`;
+        }
 
         try {
             const response = await fetch(endpoint, {
@@ -406,7 +419,9 @@ class KleerQuizEngine {
                     responseData?.message
                     || `Máy chủ trả về lỗi HTTP ${response.status}.`;
 
-                throw new Error(message);
+                const httpError = new Error(message);
+                httpError.httpStatus = response.status;
+                throw httpError;
             }
 
             if (
@@ -428,7 +443,14 @@ class KleerQuizEngine {
                 ? error.message
                 : 'Kết nối mạng đã bị gián đoạn. Vui lòng kiểm tra Internet và thử lại.';
 
-            this.renderErrorState(message);
+            const status = Number(error?.httpStatus) || 0;
+            const canRetry =
+                status === 0
+                || status === 408
+                || status === 429
+                || status >= 500;
+
+            this.renderErrorState(message, canRetry);
         } finally {
             this.isSubmitting = false;
         }
@@ -522,6 +544,9 @@ class KleerQuizEngine {
         const disclaimer =
             data.disclaimer
             || 'Vui lòng thử trước sản phẩm 24h trên vùng da quai hàm.';
+
+        const canAddToCart =
+            this.cartEnabled && products.length > 0;
 
         const productsHtml = products.length > 0
             ? products
@@ -641,10 +666,20 @@ class KleerQuizEngine {
                     <button
                         type="button"
                         class="btn-quiz-primary btn-routine-cart"
-                        ${products.length === 0 ? 'disabled' : ''}
+                        ${canAddToCart ? '' : 'disabled aria-disabled="true"'}
                     >
-                        THÊM TRỌN BỘ ROUTINE VÀO GIỎ HÀNG
+                        ${canAddToCart
+                            ? 'THÊM TRỌN BỘ ROUTINE VÀO GIỎ HÀNG'
+                            : 'THÊM ROUTINE VÀO GIỎ HÀNG (SẮP RA MẮT)'}
                     </button>
+
+                    ${canAddToCart
+                        ? ''
+                        : `
+                            <p class="routine-missing-note">
+                                Tính năng thêm vào giỏ hàng sẽ có trong bản cập nhật tiếp theo.
+                            </p>
+                        `}
                 </div>
             </div>
         `;
@@ -722,6 +757,10 @@ class KleerQuizEngine {
     }
 
     bindResultEvents(mainCard, data, products) {
+        if (!this.cartEnabled) {
+            return;
+        }
+
         const btnCart = mainCard.querySelector(
             '.btn-routine-cart'
         );
@@ -743,7 +782,7 @@ class KleerQuizEngine {
         });
     }
 
-    renderErrorState(errorMessage) {
+    renderErrorState(errorMessage, canRetry = true) {
         const mainCard = document.querySelector(
             '.quiz-content-card'
         );
@@ -758,13 +797,37 @@ class KleerQuizEngine {
             return;
         }
 
+        const actionHtml = canRetry
+            ? `
+                <button
+                    type="button"
+                    id="btn-quiz-retry"
+                    class="btn-quiz-primary"
+                >
+                    THỬ LẠI
+                </button>
+            `
+            : `
+                <button
+                    type="button"
+                    id="btn-quiz-restart"
+                    class="btn-quiz-primary"
+                >
+                    LÀM LẠI QUIZ
+                </button>
+            `;
+
+        const savedNote = canRetry
+            ? 'Câu trả lời của bạn vẫn được lưu trên thiết bị. Vui lòng thử lại.'
+            : 'Câu trả lời không hợp lệ hoặc đã cũ. Vui lòng làm lại Quiz để nhận phác đồ mới.';
+
         mainCard.innerHTML = `
             <div
                 class="quiz-state-card"
                 role="alert"
             >
                 <span class="state-subtitle text-orange">
-                    LỖI KẾT NỐI
+                    ${canRetry ? 'LỖI KẾT NỐI' : 'DỮ LIỆU KHÔNG HỢP LỆ'}
                 </span>
 
                 <h2 class="state-title">
@@ -779,25 +842,39 @@ class KleerQuizEngine {
                 </p>
 
                 <p class="state-desc">
-                    Câu trả lời của bạn vẫn được lưu trên thiết bị.
-                    Vui lòng thử lại.
+                    ${savedNote}
                 </p>
 
-                <button
-                    type="button"
-                    id="btn-quiz-retry"
-                    class="btn-quiz-primary"
-                >
-                    THỬ LẠI
-                </button>
+                ${actionHtml}
             </div>
         `;
 
+        if (canRetry) {
+            mainCard
+                .querySelector('#btn-quiz-retry')
+                ?.addEventListener('click', () => {
+                    this.handleSubmission();
+                });
+
+            return;
+        }
+
         mainCard
-            .querySelector('#btn-quiz-retry')
+            .querySelector('#btn-quiz-restart')
             ?.addEventListener('click', () => {
-                this.handleSubmission();
+                this.resetQuiz();
             });
+    }
+
+    resetQuiz() {
+        try {
+            localStorage.removeItem(this.storageKey);
+            localStorage.removeItem(this.sessionKey);
+        } catch (error) {
+            console.warn('Cannot clear quiz storage:', error);
+        }
+
+        window.location.reload();
     }
 
     getStepName(step) {
@@ -806,6 +883,7 @@ class KleerQuizEngine {
             cleanser: 'Làm sạch',
             toner: 'Toner',
             serum: 'Serum',
+            treatment: 'Điều trị',
             moisturizer: 'Dưỡng ẩm',
             sunscreen: 'Chống nắng',
         };

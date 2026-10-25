@@ -6,7 +6,7 @@ namespace Kleer\Services;
 
 use Kleer\Config\QuizQuestions;
 use Kleer\Contracts\ProductRepositoryInterface;
-use Kleer\Repositories\WooCommerceProductRepository;
+use Kleer\Contracts\QuizProductRepositoryInterface;
 
 // Prevent direct file access
 defined('ABSPATH') || exit;
@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
  *                 truy vấn sản phẩm theo Custom Taxonomies và thực thi Safe Fallback.
  *                 Hỗ trợ đồng thời:
  *                   - v1: Chuẩn 5 câu hỏi hiện hành (legacy).
- *                   - v4: Bản nháp 6 câu / 27 lựa chọn của PO (opt-in draft mode).
+ *                   - v4: Bản nháp 6 câu / 27 lựa chọn của PO (đang dùng trên UI để nghiệm thu).
  * Boundary: Không xử lý HTTP request/response trực tiếp; có thể tái sử dụng qua CLI/REST/GraphQL.
  */
 class QuizEngineService
@@ -109,7 +109,17 @@ class QuizEngineService
                 }
                 $seenQuestions[$qId] = true;
 
-                $valStr = is_string($val) ? $val : (string) $val;
+                if (is_array($val)) {
+                    $errors[] = sprintf('Câu hỏi "%s" chỉ nhận một lựa chọn, không nhận mảng.', $qId);
+                    continue;
+                }
+
+                if (!is_scalar($val) && $val !== null) {
+                    $errors[] = sprintf('Giá trị trả lời không hợp lệ cho câu hỏi "%s".', $qId);
+                    continue;
+                }
+
+                $valStr = (string) $val;
                 if (!isset($v4Def[$qId]['options'][$valStr])) {
                     $errors[] = sprintf('Lựa chọn không hợp lệ "%s" cho câu hỏi "%s".', $valStr, $qId);
                 }
@@ -208,7 +218,7 @@ class QuizEngineService
         $answers = is_array($payload['answers'] ?? null) ? $payload['answers'] : [];
         $eval = $this->calculateSkinProfileV4($answers);
 
-        $catalog = $this->catalog ?? QuizQuestions::getV4Catalog();
+        $catalog = $this->resolveCatalog(true);
 
         $recommendation = $this->recommendRoutineV4(
             $eval['skin_type'],
@@ -491,7 +501,10 @@ class QuizEngineService
     ): ?array {
         // Lọc sản phẩm đúng bước, phù hợp loại da khách và chưa chọn
         $candidates = array_values(array_filter($catalog, static function (array $item) use ($step, $skinType, $excludeIds): bool {
-            if (($item['routine_step'] ?? '') !== $step) {
+            $primaryStep = (string) ($item['routine_step'] ?? '');
+            $secondaryStep = (string) ($item['secondary_step'] ?? '');
+
+            if ($primaryStep !== $step && $secondaryStep !== $step) {
                 return false;
             }
             if (in_array($item['id'] ?? null, $excludeIds, true)) {
@@ -755,17 +768,21 @@ class QuizEngineService
         return $stepCandidates[0];
     }
 
-    private function resolveCatalog(): array
+    private function resolveCatalog(bool $preferV4 = false): array
     {
         if ($this->catalog !== null) {
             return $this->catalog;
         }
 
-        if ($this->repository !== null) {
-            return $this->repository->getQuizCatalog();
+        if ($this->repository instanceof QuizProductRepositoryInterface) {
+            return $this->repository->getQuizCatalog(
+                $preferV4 ? ['fallback_catalog' => 'v4'] : []
+            );
         }
 
-        return QuizQuestions::getDefaultCatalog();
+        return $preferV4
+            ? QuizQuestions::getV4Catalog()
+            : QuizQuestions::getDefaultCatalog();
     }
 
     private function buildProfileCode(string $type, string $concern, bool $isSensitive): string
