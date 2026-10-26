@@ -7,6 +7,8 @@ namespace Kleer\Controllers;
 use Kleer\Controllers\Concerns\ValidatesJsonPayload;
 use Kleer\Repositories\WooCommerceProductRepository;
 use Kleer\Services\QuizEngineService;
+use Kleer\Exceptions\RoutineUnavailableException;
+use Kleer\Support\Validation\JsonSchema;
 
 // Prevent direct file access
 defined('ABSPATH') || exit;
@@ -87,15 +89,17 @@ class SkinQuizController
             }
 
             $result = $this->quizEngineService->processSubmission($validatedPayload, $version);
+            if (JsonSchema::validate($result, JsonSchema::fromFile('quiz-submission-response.schema.json'))->isInvalid()) {
+                throw new \RuntimeException('Invalid routine response contract.');
+            }
             return new WP_REST_Response($result, 200);
         } catch (\InvalidArgumentException $e) {
-            return new WP_Error(
-                'kleer_invalid_payload',
-                $e->getMessage(),
-                [
-                    'status' => 400,
-                ]
-            );
+            return $this->answerError('/answers', $e->getMessage());
+        } catch (RoutineUnavailableException $e) {
+            return new WP_Error('kleer_' . $e->reason, $e->getMessage(), [
+                'status' => 503,
+                'missing_steps' => $e->missingSteps,
+            ]);
         } catch (\Throwable $e) {
             // Không lộ exception/SQL/credentials ra response public
             return new WP_Error(
@@ -106,5 +110,13 @@ class SkinQuizController
                 ]
             );
         }
+    }
+
+    private function answerError(string $pointer, string $message): WP_Error
+    {
+        return new WP_Error('kleer_invalid_payload', $message, [
+            'status' => 400,
+            'errors' => [['pointer' => $pointer, 'keyword' => 'quiz_answers', 'message' => $message]],
+        ]);
     }
 }

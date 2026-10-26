@@ -74,7 +74,6 @@ final class QuizQuestions
                         'label' => 'Da sần sùi, thường xuyên bong tróc mảng nhỏ',
                         'weights' => [
                             'skin_type' => ['dry' => 3],
-                            'concerns' => ['hydration' => 1],
                         ],
                     ],
                 ],
@@ -211,7 +210,7 @@ final class QuizQuestions
     }
 
     /**
-     * Danh mục 20 sản phẩm mặc định (v1 legacy).
+     * Fixtures v1 for explicit isolated tests only; IDs are not live WooCommerce IDs.
      *
      * @return list<array<string, mixed>>
      */

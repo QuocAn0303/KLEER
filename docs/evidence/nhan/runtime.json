@@ -1,0 +1,176 @@
+{
+    "checked_at_utc": "2026-10-26T14:41:57+00:00",
+    "plugin_active": true,
+    "woocommerce_loaded": false,
+    "product_post_type": false,
+    "published_products": 0,
+    "taxonomy_registration": {
+        "pa_skin_type": false,
+        "pa_skin_concern": false,
+        "pa_routine_step": false,
+        "skin_type": false,
+        "skin_concern": false,
+        "routine_step": false
+    },
+    "valid_request": {
+        "http_status": 503,
+        "body": {
+            "code": "kleer_woocommerce_unavailable",
+            "message": "Chưa có đủ sản phẩm phù hợp để tạo routine an toàn.",
+            "data": {
+                "status": 503,
+                "missing_steps": []
+            }
+        }
+    },
+    "invalid_request": {
+        "http_status": 400,
+        "body": {
+            "code": "kleer_invalid_payload",
+            "message": "Lựa chọn không hợp lệ \"invalid\" cho câu hỏi \"q1_skin_feeling\".",
+            "data": {
+                "status": 400,
+                "errors": [
+                    {
+                        "pointer": "/answers",
+                        "keyword": "quiz_answers",
+                        "message": "Lựa chọn không hợp lệ \"invalid\" cho câu hỏi \"q1_skin_feeling\"."
+                    }
+                ]
+            }
+        }
+    },
+    "indexes": {
+        "wp_posts": [
+            {
+                "Key_name": "PRIMARY",
+                "Seq_in_index": "1",
+                "Column_name": "ID"
+            },
+            {
+                "Key_name": "post_name",
+                "Seq_in_index": "1",
+                "Column_name": "post_name"
+            },
+            {
+                "Key_name": "type_status_date",
+                "Seq_in_index": "1",
+                "Column_name": "post_type"
+            },
+            {
+                "Key_name": "type_status_date",
+                "Seq_in_index": "2",
+                "Column_name": "post_status"
+            },
+            {
+                "Key_name": "type_status_date",
+                "Seq_in_index": "3",
+                "Column_name": "post_date"
+            },
+            {
+                "Key_name": "type_status_date",
+                "Seq_in_index": "4",
+                "Column_name": "ID"
+            },
+            {
+                "Key_name": "post_parent",
+                "Seq_in_index": "1",
+                "Column_name": "post_parent"
+            },
+            {
+                "Key_name": "post_author",
+                "Seq_in_index": "1",
+                "Column_name": "post_author"
+            },
+            {
+                "Key_name": "type_status_author",
+                "Seq_in_index": "1",
+                "Column_name": "post_type"
+            },
+            {
+                "Key_name": "type_status_author",
+                "Seq_in_index": "2",
+                "Column_name": "post_status"
+            },
+            {
+                "Key_name": "type_status_author",
+                "Seq_in_index": "3",
+                "Column_name": "post_author"
+            }
+        ],
+        "wp_postmeta": [
+            {
+                "Key_name": "PRIMARY",
+                "Seq_in_index": "1",
+                "Column_name": "meta_id"
+            },
+            {
+                "Key_name": "post_id",
+                "Seq_in_index": "1",
+                "Column_name": "post_id"
+            },
+            {
+                "Key_name": "meta_key",
+                "Seq_in_index": "1",
+                "Column_name": "meta_key"
+            }
+        ],
+        "wp_term_relationships": [
+            {
+                "Key_name": "PRIMARY",
+                "Seq_in_index": "1",
+                "Column_name": "object_id"
+            },
+            {
+                "Key_name": "PRIMARY",
+                "Seq_in_index": "2",
+                "Column_name": "term_taxonomy_id"
+            },
+            {
+                "Key_name": "term_taxonomy_id",
+                "Seq_in_index": "1",
+                "Column_name": "term_taxonomy_id"
+            }
+        ],
+        "wp_term_taxonomy": [
+            {
+                "Key_name": "PRIMARY",
+                "Seq_in_index": "1",
+                "Column_name": "term_taxonomy_id"
+            },
+            {
+                "Key_name": "term_id_taxonomy",
+                "Seq_in_index": "1",
+                "Column_name": "term_id"
+            },
+            {
+                "Key_name": "term_id_taxonomy",
+                "Seq_in_index": "2",
+                "Column_name": "taxonomy"
+            },
+            {
+                "Key_name": "taxonomy",
+                "Seq_in_index": "1",
+                "Column_name": "taxonomy"
+            }
+        ],
+        "wp_terms": [
+            {
+                "Key_name": "PRIMARY",
+                "Seq_in_index": "1",
+                "Column_name": "term_id"
+            },
+            {
+                "Key_name": "slug",
+                "Seq_in_index": "1",
+                "Column_name": "slug"
+            },
+            {
+                "Key_name": "name",
+                "Seq_in_index": "1",
+                "Column_name": "name"
+            }
+        ]
+    },
+    "note": "Taxonomy registration is not proof of WooCommerce admin menu visibility. HTTP 503 is not a successful routine or a performance pass."
+}

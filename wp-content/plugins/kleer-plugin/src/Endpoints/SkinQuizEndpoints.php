@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kleer\Endpoints;
 
 use Kleer\Controllers\SkinQuizController;
+use Kleer\Support\Cors\CorsPolicy;
 
 // Prevent direct file access
 defined('ABSPATH') || exit;
@@ -53,9 +54,24 @@ final class SkinQuizEndpoints
      * Quyền truy cập: Cho phép khách vãng lai (Public) thực hiện Quiz mà không cần đăng nhập.
      * Nếu client gửi cookie xác thực thì tự động kiểm tra CSRF Nonce hợp lệ.
      */
-    public function checkPermission(WP_REST_Request $request): bool
+    public function checkPermission(WP_REST_Request $request): bool|\WP_Error
     {
-        // Cho phép mọi người dùng ẩn danh hoặc đã đăng nhập chẩn đoán da
+        $origin = method_exists($request, 'get_header') ? ($request->get_header('origin') ?? '') : '';
+        $homeOrigin = '';
+        if (function_exists('home_url')) {
+            $parts = parse_url(home_url());
+            $homeOrigin = ($parts['scheme'] ?? '') . '://' . ($parts['host'] ?? '')
+                . (isset($parts['port']) ? ':' . $parts['port'] : '');
+        }
+        if ($origin !== '' && $origin !== $homeOrigin
+            && !CorsPolicy::fromEnvironment()->isOriginAllowed($origin)) {
+            return new \WP_Error('kleer_cors_forbidden', 'Origin không được phép.', ['status' => 403]);
+        }
+        $nonce = method_exists($request, 'get_header') ? ($request->get_header('x-wp-nonce') ?? '') : '';
+        if (($nonce !== '' || (function_exists('is_user_logged_in') && is_user_logged_in()))
+            && (!function_exists('wp_verify_nonce') || !wp_verify_nonce($nonce, 'wp_rest'))) {
+            return new \WP_Error('rest_cookie_invalid_nonce', 'Nonce không hợp lệ hoặc đã hết hạn.', ['status' => 403]);
+        }
         return true;
     }
 }

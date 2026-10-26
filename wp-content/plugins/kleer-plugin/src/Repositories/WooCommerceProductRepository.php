@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Kleer\Repositories;
 
-use Kleer\Config\QuizQuestions;
 use Kleer\Contracts\QuizProductRepositoryInterface;
+use Kleer\Exceptions\RoutineUnavailableException;
 use Kleer\Support\Cache\KleerCache;
 use Kleer\Taxonomy\TaxonomyRegistry;
 
@@ -32,7 +32,7 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
 
     /**
      * @param KleerCache|null $cache Bộ đệm tầng hạ tầng (nếu null sẽ lấy từ môi trường)
-     * @param list<array<string, mixed>>|null $fallbackCatalog Danh mục dự phòng khi DB trống
+     * @param list<array<string, mixed>>|null $fallbackCatalog Explicit test fixtures only; never auto-populated in production.
      */
     public function __construct(?KleerCache $cache = null, ?array $fallbackCatalog = null)
     {
@@ -66,8 +66,19 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
      */
     public function getQuizCatalog(array $criteria = []): array
     {
+        // Explicit fixtures are allowed for isolated tests, never as implicit live fallback.
+        if ($this->fallbackCatalog !== null) {
+            return $this->fallbackCatalog;
+        }
+        if (!class_exists('WooCommerce') || !function_exists('wc_get_products')) {
+            throw new RoutineUnavailableException([], 'woocommerce_unavailable');
+        }
+        $version = $criteria['version'] ?? (($criteria['fallback_catalog'] ?? '') === 'v4' ? 'v4' : 'v1');
+        if ($version === 'v1') {
+            return (new RoutineProductRepository())->all();
+        }
         $cache = $this->cache ?? KleerCache::fromEnvironment();
-        $cacheKey = 'catalog_all_' . md5(serialize($criteria));
+        $cacheKey = 'catalog_live_v2_' . md5(serialize($criteria));
 
         $cached = $cache->get($cacheKey, KleerCache::GROUP_PRODUCTS);
 
@@ -87,12 +98,7 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
 
         $catalog = $this->fetchFromWooCommerce($criteria);
 
-        // Nếu WooCommerce không có sản phẩm hoặc chưa kích hoạt, dùng danh mục tiêu chuẩn
-        if (empty($catalog)) {
-            $catalog = ($criteria['fallback_catalog'] ?? '') === 'v4'
-                ? QuizQuestions::getV4Catalog()
-                : ($this->fallbackCatalog ?? QuizQuestions::getDefaultCatalog());
-        }
+        // v4 retains its existing missing_steps/warnings contract for a genuinely empty catalog.
 
         // KleerCache chỉ nhận string, nên serialize catalog trước khi ghi cache.
         // Cache group phải trùng với group mà CacheInvalidation flush khi sản phẩm thay đổi.
@@ -101,7 +107,7 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
             : json_encode($catalog);
 
         if (is_string($encoded) && $encoded !== '') {
-            $cache->set($cacheKey, $encoded, KleerCache::GROUP_PRODUCTS, 3600);
+            $cache->set($cacheKey, $encoded, KleerCache::GROUP_PRODUCTS, 60);
         }
 
         return $catalog;

@@ -7,6 +7,8 @@ namespace Kleer\Services;
 use Kleer\Config\QuizQuestions;
 use Kleer\Contracts\ProductRepositoryInterface;
 use Kleer\Contracts\QuizProductRepositoryInterface;
+use Kleer\Exceptions\RoutineUnavailableException;
+use Kleer\Repositories\WooCommerceProductRepository;
 
 // Prevent direct file access
 defined('ABSPATH') || exit;
@@ -179,6 +181,7 @@ class QuizEngineService
     private function processSubmissionV1(array $payload): array
     {
         $answers = is_array($payload['answers'] ?? null) ? $payload['answers'] : [];
+        $this->validateAnswers($answers);
         $skinProfileData = $this->calculateSkinProfile($answers);
         $routineSteps = (int) ($skinProfileData['routine_steps'] ?? 4);
 
@@ -202,9 +205,34 @@ class QuizEngineService
                     'concerns' => $skinProfileData['profile']['concerns'],
                 ],
                 'recommended_products' => $recommendedProducts,
-                'disclaimer' => 'Phác đồ được xây dựng dựa trên thuật toán da liễu tham vấn từ chuyên gia KLEER. Vui lòng thử trước một lượng nhỏ sản phẩm lên vùng da dưới quai hàm 24h trước khi sử dụng toàn mặt.',
+                'disclaimer' => 'Gợi ý tham khảo theo câu trả lời, không thay thế tư vấn bác sĩ. Với da nhạy cảm, ưu tiên sản phẩm dịu nhẹ. Thử một lượng nhỏ trên vùng da dưới quai hàm trước khi sử dụng toàn mặt.',
             ],
         ];
+    }
+
+    /** Compatibility entry point named in task L01-G4-01. */
+    public function calculate_routine(array $payload): array
+    {
+        return $this->processSubmission($payload);
+    }
+
+    /** Reject missing, duplicated, unknown or multiple-choice answers for this five-question quiz. */
+    public function validateAnswers(array $answers): void
+    {
+        $questions = QuizQuestions::getQuestions();
+        $seen = [];
+        foreach ($answers as $answer) {
+            $id = $answer['question_id'] ?? '';
+            $option = $answer['answer'] ?? null;
+            if (!is_string($id) || !isset($questions[$id]) || isset($seen[$id])
+                || !is_string($option) || !isset($questions[$id]['options'][$option])) {
+                throw new \InvalidArgumentException('Cần trả lời đúng một lựa chọn hợp lệ cho mỗi câu hỏi.');
+            }
+            $seen[$id] = true;
+        }
+        if (count($seen) !== count($questions)) {
+            throw new \InvalidArgumentException('Cần trả lời đủ 5 câu hỏi.');
+        }
     }
 
     /**
@@ -684,6 +712,7 @@ class QuizEngineService
 
         $recommended = [];
         $selectedProductIds = [];
+        $missingSteps = [];
 
         foreach ($requiredSteps as $step) {
             $product = $this->findBestProductForStep(
@@ -702,7 +731,13 @@ class QuizEngineService
                     'routine_step' => $step,
                     'reason' => (string) ($product['reason'] ?? "Được tối ưu cho bước $step của phác đồ da."),
                 ];
+            } else {
+                $missingSteps[] = $step;
             }
+        }
+
+        if ($missingSteps !== []) {
+            throw new RoutineUnavailableException($missingSteps);
         }
 
         return $recommended;
@@ -733,6 +768,12 @@ class QuizEngineService
 
         $targetType = $profile['is_sensitive'] ? 'sensitive' : $profile['primary_type'];
         $targetConcern = $profile['primary_concern'];
+        if ($profile['is_sensitive']) {
+            $stepCandidates = array_values(array_filter($stepCandidates, static function (array $p): bool {
+                return (bool) ($p['is_gentle_fallback'] ?? false)
+                    || in_array('sensitive', (array) ($p['skin_types'] ?? []), true);
+            }));
+        }
 
         // Tầng 1: Khớp cả loại da lẫn vấn đề
         foreach ($stepCandidates as $p) {
@@ -750,7 +791,10 @@ class QuizEngineService
         // Tầng 2: Khớp loại da
         foreach ($stepCandidates as $p) {
             $types = (array) ($p['skin_types'] ?? []);
-            if (in_array($targetType, $types, true)) {
+            if (in_array($targetType, $types, true)
+                && ((bool) ($p['is_gentle_fallback'] ?? false)
+                    || in_array('soothing', (array) ($p['concerns'] ?? []), true))) {
+                $this->recordFallback($step, 'partial');
                 return $p;
             }
         }
@@ -760,12 +804,21 @@ class QuizEngineService
             $types = (array) ($p['skin_types'] ?? []);
             $isGentle = (bool) ($p['is_gentle_fallback'] ?? false);
 
-            if ($isGentle || in_array('all_skin_types', $types, true)) {
+            if ($isGentle || (in_array('all_skin_types', $types, true)
+                && in_array('soothing', (array) ($p['concerns'] ?? []), true))) {
+                $this->recordFallback($step, 'gentle');
                 return $p;
             }
         }
 
-        return $stepCandidates[0];
+        return null;
+    }
+
+    private function recordFallback(string $step, string $level): void
+    {
+        if (function_exists('do_action')) {
+            do_action('kleer_quiz_fallback_used', $step, $level);
+        }
     }
 
     private function resolveCatalog(bool $preferV4 = false): array
@@ -774,21 +827,16 @@ class QuizEngineService
             return $this->catalog;
         }
 
-        if ($this->repository instanceof QuizProductRepositoryInterface) {
-            return $this->repository->getQuizCatalog(
-                $preferV4 ? ['fallback_catalog' => 'v4'] : []
-            );
-        }
-
-        return $preferV4
-            ? QuizQuestions::getV4Catalog()
-            : QuizQuestions::getDefaultCatalog();
+        $repository = $this->repository instanceof QuizProductRepositoryInterface
+            ? $this->repository
+            : new WooCommerceProductRepository();
+        return $repository->getQuizCatalog(['version' => $preferV4 ? 'v4' : 'v1']);
     }
 
     private function buildProfileCode(string $type, string $concern, bool $isSensitive): string
     {
         if ($isSensitive) {
-            return 'sensitive_' . $concern;
+            return $type . '_sensitive';
         }
 
         return $type . '_' . $concern;

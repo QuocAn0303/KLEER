@@ -1,0 +1,21 @@
+{
+  "url": "http://localhost:8081/?rest_route=/kleer/v1/recommend",
+  "sample_count": 2,
+  "first_request_ms": 401.65,
+  "median_ms": 402.83,
+  "max_ms": 404.02,
+  "all_successful_complete_routines": false,
+  "all_below_300ms": false,
+  "samples": [
+    {
+      "status": 503,
+      "ms": 401.65,
+      "complete_routine": false
+    },
+    {
+      "status": 503,
+      "ms": 404.02,
+      "complete_routine": false
+    }
+  ]
+}

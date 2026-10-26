@@ -139,6 +139,9 @@ final class Plugin
 
         $this->cacheInvalidation = new CacheInvalidation(KleerCache::fromEnvironment());
         $this->cacheInvalidation->register();
+        foreach (['set_object_terms', 'created_term', 'edited_term', 'delete_term'] as $hook) {
+            add_action($hook, [$this->cacheInvalidation, 'invalidateProductCache']);
+        }
 
         $this->taxonomyRegistry = new TaxonomyRegistry();
         $this->taxonomyRegistry->register();

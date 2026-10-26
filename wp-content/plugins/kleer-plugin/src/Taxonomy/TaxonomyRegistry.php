@@ -151,7 +151,7 @@ class TaxonomyRegistry
     {
         if (!$this->isWooCommerceActive() && function_exists('current_user_can') && current_user_can('manage_options')) {
             echo '<div class="notice notice-warning is-dismissible"><p>'
-                . esc_html__('KLEER Plugin: WooCommerce chưa được kích hoạt. Ba thuộc tính pa_skin_type, pa_skin_concern, pa_routine_step sẽ được tạo khi WooCommerce được kích hoạt; trong thời gian chờ, Quiz dùng catalog fallback.', 'kleer-plugin')
+                . esc_html__('KLEER Plugin: WooCommerce chưa được kích hoạt. Ba thuộc tính pa_skin_type, pa_skin_concern, pa_routine_step sẽ được tạo khi WooCommerce được kích hoạt; trong thời gian chờ, API Quiz báo dịch vụ chưa sẵn sàng và không dùng ID sản phẩm mẫu.', 'kleer-plugin')
                 . '</p></div>';
         }
     }

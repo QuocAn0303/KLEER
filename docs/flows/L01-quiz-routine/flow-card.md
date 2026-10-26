@@ -5,10 +5,13 @@
 - **Mã task liên quan:** `L01-G1-01`, `L01-G2-01`, `L01-G3-01`, `L01-G4-01`, `L01-G5-01..06`, `L01-G6-01`, `L01-G7-01`, `L01-G8-01`
 - **Chủ sở hữu luồng (Flow Owner):** Bùi Hiếu Nhân (Plugin Dev 1 - Quiz Backend, Taxonomy, REST)
 - **Phối hợp:** Huỳnh Ngọc Nhã Uyên (Theme Dev 2 - Frontend SPA), Lê Nguyễn Quốc An (Scrum Master & DevOps), Nguyễn Tấn Phát (PO & BA), Nguyễn Ngọc Thảo Uyên (QA)
-- **Trạng thái:** SẴN SÀNG PROMPT (Gate G3 Approved)
+- **Trạng thái:** DỰ THẢO — CHỜ PO PHÁT VÀ SM AN DUYỆT G3
+- **Xác nhận ngày 26/10/2026:** Nhân cho biết G3 chưa được phê duyệt. Các trọng số và ca nghiệm thu bên dưới là đầu vào dự thảo để chuẩn bị kỹ thuật, chưa phải quyết định PO.
 - **Thư mục tài liệu:** `docs/flows/L01-quiz-routine/`
 
 ---
+
+> Phạm vi bản Flow Card này là v1 legacy 5 câu. develop còn có bản nháp v4 6 câu với version=v4; giữ nguyên thuật toán và missing_steps/warnings của v4, không dùng 384 ca v1 để tuyên bố nghiệm thu v4. PO cần chốt bản dùng chính thức.
 
 ## 1. Mục tiêu & Giá trị nghiệp vụ (Business Objective)
 
@@ -83,8 +86,9 @@ $scores = [
    - Nếu `sensitivity >= 3`, gắn cờ `is_sensitive = true`.
 2. **Xác định Vấn đề chính (`primary_concern`):**
    - Vấn đề có điểm cao nhất trong nhóm `concerns`.
-3. **Mã hồ sơ da (`skin_profile`):**
-   - Được ghép từ loại da và vấn đề chính: Ví dụ `oily_acne` (Da dầu mụn), `dry_aging` (Da khô lão hóa), `sensitive_soothing` (Da nhạy cảm phục hồi), `combination_dark_spots` (Da hỗn hợp thâm sạm).
+3. **Mã hồ sơ da (`skin_profile`) đề xuất chờ PO chốt:**
+   - Da không nhạy cảm: `<loại_da>_<vấn_đề>`; da nhạy cảm: `<loại_da>_sensitive` để khớp ca nghiệm thu 2 (`dry_sensitive`). Vấn đề ưu tiên vẫn nằm trong nhãn và danh sách `concerns`.
+   - Khi bằng điểm, ưu tiên theo thứ tự khai báo: oily, dry, combination, normal. Đây là quy tắc xác định của bản triển khai dự thảo, cần PO chấp thuận.
 
 ---
 
@@ -107,7 +111,11 @@ Hệ thống sử dụng 3 Custom Taxonomies của WooCommerce để lọc sản
 1. **Ưu tiên 1 (Exact Match):** Sản phẩm khớp chính xác cả 3 điều kiện: `pa_routine_step` + `pa_skin_type` + `pa_skin_concern`.
 2. **Ưu tiên 2 (Partial Match):** Nếu không có sản phẩm khớp cả vấn đề da, truy vấn sản phẩm khớp: `pa_routine_step` + `pa_skin_type` + `pa_skin_concern: soothing / all`.
 3. **Ưu tiên 3 (Safe Fallback):** Nếu vẫn không tìm thấy, hệ thống tự động gán sản phẩm dịu nhẹ quốc dân: `pa_routine_step` + `pa_skin_type: all_skin_types` (ví dụ: Sữa rửa mặt Cetaphil Gentle, Dưỡng chất Vichy Mineral 89, Kem chống nắng Cell Fusion C).
-4. **Cam kết DoD:** Luôn trả về đủ **3 hoặc 4 sản phẩm** tương ứng với lựa chọn ở `q5_routine_goal`.
+4. **Điều kiện để nghiệm thu:** Kho phải có ít nhất một sản phẩm dịu nhẹ, còn hàng, đã xuất bản cho mỗi bước. Khi đủ dữ liệu, trả đủ **3 hoặc 4 sản phẩm** theo `q5_routine_goal`. Kho rỗng hoặc thiếu sản phẩm an toàn trả lỗi JSON `503 kleer_catalog_incomplete`, không trả HTTP 200 với danh sách thiếu, không dùng ID mẫu. Ngoại lệ này cần PO duyệt trước khi đóng task fallback.
+
+### Tương thích tên taxonomy trong triển khai
+
+Sau cập nhật develop, giữ registry `TaxonomyRegistry` của nhóm: dùng ba thuộc tính WooCommerce `pa_skin_type`, `pa_skin_concern`, `pa_routine_step`, được tạo qua WooCommerce API ở admin_init. Không đăng ký thêm một bộ taxonomy trùng. Adapter v1 vẫn đọc được dữ liệu legacy skin_type/skin_concern/routine_step nếu đã tồn tại. WooCommerce chưa có thì registry chờ, không tạo product post type giả.
 
 ---
 
@@ -121,7 +129,7 @@ Hệ thống sử dụng 3 Custom Taxonomies của WooCommerce để lọc sản
   - `Origin: <origin-in-whitelist>`
 - **Request Schema:** `wp-content/plugins/kleer-plugin/schemas/quiz-submission.schema.json`
 - **Response Schema:** `wp-content/plugins/kleer-plugin/schemas/quiz-submission-response.schema.json`
-- **Thời gian phản hồi cam kết:** `< 300ms` (được cache tầng application qua `KleerCache` nhóm `kleer_quiz`).
+- **Mục tiêu phản hồi:** `< 300ms` cho toàn bộ HTTP request thành công, chưa nghiệm thu. Catalog được cache qua `KleerCache` nhóm `kleer_products` tối đa 60 giây; không cache response chứa mã phiên.
 
 ---
 
@@ -132,7 +140,8 @@ Hệ thống sử dụng 3 Custom Taxonomies của WooCommerce để lọc sản
 | `400 Bad Request` | `kleer_invalid_payload` | Payload thiếu trường hoặc sai định dạng schema | Trả JSON Pointer chỉ rõ vị trí lỗi để Frontend highlight |
 | `403 Forbidden` | `kleer_cors_forbidden` | Origin không nằm trong whitelist cấu hình `.env` | Chặn kết nối từ trang không được phép |
 | `403 Forbidden` | `rest_cookie_invalid_nonce` | CSRF Nonce hết hạn | Trả mã yêu cầu Frontend làm mới nonce |
-| `500 Internal Error`| `kleer_quiz_engine_error` | Lỗi truy vấn cơ sở dữ liệu | Kích hoạt Fallback tĩnh, ghi log an toàn |
+| `503 Service Unavailable` | `kleer_catalog_incomplete` / `kleer_woocommerce_unavailable` / `kleer_catalog_unavailable` | Thiếu sản phẩm an toàn, thiếu WooCommerce hoặc không đọc được kho | Trả JSON có thông báo và missing_steps; không giả sản phẩm |
+| `500 Internal Error`| `kleer_quiz_engine_error` | Lỗi nội bộ không dự kiến | Trả thông báo chung, không lộ chi tiết máy chủ |
 
 ---
 

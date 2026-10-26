@@ -836,7 +836,7 @@ $defaultCatalog = QuizQuestions::getDefaultCatalog();
 assert_true(count($defaultCatalog) >= 15, 'Default catalog contains at least 15 skincare products');
 
 // 15.2. QuizEngineService: Happy Path (Oily & Acne -> Intensive 4-step routine)
-$quizService = new QuizEngineService();
+$quizService = new QuizEngineService(QuizQuestions::getDefaultCatalog());
 $oilyPayload = [
     'session_id' => '11111111-2222-4333-8444-555555555555',
     'consent' => ['policy_accepted' => true, 'marketing_opt_in' => false],
@@ -869,7 +869,7 @@ $dryPayload = [
     ],
 ];
 $dryResult = $quizService->processSubmission($dryPayload);
-assert_true($dryResult['data']['skin_profile']['code'] === 'sensitive_hydration', 'Sensitive + Dehydration maps to sensitive_hydration');
+assert_true($dryResult['data']['skin_profile']['code'] === 'dry_sensitive', 'Dry sensitive profile matches Flow Card acceptance case 2');
 assert_true(count($dryResult['data']['recommended_products']) === 3, 'Minimal routine recommends exactly 3 products');
 $drySteps = array_column($dryResult['data']['recommended_products'], 'routine_step');
 assert_true($drySteps === ['cleanser', 'moisturizer', 'sunscreen'], 'Minimal routine omits treatment step');
@@ -894,7 +894,7 @@ $baseRepository = new class implements \Kleer\Contracts\ProductRepositoryInterfa
         return [];
     }
 };
-$baseRepositoryService = new QuizEngineService($baseRepository);
+$baseRepositoryService = new QuizEngineService($baseRepository, QuizQuestions::getDefaultCatalog());
 $baseRepositoryResult = $baseRepositoryService->processSubmission($oilyPayload);
 assert_true($baseRepositoryResult['status'] === 'ok', 'Base ProductRepositoryInterface falls back without calling getQuizCatalog()');
 
@@ -994,7 +994,7 @@ assert_true($totalV4Options === 27, 'v4 questions define exactly 27 options in t
 $v4Catalog = QuizQuestions::getV4Catalog();
 assert_true(count($v4Catalog) === 30, 'v4 catalog contains exactly 30 reference SKUs');
 
-$v4Service = new QuizEngineService();
+$v4Service = new QuizEngineService(QuizQuestions::getV4Catalog());
 
 // TC01: Oily, not sensitive, Acne, 4 steps, Q6=6B
 $tc01 = $v4Service->processSubmissionV4([
@@ -1329,7 +1329,7 @@ assert_true($v4MissingCaught, 'Missing question in v4 payload throws InvalidArgu
 
 // 19. Testing QuizProductRepository & Product Model (L01-G5-05)
 echo "\n19. Testing QuizProductRepository & Product Model Architecture...\n";
-$wcRepo = new \Kleer\Repositories\WooCommerceProductRepository();
+$wcRepo = new \Kleer\Repositories\WooCommerceProductRepository(null, QuizQuestions::getDefaultCatalog());
 assert_true($wcRepo instanceof \Kleer\Contracts\QuizProductRepositoryInterface, 'WooCommerceProductRepository implements QuizProductRepositoryInterface');
 assert_true($wcRepo instanceof \Kleer\Contracts\ProductRepositoryInterface, 'WooCommerceProductRepository preserves ProductRepositoryInterface hierarchy');
 assert_true(method_exists($wcRepo, 'findFeatured'), 'findFeatured() method is available');

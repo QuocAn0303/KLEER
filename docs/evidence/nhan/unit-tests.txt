@@ -1,0 +1,346 @@
+Running KLEER Plugin Architecture Tests...
+
+0. Testing Plugin Bootstrap, Constants & Lifecycle Hooks...
+  [PASS] KLEER_PLUGIN_VERSION is 0.1.0
+  [PASS] KLEER_MIN_PHP_VERSION is 8.2
+  [PASS] KLEER_PLUGIN_FILE is defined
+  [PASS] KLEER_PLUGIN_DIR is defined
+  [PASS] Activation hook is registered for plugin file
+  [PASS] Deactivation hook is registered for plugin file
+  [PASS] plugins_loaded hook is registered
+
+1. Testing Autoloader & Model Layer (Product)...
+  [PASS] Autoloader successfully loads Kleer\Models\Product
+  [PASS] Product id is 101
+  [PASS] Product name matches
+  [PASS] Product price is 250000
+  [PASS] Product::toArray() returns valid array
+
+2. Testing Controller Layer (HealthController)...
+  [PASS] Autoloader successfully loads Kleer\Controllers\HealthController
+  [PASS] Health status is ok
+  [PASS] Health service is kleer-plugin
+
+3. Testing Service & Contract Layer (ProductService)...
+  [PASS] Autoloader successfully loads ProductRepositoryInterface
+  [PASS] Autoloader successfully loads ProductService
+  [PASS] ProductService returns 3 items when requested 3
+  [PASS] Item name matches mock repository
+  [PASS] ProductService clamps limit to maximum 20
+  [PASS] ProductService clamps limit to minimum 1
+
+4. Testing Endpoints Layer (HealthEndpoints)...
+  [PASS] Autoloader successfully loads HealthEndpoints
+  [PASS] HealthEndpoints hooks into rest_api_init
+  [PASS] register_rest_route was called
+  [PASS] Route kleer/v1 /health is registered
+  [PASS] HTTP method is GET
+  [PASS] Permission callback is __return_true
+  [PASS] Endpoint callback returns status ok
+
+5. Testing Plugin Singleton & Lifecycle Methods...
+  [PASS] Autoloader successfully loads Kleer\Plugin
+  [PASS] Plugin::getInstance() implements Singleton pattern
+  [PASS] Plugin constructor is private (enforces singleton)
+  [PASS] Plugin::activate() flushes rewrite rules
+  [PASS] Plugin::deactivate() flushes rewrite rules
+  [PASS] Plugin::deactivate() cleans temporary transient cache
+  [PASS] plugins_loaded callback registers Plugin without error
+
+6. Testing Theme Independence...
+  [PASS] Plugin production code has zero references to theme
+
+7. Testing Security Case (defined ABSPATH || exit)...
+  [PASS] kleer-plugin.php contains defined ABSPATH || exit;
+  [PASS] src/Plugin.php contains defined ABSPATH || exit;
+  [PASS] Every new Support/Concerns file carries the direct-access guard
+
+8. Testing CORS Policy (whitelist & header generation)...
+  [PASS] Whitelisted origin is allowed
+  [PASS] Unlisted origin is rejected
+  [PASS] Missing origin is rejected (same-origin requests unaffected)
+  [PASS] Allow-Origin echoes the whitelisted origin
+  [PASS] No CORS headers emitted for a rejected origin
+  [PASS] Vary header is always emitted (cache poisoning guard)
+  [PASS] Credentials header absent by default
+  [PASS] Max-Age is not sent on a normal request
+  [PASS] Preflight carries Max-Age 86400
+  [PASS] Origin comparison ignores case and trailing slash
+  [PASS] Resolved origin is normalised before being echoed
+  [PASS] Wildcard policy allows any origin
+  [PASS] Wildcard echoes * when credentials are off
+  [PASS] Wildcard response carries no Max-Age before preflight
+  [PASS] Wildcard + credentials echoes the concrete origin instead of *
+  [PASS] Wildcard + credentials never emits a literal * (invalid per spec with credentials)
+  [PASS] Wildcard + credentials emits Allow-Credentials
+  [PASS] Credentials header sent for explicit origin when enabled
+  [PASS] OPTIONS is detected as preflight (case-insensitive)
+  [PASS] POST is not a preflight request
+  [PASS] Header allow-list is case-insensitive
+  [PASS] Unlisted request header is rejected
+  [PASS] Preflight filters requested headers against the allow-list
+  [PASS] Empty requested headers yield an empty allow list
+  [PASS] X-KLEER-Session is allowed by default
+  [PASS] Empty configuration denies every cross-origin request
+  [PASS] Empty configuration emits no CORS headers
+  [PASS] fromEnvironment() builds a policy without explicit configuration
+  [PASS] Environment variable populates the origin allow-list
+  [PASS] Environment allow-list is not open-ended
+  [PASS] KLEER_CORS_ALLOW_CREDENTIALS is parsed as boolean
+  [PASS] Policy headers are merged into the WordPress core allow-list
+
+9. Testing CORS Service (WordPress hooks & preflight)...
+  [PASS] CORS hooks into rest_pre_serve_request
+  [PASS] CORS hooks into rest_pre_dispatch
+  [PASS] CORS hooks into rest_allowed_cors_headers
+  [PASS] Core CORS removal is hooked on rest_api_init
+  [PASS] Core CORS removal is hooked exactly once
+  [PASS] Core CORS removal runs after WordPress attaches its own handler (priority > 10)
+  [PASS] WordPress core permissive CORS sender is removed
+  [PASS] Serve hook emits Allow-Origin for allowed origin
+  [PASS] Serve hook advertises allowed methods
+  [PASS] Serve hook emits Vary
+  [PASS] Serve hook emits nothing for a rejected origin
+  [PASS] Preflight returns a REST response
+  [PASS] Preflight answers HTTP 204
+  [PASS] Preflight emits Allow-Origin
+  [PASS] Preflight allow-headers are filtered (X-Evil stripped)
+  [PASS] Preflight caches with Max-Age
+  [PASS] Preflight from a rejected origin is handed back to WordPress
+  [PASS] Non-OPTIONS requests are never short-circuited
+  [PASS] An earlier filter result is never overwritten
+
+10. Testing JSON Schema Validation (schema integrity)...
+  [PASS] ValidationResult::valid() is valid
+  [PASS] ValidationResult::invalid() is invalid
+  [PASS] Quiz submission schema file loads from schemas/
+  [PASS] A complete quiz submission passes validation
+  [PASS] Missing required field is rejected
+  [PASS] Missing required field is reported at the object pointer
+  [PASS] Missing required field names the field
+  [PASS] ValidationResult counts errors
+  [PASS] Wrong JSON type is rejected
+  [PASS] Type error points at /answers
+  [PASS] Type error is tagged with the "type" keyword
+  [PASS] additionalProperties:false rejects unknown fields
+  [PASS] session_id failing the pattern is rejected
+  [PASS] Pattern error points at /session_id
+  [PASS] Nested array errors keep an exact JSON Pointer
+  [PASS] Nested object required-field error points at /consent
+  [PASS] maxItems is enforced on the answers array
+  [PASS] minItems is enforced on the answers array
+  [PASS] oneOf answer accepts int
+  [PASS] oneOf answer accepts float
+  [PASS] oneOf answer accepts bool
+  [PASS] oneOf answer accepts array
+  [PASS] oneOf rejects a malformed answer payload
+  [PASS] maxLength is enforced on nested strings
+  [PASS] BCP 47 locale pattern is enforced
+  [PASS] enum is enforced on context.device
+  [PASS] Response schema rejects a negative price
+  [PASS] A well-formed quiz response passes validation
+  [PASS] Unsupported schema keywords throw instead of silently passing (fail-closed)
+  [PASS] Missing schema file throws a RuntimeException
+  [PASS] Unknown JSON type throws instead of silently passing
+  [PASS] JSON Pointer escaping is RFC 6901 compliant
+
+11. Testing ValidatesJsonPayload Trait (Controller boundary)...
+  [PASS] Valid JSON body returns the normalised payload array
+  [PASS] Returned payload preserves the session id
+  [PASS] Invalid JSON body returns a WP_Error
+  [PASS] WP_Error uses the kleer_invalid_payload code
+  [PASS] WP_Error data carries HTTP status 400
+  [PASS] WP_Error data carries a machine-readable error list
+  [PASS] Each error in the list carries a JSON Pointer
+  [PASS] Empty body is rejected because required fields are missing
+  [PASS] Malformed JSON is rejected, not thrown
+
+12. Testing Plugin Integration (L01-G6-01 wiring)...
+  [PASS] Plugin::register() boots the CORS service
+  [PASS] CORS is active after plugins_loaded fires
+  [PASS] Booted CORS service exposes KLEER headers to WordPress core
+  [PASS] Autoloader exposes the ValidatesJsonPayload trait to Controllers
+
+13. Testing WooCommerce HPOS Compatibility...
+  [PASS] HPOS feature custom_order_tables is declared
+  [PASS] At least one compatibility feature is declared
+  [PASS] Compatibility is declared on before_woocommerce_init
+  [PASS] declareCompatibility() is a no-op when WooCommerce is absent
+  [PASS] Cart/checkout declaration is a no-op when WooCommerce is absent
+  [PASS] declareCompatibility() succeeds when WooCommerce is present
+  [PASS] Exactly one compatibility declaration is sent to WooCommerce
+  [PASS] HPOS is the feature declared to WooCommerce
+  [PASS] HPOS is declared as compatible (not merely experimental)
+  [PASS] Cart and checkout blocks are both declared
+
+14. Testing Cache Invalidation Hooks...
+  [PASS] Cache invalidation hooks into save_post_product
+  [PASS] Cache invalidation hooks into deleted_post
+  [PASS] Cache invalidation hooks into woocommerce_update_product
+  [PASS] Cache invalidation hooks into updated_option
+  [PASS] Cache invalidation hooks into deleted_option
+  [PASS] Cache invalidation hooks into woocommerce_new_product
+  [PASS] Cache invalidation hooks into woocommerce_delete_product
+  [PASS] Cache key includes the group so groups can be flushed separately
+  [PASS] Same key in different groups does not collide
+  [PASS] Slashes in keys are namespaced correctly
+  [PASS] Global groups are deduplicated
+  [PASS] Non-persistent group is registered
+  [PASS] Multiple non-persistent groups can be registered at once
+  [PASS] set() reports failure when Redis is unreachable
+  [PASS] get() returns a cache miss when Redis is unreachable
+  [PASS] Availability is reported as false when Redis is unreachable
+  [PASS] A reason is recorded for diagnostics
+  [PASS] Hit rate is zero before any traffic
+  [PASS] Miss counter is zero before any traffic
+  [PASS] Instances do not share connection state
+  [PASS] Plugin boots the HPOS compatibility layer
+  [PASS] Plugin boots the cache invalidation layer
+
+15. Testing Skin Quiz Engine, Safe Fallback & Endpoints...
+  [PASS] QuizQuestions defines exactly 5 core questions
+  [PASS] All 5 question keys exist
+  [PASS] Default catalog contains at least 15 skincare products
+  [PASS] QuizEngineService returns status ok
+  [PASS] Oily + Acne answers map to code oily_acne
+  [PASS] Intensive routine recommends 4 products
+  [PASS] 4 steps follow cleanser -> treatment -> moisturizer -> sunscreen
+  [PASS] Dry sensitive profile matches Flow Card acceptance case 2
+  [PASS] Minimal routine recommends exactly 3 products
+  [PASS] Minimal routine omits treatment step
+  [PASS] Safe Fallback ensures 4 products even with no exact tag match
+  [PASS] Fallback product id is returned correctly
+  [PASS] Base ProductRepositoryInterface falls back without calling getQuizCatalog()
+  [PASS] Generated quiz output passes quiz-submission-response.schema.json
+  [PASS] Valid submission returns WP_REST_Response
+  [PASS] Valid submission responds HTTP 200
+  [PASS] Invalid submission returns WP_Error
+  [PASS] Error code is kleer_invalid_payload
+  [PASS] Error status is 400
+  [PASS] Declined policy consent is rejected by the backend
+  [PASS] Declined consent returns HTTP 400
+  [PASS] version=v4 query param is accepted
+  [PASS] version=v4 query param routes to the v4 engine
+  [PASS] Unsupported version query param is rejected
+  [PASS] Unsupported version returns kleer_invalid_version
+  [PASS] Unsupported version returns HTTP 400
+  [PASS] SkinQuizEndpoints hooks into rest_api_init
+  [PASS] Public access permission callback returns true
+
+16. Testing TaxonomyRegistry Idempotency & Schema Mapping...
+  [PASS] TaxonomyRegistry defines exactly 3 taxonomy slugs
+  [PASS] pa_skin_type taxonomy is defined
+  [PASS] pa_skin_concern taxonomy is defined
+  [PASS] pa_routine_step taxonomy is defined
+  [PASS] dryRunSchemaMap returns status dry_run_ready
+  [PASS] dryRunSchemaMap maps all 3 taxonomies
+  [PASS] pa_skin_type has show_in_rest enabled
+  [PASS] pa_skin_type contains 6 default terms
+  [PASS] pa_skin_concern contains 6 default terms
+  [PASS] pa_routine_step contains 7 default terms
+  [PASS] WooCommerce attribute slug keeps underscores so taxonomy stays pa_skin_type
+  [PASS] WooCommerce routine_step attribute slug stays pa_routine_step
+  [PASS] TaxonomyRegistry registers into init hook
+  [PASS] TaxonomyRegistry registers admin_init hook
+  [PASS] TaxonomyRegistry registers admin notices hook
+
+17. Testing QuizEngineService v4 Draft Scoring & All 11 Workbook Test Cases...
+  [PASS] v4 questions define exactly 6 questions (Q1..Q6)
+  [PASS] v4 questions define exactly 27 options in total
+  [PASS] v4 catalog contains exactly 30 reference SKUs
+  [PASS] TC01 primary skin type is oily
+  [PASS] TC01 sensitivity flag is false
+  [PASS] TC01 primary concern is acne
+  [PASS] TC01 recommends Cleanser #1, Toner #15, Sunscreen #28
+  [PASS] TC01 marks makeup_remover as missing SKU
+  [PASS] TC02 primary skin type is dry
+  [PASS] TC02 primary concern is aging
+  [PASS] TC02 retains Sunscreen #25 despite Q6=6C because concern is aging
+  [PASS] TC03 primary skin type is sensitive
+  [PASS] TC03 sensitivity flag is true
+  [PASS] TC03 recommends Cleanser #6, Toner #9, Serum #21
+  [PASS] TC04 primary skin type is combination
+  [PASS] TC04 recommends Cleanser #8, Toner #12, Serum #23, Sunscreen #26
+  [PASS] TC05 primary skin type is normal
+  [PASS] TC05 recommends Cleanser #5, Toner #10, Serum #19
+  [PASS] TC06 sensitivity flag is true
+  [PASS] TC06 excludes Some By Mi (#15) with strong actives and chooses safe Thayers (#10)
+  [PASS] TC07 tie-break prioritises Dry over Oily
+  [PASS] TC07 recommends Cleanser #5, Toner #10, Serum #23
+  [PASS] TC08 sensitivity flag is true
+  [PASS] TC08 falls back to safe Serum #21 when all dark spots serums have strong actives
+  [PASS] TC09 recommends Cleanser #1, Toner #15, Serum #16, Sunscreen #28
+  [PASS] TC10 drops sunscreen when Q6=6C and concern is acne
+  [PASS] TC11 minimal 2-step routine selects Cleanser #5 and Serum #19
+  [PASS] Generated v4 quiz output passes quiz-submission-response.schema.json
+  [PASS] v4 uses the injected repository catalog instead of hardcoded IDs
+  [PASS] v4 without matching SKUs returns an empty product list
+  [PASS] v4 without matching SKUs explains the gap in warnings
+  [PASS] v4 response with zero products passes the shared response schema
+
+18. Testing Business Validation & Machine-Readable Errors...
+  [PASS] Missing v1 question error message is clear
+  [PASS] Missing question in v1 payload throws InvalidArgumentException
+  [PASS] Duplicate question error message explains 1 answer per question
+  [PASS] Duplicate question in payload throws InvalidArgumentException
+  [PASS] Invalid option error message names the invalid option
+  [PASS] Invalid option in payload throws InvalidArgumentException
+  [PASS] Missing v4 question error message is clear
+  [PASS] Missing question in v4 payload throws InvalidArgumentException
+
+19. Testing QuizProductRepository & Product Model Architecture...
+  [PASS] WooCommerceProductRepository implements QuizProductRepositoryInterface
+  [PASS] WooCommerceProductRepository preserves ProductRepositoryInterface hierarchy
+  [PASS] findFeatured() method is available
+  [PASS] getQuizCatalog() method is available
+  [PASS] getQuizCatalog returns at least 15 skincare products in offline mode
+  [PASS] Product model preserves ID
+  [PASS] Product model preserves name
+  [PASS] Product model preserves price
+  [PASS] Product model toArray serialises correctly
+
+Summary: 259 tests, 0 failures.
+All architecture tests PASSED!
+
+16. Nhan: independent matrix, exhaustive combinations and failure cases
+  [PASS] v1 production mode rejects missing WooCommerce instead of using fixture IDs
+  [PASS] v4 production mode rejects missing WooCommerce instead of using fixture IDs
+  [PASS] Default repository requires live WooCommerce or an explicitly injected test catalog
+  [PASS] Reference matrix q1_skin_feeling/tight_dry
+  [PASS] Reference matrix q1_skin_feeling/greasy_all
+  [PASS] Reference matrix q1_skin_feeling/oily_tzone
+  [PASS] Reference matrix q1_skin_feeling/comfortable
+  [PASS] Reference matrix q2_pore_sebum/large_pores
+  [PASS] Reference matrix q2_pore_sebum/normal_pores
+  [PASS] Reference matrix q2_pore_sebum/tzone_only
+  [PASS] Reference matrix q2_pore_sebum/flaky_rough
+  [PASS] Reference matrix q3_sensitivity/very_often
+  [PASS] Reference matrix q3_sensitivity/sometimes
+  [PASS] Reference matrix q3_sensitivity/rarely_never
+  [PASS] Reference matrix q4_main_concern/acne_blemish
+  [PASS] Reference matrix q4_main_concern/dark_spots
+  [PASS] Reference matrix q4_main_concern/dehydration
+  [PASS] Reference matrix q4_main_concern/anti_aging
+  [PASS] Reference matrix q5_routine_goal/minimal
+  [PASS] Reference matrix q5_routine_goal/intensive
+  [PASS] All 384 combinations match independent draft matrix, 3/4 steps and schema for full and gentle-only catalogs
+  [PASS] Incomplete inventory returns controlled 503, never partial/fake HTTP 200
+  [PASS] Stock shortage has stable error code
+  [PASS] Incomplete inventory returns controlled 503, never partial/fake HTTP 200
+  [PASS] Stock shortage has stable error code
+  [PASS] Sensitive skin never falls back to arbitrary incompatible product
+  [PASS] Reject missing with HTTP 400
+  [PASS] Reject duplicate with HTTP 400
+  [PASS] Reject unknown with HTTP 400
+  [PASS] Reject multiple with HTTP 400
+  [PASS] Reject no_consent with HTTP 400
+  [PASS] Repository uses four batched SELECTs and excludes unavailable, hidden and variable products
+  [PASS] Returned IDs/prices come from database, not fixture IDs
+  [PASS] Reader accepts canonical and legacy pa_* terms
+  [PASS] Database errors become a generic availability error
+  [PASS] WordPress null headers allow anonymous server-side requests
+  [PASS] Unapproved origin or supplied bad nonce receives 403
+  [PASS] Unapproved origin or supplied bad nonce receives 403
+  [PASS] Same-origin request with valid nonce is accepted
+
+Nhan verification: 298 assertions, 0 failures; 384 combinations x 2 catalogs.
