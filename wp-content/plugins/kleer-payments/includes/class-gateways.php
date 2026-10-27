@@ -52,6 +52,11 @@ class Gateways {
 
 		$gateways[] = $this->bank_account->gateway_definition();
 
+		if ( class_exists( 'WC_Payment_Gateway' ) ) {
+			require_once KLEER_PAYMENTS_DIR . 'includes/class-vnpay-gateway.php';
+			$gateways[] = VNPay_Gateway::class;
+		}
+
 		return $gateways;
 	}
 
