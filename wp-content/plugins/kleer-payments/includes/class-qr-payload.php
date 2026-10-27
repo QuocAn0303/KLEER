@@ -17,9 +17,14 @@ defined( 'ABSPATH' ) || exit;
 class QR_Payload {
 
 	/**
-	 * GUID cua he thong VietQR / NAPAS.
+	 * AID cua NAPAS trong tag 38 (VietQR - chuyen nhanh NAPAS 247).
 	 */
-	public const GUID = '9704360000';
+	public const GUID = 'A000000727';
+
+	/**
+	 * Dich vu chuyen nhanh den tai khoan.
+	 */
+	public const SERVICE_CODE = 'QRIBFTTA';
 
 	/**
 	 * 01 = static, 11 = dynamic 1 lan, 12 = dynamic nhieu lan (mac dinh theo don hang).
@@ -32,11 +37,6 @@ class QR_Payload {
 	public const CURRENCY_VND = '704';
 
 	/**
-	 * MCC cua ban le / thuong mai dien tu.
-	 */
-	public const MCC = '5992';
-
-	/**
 	 * Ma quoc gia VN.
 	 */
 	public const COUNTRY_VN = 'VN';
@@ -44,9 +44,6 @@ class QR_Payload {
 	/**
 	 * Gioi han do dai theo chuan EMVCo.
 	 */
-	public const MAX_MERCHANT_NAME = 25;
-	public const MAX_CITY = 15;
-	public const MAX_REFERENCE = 25;
 
 	/**
 	 * Do dai nguoi dung cho noi dung chuyen khoan.
@@ -139,12 +136,12 @@ class QR_Payload {
 	}
 
 	/**
-	 * CRC-16/XMODEM: poly 0x1021, khoi tao 0x0000, khong reflect, khong xor cuoi.
+	 * CRC-16/CCITT-FALSE (ISO/IEC 13239): poly 0x1021, khoi tao 0xFFFF, khong reflect, khong xor cuoi.
 	 *
-	 * VietQR yeu cau CRC 4 ky tu hex viet hoa dinh ngay cuoi chuoi.
+	 * Dung theo dac ta NAPAS 247: CRC 4 ky tu hex viet hoa dinh ngay cuoi chuoi.
 	 */
 	public function crc16( string $data ): string {
-		$crc = 0x0000;
+		$crc = 0xFFFF;
 		$len = strlen( $data );
 
 		for ( $i = 0; $i < $len; $i++ ) {
@@ -170,26 +167,25 @@ class QR_Payload {
 	}
 
 	/**
-	 * Tao chuoi QR day du cho mot don hang.
+	 * Tao chuoi VietQR (NAPAS 247, chuyen den tai khoan) cho mot don hang.
 	 *
-	 * @param int    $amount_vnd So tien VND, phai la so nguyen duong.
-	 * @param string $reference   Ma tham chieu (ma don hang).
-	 * @param string $bank_bin    6 so BIN cua ngan hang.
-	 * @param string $bin_location 4 so ma vung cua ngan hang.
-	 * @param string $merchant_name Ten cua hang.
-	 * @param string $city          Thanh pho.
-	 * @param string $account_type  3 so, '000' la tai khoan thanh toan.
+	 * Cau truc: 00 (format) 01 (12 = dong) 38 (AID A000000727 / 01: BIN + so tai khoan /
+	 * 02: QRIBFTTA) 53 (704) 54 (so tien) 58 (VN) 62/08 (noi dung chuyen khoan) 63 (CRC).
+	 *
+	 * @param int    $amount_vnd       So tien VND, phai la so nguyen duong.
+	 * @param string $bank_bin         6 so BIN cua ngan hang thu huong.
+	 * @param string $account_number   So tai khoan thu huong (4-19 chu so).
+	 * @param string $transfer_content Noi dung chuyen khoan (toi da 25 ky tu).
 	 *
 	 * @return string Chuoi QR hoan chinh, ket thuc bang CRC 4 ky tu hex.
+	 *
+	 * @throws \InvalidArgumentException Khi tham so khong hop le.
 	 */
 	public function build(
 		int $amount_vnd,
-		string $reference,
 		string $bank_bin,
-		string $bin_location,
-		string $merchant_name,
-		string $city,
-		string $account_type = '000'
+		string $account_number,
+		string $transfer_content
 	): string {
 		if ( $amount_vnd <= 0 ) {
 			throw new \InvalidArgumentException(
@@ -197,37 +193,38 @@ class QR_Payload {
 			);
 		}
 
-		$bin      = $this->sanitize( $bank_bin );
-		$location = $this->sanitize( $bin_location );
-		$type     = $this->sanitize( $account_type );
+		$bin     = trim( $bank_bin );
+		$account = trim( $account_number );
 
-		if ( '' === $bin || '' === $location || '' === $type ) {
-			throw new \InvalidArgumentException( 'QR VietQR: thieu bank BIN, dia chi vung hoac loai tai khoan.' );
+		if ( 1 !== preg_match( '/^[0-9]{6}$/', $bin ) ) {
+			throw new \InvalidArgumentException( 'QR VietQR: Bank BIN phai gom dung 6 chu so.' );
 		}
 
-		// 26 - Merchant Account Information
-		$merchant_account = $this->tlv( '00', self::GUID )
-			. $this->tlv( '01', $bin )
-			. $this->tlv( '02', $location )
-			. $this->tlv( '03', $type );
+		if ( 1 !== preg_match( '/^[0-9]{4,19}$/', $account ) ) {
+			throw new \InvalidArgumentException( 'QR VietQR: so tai khoan phai gom 4-19 chu so.' );
+		}
 
-		// 62 - Additional Data, chua ma don de doi soat
-		$additional_data = $this->tlv(
-			'01',
-			$this->truncate( $this->sanitize( $reference ), self::MAX_REFERENCE )
-		);
+		$content = $this->truncate( $this->sanitize( $transfer_content ), self::MAX_TRANSFER_CONTENT );
+
+		// 38 - Merchant Account Information (NAPAS 247).
+		$beneficiary = $this->tlv( '00', $bin ) . $this->tlv( '01', $account );
+		$merchant    = $this->tlv( '00', self::GUID )
+			. $this->tlv( '01', $beneficiary )
+			. $this->tlv( '02', self::SERVICE_CODE );
 
 		$payload = $this->tlv( '00', '01' )
 			. $this->tlv( '01', self::INITIATION_DYNAMIC )
-			. $this->tlv( '26', $merchant_account )
-			. $this->tlv( '52', self::MCC )
+			. $this->tlv( '38', $merchant )
 			. $this->tlv( '53', self::CURRENCY_VND )
 			. $this->tlv( '54', (string) $amount_vnd )
-			. $this->tlv( '58', self::COUNTRY_VN )
-			. $this->tlv( '59', $this->truncate( $this->sanitize( $merchant_name ), self::MAX_MERCHANT_NAME ) )
-			. $this->tlv( '60', $this->truncate( $this->sanitize( $city ), self::MAX_CITY ) )
-			. $this->tlv( '62', $additional_data )
-			. '6304';
+			. $this->tlv( '58', self::COUNTRY_VN );
+
+		// 62/08 - Noi dung chuyen khoan hien san tren app ngan hang.
+		if ( '' !== $content ) {
+			$payload .= $this->tlv( '62', $this->tlv( '08', $content ) );
+		}
+
+		$payload .= '6304';
 
 		return $payload . $this->crc16( $payload );
 	}
