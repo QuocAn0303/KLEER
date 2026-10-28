@@ -59,6 +59,11 @@ class SMTP_Config {
 		$user   = defined( 'KLEER_SMTP_USER' ) ? (string) KLEER_SMTP_USER : (string) ( $preset['user'] ?? '' );
 		$pass   = defined( 'KLEER_SMTP_PASS' ) ? (string) KLEER_SMTP_PASS : '';
 
+		// Google hien App Password dang "xxxx xxxx xxxx xxxx"; bo khoang trang cho chac.
+		if ( 'gmail' === $provider ) {
+			$pass = (string) preg_replace( '/\s+/', '', $pass );
+		}
+
 		if ( ! in_array( $secure, array( 'tls', 'ssl', '' ), true ) ) {
 			$secure = 'tls';
 		}
