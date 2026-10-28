@@ -18,11 +18,21 @@ class Order_Email {
 	private const CID = 'kleer-order-qr';
 
 	/**
+	 * So anh san pham toi da nhung vao mot email (giu email nhe, tranh bi Gmail cat o 102 KB).
+	 */
+	private const MAX_THUMBS = 6;
+
+	/**
+	 * Dung luong toi da cua mot anh thu nho (byte).
+	 */
+	private const MAX_THUMB_BYTES = 40000;
+
+	/**
 	 * Du lieu inline can gan vao email dang gui (do phpmailer_init xu ly).
 	 *
-	 * @var array{png: string, alt: string}|null
+	 * @var array{inline: array<int, array{data: string, cid: string, name: string, mime: string}>, alt: string}|null
 	 */
-	private ?array $pending = null;
+	private static ?array $pending = null;
 
 	public function register(): void {
 		add_action( 'woocommerce_order_status_processing', array( $this, 'on_processing' ), 20, 2 );
@@ -78,15 +88,15 @@ class Order_Email {
 		$html = $this->render( $data );
 		$text = $this->plain_text( $data );
 
-		$this->pending = array(
-			'png' => $data['qr_png'],
-			'alt' => $text,
+		self::$pending = array(
+			'inline' => $data['inline'],
+			'alt'    => $text,
 		);
 
 		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
 		$sent    = wp_mail( $to, $data['subject'], $html, $headers );
 
-		$this->pending = null;
+		self::$pending = null;
 
 		if ( $sent ) {
 			$order->update_meta_data( $meta_key, gmdate( 'c' ) );
@@ -105,16 +115,16 @@ class Order_Email {
 	 * @param \PHPMailer\PHPMailer\PHPMailer $phpmailer PHPMailer.
 	 */
 	public function attach_inline( $phpmailer ): void {
-		if ( null === $this->pending ) {
+		if ( null === self::$pending ) {
 			return;
 		}
 
-		if ( '' !== $this->pending['png'] ) {
-			$phpmailer->addStringEmbeddedImage( $this->pending['png'], self::CID, 'ma-qr-tra-cuu.png', 'base64', 'image/png' );
+		foreach ( self::$pending['inline'] as $img ) {
+			$phpmailer->addStringEmbeddedImage( $img['data'], $img['cid'], $img['name'], 'base64', $img['mime'] );
 		}
 
 		// Ban text thuan: thu chi co HTML de bi cham diem spam hon thu multipart/alternative.
-		$phpmailer->AltBody = $this->pending['alt'];
+		$phpmailer->AltBody = self::$pending['alt'];
 	}
 
 	/**
@@ -134,19 +144,57 @@ class Order_Email {
 			$qr_png = ''; // URL qua dai hoac thieu GD: gui thu khong co QR, van co duong link.
 		}
 
+		$inline = array();
+		if ( '' !== $qr_png ) {
+			$inline[] = array(
+				'data' => $qr_png,
+				'cid'  => self::CID,
+				'name' => 'ma-qr-tra-cuu.png',
+				'mime' => 'image/png',
+			);
+		}
+
 		$items = array();
 		foreach ( $order->get_items() as $item ) {
+			$product = $item instanceof \WC_Order_Item_Product ? $item->get_product() : null;
+			$qty     = (int) $item->get_quantity();
+			$total   = (float) $order->get_line_total( $item, true, true );
+
+			$thumb_cid = '';
+			if ( $product && count( $items ) < self::MAX_THUMBS ) {
+				$thumb = $this->thumbnail( $product );
+				if ( null !== $thumb ) {
+					$thumb_cid = 'kleer-item-' . count( $items );
+					$inline[]  = array(
+						'data' => $thumb['data'],
+						'cid'  => $thumb_cid,
+						'name' => 'san-pham-' . count( $items ) . '.' . $thumb['ext'],
+						'mime' => $thumb['mime'],
+					);
+				}
+			}
+
 			$items[] = array(
-				'name'  => $item->get_name(),
-				'qty'   => (int) $item->get_quantity(),
-				'total' => (float) $order->get_line_total( $item, true, true ),
+				'name'      => $item->get_name(),
+				'sku'       => $product ? (string) $product->get_sku() : '',
+				'variation' => $this->variation_text( $item ),
+				'qty'       => $qty,
+				'unit'      => $qty > 0 ? $total / $qty : $total,
+				'total'     => $total,
+				'thumb_cid' => $thumb_cid,
 			);
+		}
+
+		$shipping_names = array();
+		foreach ( $order->get_shipping_methods() as $method ) {
+			$shipping_names[] = $method->get_name();
 		}
 
 		$on_hold = 'on-hold' === $stage;
 
 		return array(
 			'store'        => $store,
+			'store_short'  => (string) strtok( $store, ' ' ),
 			'stage'        => $stage,
 			'subject'      => $on_hold
 				? sprintf( '[%s] Đã nhận đơn hàng #%s - chờ thanh toán', $store, $number )
@@ -170,8 +218,70 @@ class Order_Email {
 			'lookup_url'   => $lookup,
 			'qr_png'       => $qr_png,
 			'qr_cid'       => self::CID,
+			'inline'       => $inline,
+			'status_label' => $on_hold ? 'Chờ thanh toán' : 'Đã xác nhận',
+			'status_tone'  => $on_hold ? 'wait' : 'ok',
+			'shipping_via' => implode( ', ', $shipping_names ),
+			'note'         => (string) $order->get_customer_note(),
+			'support'      => (string) get_option( 'admin_email' ),
 			'bank'         => $this->bank_info( $order ),
 		);
+	}
+
+
+	/**
+	 * Doc anh thu nho san pham tu o dia (nhung inline, khong phu thuoc URL cong khai).
+	 *
+	 * @return array{data: string, ext: string, mime: string}|null
+	 */
+	private function thumbnail( \WC_Product $product ): ?array {
+		$image_id = (int) $product->get_image_id();
+		if ( $image_id <= 0 ) {
+			return null;
+		}
+
+		$full = get_attached_file( $image_id );
+		if ( ! is_string( $full ) || '' === $full ) {
+			return null;
+		}
+
+		$path  = $full;
+		$sized = image_get_intermediate_size( $image_id, 'thumbnail' );
+		if ( is_array( $sized ) && ! empty( $sized['file'] ) ) {
+			$path = trailingslashit( dirname( $full ) ) . $sized['file'];
+		}
+
+		if ( ! is_readable( $path ) || filesize( $path ) > self::MAX_THUMB_BYTES ) {
+			return null;
+		}
+
+		$type = wp_check_filetype( $path );
+		if ( ! in_array( $type['type'], array( 'image/jpeg', 'image/png', 'image/gif' ), true ) ) {
+			return null;
+		}
+
+		$data = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		if ( false === $data ) {
+			return null;
+		}
+
+		return array(
+			'data' => $data,
+			'ext'  => (string) $type['ext'],
+			'mime' => (string) $type['type'],
+		);
+	}
+
+	/**
+	 * Thuoc tinh bien the, vd. "Dung tich: 50ml, Loai da: Da dau".
+	 */
+	private function variation_text( \WC_Order_Item $item ): string {
+		$parts = array();
+		foreach ( $item->get_formatted_meta_data( '' ) as $meta ) {
+			$parts[] = wp_strip_all_tags( $meta->display_key ) . ': ' . wp_strip_all_tags( (string) $meta->display_value );
+		}
+
+		return implode( ', ', $parts );
 	}
 
 	/**
@@ -225,7 +335,8 @@ class Order_Email {
 		$lines[] = 'Thanh toán: ' . $d['payment'];
 		$lines[] = '';
 		foreach ( $d['items'] as $it ) {
-			$lines[] = sprintf( '- %s x %d: %s', $it['name'], $it['qty'], self::money( $it['total'] ) );
+			$label = $it['name'] . ( '' !== $it['variation'] ? ' (' . $it['variation'] . ')' : '' ) . ( '' !== $it['sku'] ? ' [' . $it['sku'] . ']' : '' );
+			$lines[] = sprintf( '- %s x %d: %s', $label, $it['qty'], self::money( $it['total'] ) );
 		}
 		$lines[] = '';
 		$lines[] = 'Tạm tính: ' . self::money( $d['subtotal'] );
