@@ -6,6 +6,7 @@ namespace Kleer;
 
 use Kleer\Endpoints\HealthEndpoints;
 use Kleer\Endpoints\SkinQuizEndpoints;
+use Kleer\Services\CartComboService;
 use Kleer\Support\Cache\CacheInvalidation;
 use Kleer\Support\Cache\KleerCache;
 use Kleer\Support\Cache\WooCommerceCompatibility;
@@ -31,6 +32,8 @@ final class Plugin
     private ?CacheInvalidation $cacheInvalidation = null;
 
     private ?TaxonomyRegistry $taxonomyRegistry = null;
+
+    private ?CartComboService $cartComboService = null;
 
 
     /**
@@ -146,6 +149,9 @@ final class Plugin
         $this->taxonomyRegistry = new TaxonomyRegistry();
         $this->taxonomyRegistry->register();
 
+        $this->cartComboService = new CartComboService();
+        $this->cartComboService->register();
+
         (new HealthEndpoints())->register();
         (new SkinQuizEndpoints())->register();
     }
@@ -171,5 +177,10 @@ final class Plugin
     public function taxonomyRegistry(): ?TaxonomyRegistry
     {
         return $this->taxonomyRegistry;
+    }
+
+    public function cartComboService(): ?CartComboService
+    {
+        return $this->cartComboService;
     }
 }

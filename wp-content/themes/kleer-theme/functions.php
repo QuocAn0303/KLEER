@@ -54,10 +54,39 @@ function enqueue_assets(): void
 
     wp_localize_script('kleer-main-script', 'kleerAjax', [
         'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce'    => wp_create_nonce('kleer_filter_nonce'),
+        'nonce'    => wp_create_nonce('kleer_add_routine_to_cart'),
     ]);
+
+    wp_enqueue_script(
+        'kleer-routine-cart',
+        get_template_directory_uri() . '/assets/js/routine-cart.js',
+        ['jquery'],
+        KLEER_THEME_VERSION,
+        true
+    );
+
+    wp_localize_script('kleer-routine-cart', 'kleerAjax', [
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce'    => wp_create_nonce('kleer_add_routine_to_cart'),
+    ]);
+
+    if (function_exists('is_shop') && is_shop()) {
+        wp_enqueue_script(
+            'kleer-catalog-filter',
+            get_template_directory_uri() . '/assets/js/catalog-filter.js',
+            [],
+            KLEER_THEME_VERSION,
+            true
+        );
+        wp_localize_script('kleer-catalog-filter', 'kleerAjax', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('kleer_filter_products'),
+        ]);
+    }
 }
 add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets');
 
 // Nạp file đăng ký script & style cho Quiz SPA
 require_once get_template_directory() . '/inc/quiz-assets.php';
+
+require_once get_template_directory() . '/inc/ajax-catalog-filter.php';

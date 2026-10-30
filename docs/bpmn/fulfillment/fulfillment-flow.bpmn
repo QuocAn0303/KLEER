@@ -1,0 +1,996 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_FulfillmentFlow" targetNamespace="http://kleer.edu.vn/bpmn/fulfillment" exporter="Camunda Modeler" exporterVersion="5.46.1">
+  <bpmn:collaboration id="Collaboration_FulfillmentFlow">
+    <bpmn:participant id="Participant_FulfillmentFlow" name="Fulfillment Flow – KLEER" processRef="Process_FulfillmentFlow" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_FulfillmentFlow" name="Quy trình hoàn tất đơn hàng – Fulfillment Flow" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_FulfillmentFlow">
+      <bpmn:lane id="Lane_F03" name="Đối tác 3PL">
+        <bpmn:flowNodeRef>Task_F32</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_F02" name="Nhân sự Kho">
+        <bpmn:flowNodeRef>Task_F26</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F31</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F10</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F07</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F08</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F09</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F35</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F28</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F29</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F36</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F30</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F33</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F12</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F11</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F07</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F05</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F12</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F06</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_F01" name="Hệ thống xử lý (WooCommerce / Plugin / Integration)">
+        <bpmn:flowNodeRef>Task_F04</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F19</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F22</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F23</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F03</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F06</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F05</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F17</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F18</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F20</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F13</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F38</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F14</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F15</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F41</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F40</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F24</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_F21</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Start_F01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F04</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F10</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F09</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_F01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F13</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F14</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_F02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_F03</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_F11</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_F01" name="Đơn hàng chuyển sang trạng thái Processing">
+      <bpmn:outgoing>Flow_F01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_F01" name="Chốt trạng thái Processing">
+      <bpmn:incoming>Flow_F01</bpmn:incoming>
+      <bpmn:outgoing>Flow_F02</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F02" name="Kiểm tra tồn kho khả dụng">
+      <bpmn:incoming>Flow_F02</bpmn:incoming>
+      <bpmn:outgoing>Flow_F03</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_F01" name="Tồn kho hệ thống có đủ?">
+      <bpmn:incoming>Flow_F03</bpmn:incoming>
+      <bpmn:outgoing>Flow_F04</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F05</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_F04" name="Ghi nhận đơn vào hàng đợi xuất kho">
+      <bpmn:incoming>Flow_F04</bpmn:incoming>
+      <bpmn:incoming>Flow_F07</bpmn:incoming>
+      <bpmn:incoming>Flow_F24</bpmn:incoming>
+      <bpmn:incoming>Flow_F51</bpmn:incoming>
+      <bpmn:outgoing>Flow_F09</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F05" name="Trừ tồn kho kho lưu trữ">
+      <bpmn:incoming>Flow_F09</bpmn:incoming>
+      <bpmn:outgoing>Flow_F10</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F06" name="Kết xuất CSV Pick-list">
+      <bpmn:incoming>Flow_F10</bpmn:incoming>
+      <bpmn:outgoing>Flow_F11</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F19" name="Gọi API 3PL tạo vận đơn">
+      <bpmn:incoming>Flow_F28</bpmn:incoming>
+      <bpmn:incoming>Flow_F34</bpmn:incoming>
+      <bpmn:outgoing>Flow_F30</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_F10" name="Tạo vận đơn thành công?">
+      <bpmn:incoming>Flow_F30</bpmn:incoming>
+      <bpmn:outgoing>Flow_F31</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F32</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_F20" name="Ghi mã vận đơn vào đơn hàng">
+      <bpmn:incoming>Flow_F31</bpmn:incoming>
+      <bpmn:incoming>Flow_F37</bpmn:incoming>
+      <bpmn:outgoing>Flow_F38</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F22" name="Gửi email vận chuyển">
+      <bpmn:incoming>Flow_F38</bpmn:incoming>
+      <bpmn:outgoing>Flow_F39</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:receiveTask id="Task_F23" name="Nhận webhook trạng thái 3PL">
+      <bpmn:incoming>Flow_F41</bpmn:incoming>
+      <bpmn:outgoing>Flow_F42</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:exclusiveGateway id="GW_F09" name="Yêu cầu hủy / đổi địa chỉ sau bàn giao?">
+      <bpmn:incoming>Flow_F42</bpmn:incoming>
+      <bpmn:outgoing>Flow_F43</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F44</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_F03" name="Chuyển đơn sang On-hold">
+      <bpmn:incoming>Flow_F05</bpmn:incoming>
+      <bpmn:outgoing>Flow_F06</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_F04" name="Kiểm kê đủ hàng thực tế?">
+      <bpmn:incoming>Flow_F06</bpmn:incoming>
+      <bpmn:outgoing>Flow_F07</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F08</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_F17" name="Cập nhật trạng thái Completed">
+      <bpmn:incoming>Flow_F47</bpmn:incoming>
+      <bpmn:outgoing>Flow_F61</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F18" name="Gửi email hoàn tất đơn">
+      <bpmn:incoming>Flow_F61</bpmn:incoming>
+      <bpmn:outgoing>Flow_F62</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_F01" name="Giao thành công – Completed">
+      <bpmn:incoming>Flow_F62</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_F13" name="Hủy đơn và hoàn tồn kho">
+      <bpmn:incoming>Flow_F08</bpmn:incoming>
+      <bpmn:incoming>Flow_F21</bpmn:incoming>
+      <bpmn:incoming>Flow_F29</bpmn:incoming>
+      <bpmn:outgoing>Flow_F53</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_F14" name="Đơn đã thu tiền trước?">
+      <bpmn:incoming>Flow_F53</bpmn:incoming>
+      <bpmn:outgoing>Flow_F54</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F55</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_F14" name="Hoàn tiền đơn bị hủy">
+      <bpmn:incoming>Flow_F54</bpmn:incoming>
+      <bpmn:outgoing>Flow_F56</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F15" name="Gửi email thông báo hủy đơn">
+      <bpmn:incoming>Flow_F55</bpmn:incoming>
+      <bpmn:incoming>Flow_F56</bpmn:incoming>
+      <bpmn:outgoing>Flow_F57</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_F02" name="Đơn bị hủy – đã hoàn tồn và hoàn tiền">
+      <bpmn:incoming>Flow_F57</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_F21" name="Retry tạo vận đơn">
+      <bpmn:incoming>Flow_F32</bpmn:incoming>
+      <bpmn:outgoing>Flow_F33</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_F11" name="Đã retry đủ số lần?">
+      <bpmn:incoming>Flow_F33</bpmn:incoming>
+      <bpmn:outgoing>Flow_F34</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F35</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_F24" name="Nhập lại tồn kho hàng hoàn">
+      <bpmn:incoming>Flow_F49</bpmn:incoming>
+      <bpmn:outgoing>Flow_F50</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_F13" name="Còn hàng đủ để giao lại?">
+      <bpmn:incoming>Flow_F50</bpmn:incoming>
+      <bpmn:outgoing>Flow_F51</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F52</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_F38" name="Chuyển trạng thái Refunded">
+      <bpmn:incoming>Flow_F52</bpmn:incoming>
+      <bpmn:outgoing>Flow_F58</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F41" name="Hoàn tiền đơn giao thất bại">
+      <bpmn:incoming>Flow_F58</bpmn:incoming>
+      <bpmn:outgoing>Flow_F59</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_F40" name="Gửi email thông báo hoàn tiền">
+      <bpmn:incoming>Flow_F59</bpmn:incoming>
+      <bpmn:outgoing>Flow_F60</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_F03" name="Giao thất bại – hoàn kho và hoàn tiền">
+      <bpmn:incoming>Flow_F60</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_F07" name="Mở Pick-list và chốt đơn gộp">
+      <bpmn:incoming>Flow_F11</bpmn:incoming>
+      <bpmn:outgoing>Flow_F12</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_F08" name="Lấy hàng theo Pick-list (Picking)">
+      <bpmn:incoming>Flow_F12</bpmn:incoming>
+      <bpmn:outgoing>Flow_F13</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_F09" name="Đối chiếu số lượng thực lấy">
+      <bpmn:incoming>Flow_F13</bpmn:incoming>
+      <bpmn:outgoing>Flow_F14</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_F02" name="Số lượng thực lấy khớp đơn?">
+      <bpmn:incoming>Flow_F14</bpmn:incoming>
+      <bpmn:outgoing>Flow_F15</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F16</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_F26" name="Đóng gói và dán nhãn (Packing)">
+      <bpmn:incoming>Flow_F15</bpmn:incoming>
+      <bpmn:incoming>Flow_06khluu</bpmn:incoming>
+      <bpmn:outgoing>Flow_F25</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_F06" name="Hàng nguyên vẹn sau đóng gói?">
+      <bpmn:incoming>Flow_F25</bpmn:incoming>
+      <bpmn:outgoing>Flow_F26</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F27</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="GW_F07" name="Khách có yêu cầu hủy đơn?">
+      <bpmn:incoming>Flow_F26</bpmn:incoming>
+      <bpmn:outgoing>Flow_F28</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F29</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_F10" name="Kiểm kê và ghi nhận lệch tồn kho">
+      <bpmn:incoming>Flow_F16</bpmn:incoming>
+      <bpmn:incoming>Flow_F27</bpmn:incoming>
+      <bpmn:outgoing>Flow_F17</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_F05" name="Cách xử lý lệch tồn kho?">
+      <bpmn:incoming>Flow_F17</bpmn:incoming>
+      <bpmn:outgoing>Flow_F19</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F20</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F21</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_F11" name="Đổi SKU thay thế trong kho">
+      <bpmn:incoming>Flow_F19</bpmn:incoming>
+      <bpmn:incoming>Flow_F23</bpmn:incoming>
+      <bpmn:outgoing>Flow_0pillfb</bpmn:outgoing>
+      <bpmn:outgoing>Flow_06khluu</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_F12" name="Tách lô giao một phần">
+      <bpmn:incoming>Flow_0pillfb</bpmn:incoming>
+      <bpmn:outgoing>Flow_F23</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_F33" name="Ghi nhận yêu cầu nhập bổ sung">
+      <bpmn:incoming>Flow_F20</bpmn:incoming>
+      <bpmn:outgoing>Flow_F24</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_F35" name="Tiếp nhận cảnh báo và tạo vận đơn tay">
+      <bpmn:incoming>Flow_F35</bpmn:incoming>
+      <bpmn:outgoing>Flow_F36</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_F28" name="Nhập mã vận đơn tay vào đơn hàng">
+      <bpmn:incoming>Flow_F36</bpmn:incoming>
+      <bpmn:outgoing>Flow_F37</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_F29" name="Bàn gàng hàng cho 3PL">
+      <bpmn:incoming>Flow_F39</bpmn:incoming>
+      <bpmn:outgoing>Flow_F40</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_F36" name="Chuyển yêu cầu hủy thành đơn hoàn hàng">
+      <bpmn:incoming>Flow_F44</bpmn:incoming>
+      <bpmn:outgoing>Flow_F46</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:receiveTask id="Task_F30" name="Tiếp nhận và nhập kho vận đơn">
+      <bpmn:incoming>Flow_F40</bpmn:incoming>
+      <bpmn:outgoing>Flow_F41</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:userTask id="Task_F31" name="Giao hàng và thu tiền COD">
+      <bpmn:incoming>Flow_F43</bpmn:incoming>
+      <bpmn:outgoing>Flow_F45</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_F12" name="Kết quả giao hàng?">
+      <bpmn:incoming>Flow_F45</bpmn:incoming>
+      <bpmn:outgoing>Flow_F47</bpmn:outgoing>
+      <bpmn:outgoing>Flow_F48</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_F32" name="Hoàn hàng về kho">
+      <bpmn:incoming>Flow_F46</bpmn:incoming>
+      <bpmn:incoming>Flow_F48</bpmn:incoming>
+      <bpmn:outgoing>Flow_F49</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_F01" sourceRef="Start_F01" targetRef="Task_F01" />
+    <bpmn:sequenceFlow id="Flow_F02" sourceRef="Task_F01" targetRef="Task_F02" />
+    <bpmn:sequenceFlow id="Flow_F03" sourceRef="Task_F02" targetRef="GW_F01" />
+    <bpmn:sequenceFlow id="Flow_F04" sourceRef="GW_F01" targetRef="Task_F04">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Tồn kho đủ</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F05" sourceRef="GW_F01" targetRef="Task_F03" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Không đủ tồn kho</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F06" sourceRef="Task_F03" targetRef="GW_F04" />
+    <bpmn:sequenceFlow id="Flow_F07" sourceRef="GW_F04" targetRef="Task_F04">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Kiểm kê đủ hàng thực tế</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F08" sourceRef="GW_F04" targetRef="Task_F13" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Vẫn thiếu hàng</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F09" sourceRef="Task_F04" targetRef="Task_F05" />
+    <bpmn:sequenceFlow id="Flow_F10" sourceRef="Task_F05" targetRef="Task_F06" />
+    <bpmn:sequenceFlow id="Flow_F11" sourceRef="Task_F06" targetRef="Task_F07" />
+    <bpmn:sequenceFlow id="Flow_F12" sourceRef="Task_F07" targetRef="Task_F08" />
+    <bpmn:sequenceFlow id="Flow_F13" sourceRef="Task_F08" targetRef="Task_F09" />
+    <bpmn:sequenceFlow id="Flow_F14" sourceRef="Task_F09" targetRef="GW_F02" />
+    <bpmn:sequenceFlow id="Flow_F15" sourceRef="GW_F02" targetRef="Task_F26">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Số lượng khớp đơn</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F16" sourceRef="GW_F02" targetRef="Task_F10" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Lệch số lượng thực tế</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F17" sourceRef="Task_F10" targetRef="GW_F05" />
+    <bpmn:sequenceFlow id="Flow_F19" sourceRef="GW_F05" targetRef="Task_F11">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Giao một phần</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F20" sourceRef="GW_F05" targetRef="Task_F33">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Chờ nhập hàng</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F21" sourceRef="GW_F05" targetRef="Task_F13" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Hủy đơn</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F23" sourceRef="Task_F12" targetRef="Task_F11" />
+    <bpmn:sequenceFlow id="Flow_F24" sourceRef="Task_F33" targetRef="Task_F04">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Nhập đủ – gộp lại hàng đợi</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F25" sourceRef="Task_F26" targetRef="GW_F06" />
+    <bpmn:sequenceFlow id="Flow_F26" sourceRef="GW_F06" targetRef="GW_F07">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Hàng nguyên vẹn</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F27" sourceRef="GW_F06" targetRef="Task_F10" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Hỏng / hư hỏng</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F28" sourceRef="GW_F07" targetRef="Task_F19">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Khách không hủy</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F29" sourceRef="GW_F07" targetRef="Task_F13" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Khách yêu cầu hủy</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F30" sourceRef="Task_F19" targetRef="GW_F10" />
+    <bpmn:sequenceFlow id="Flow_F31" sourceRef="GW_F10" targetRef="Task_F20">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Tạo vận đơn thành công</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F32" sourceRef="GW_F10" targetRef="Task_F21" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Lỗi / timeout API</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F33" sourceRef="Task_F21" targetRef="GW_F11" />
+    <bpmn:sequenceFlow id="Flow_F34" sourceRef="GW_F11" targetRef="Task_F19">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Chưa đạt giới hạn</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F35" sourceRef="GW_F11" targetRef="Task_F35" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Đã đạt giới hạn</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F36" sourceRef="Task_F35" targetRef="Task_F28" />
+    <bpmn:sequenceFlow id="Flow_F37" sourceRef="Task_F28" targetRef="Task_F20">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Nhập mã vận đơn tay</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F38" sourceRef="Task_F20" targetRef="Task_F22" />
+    <bpmn:sequenceFlow id="Flow_F39" sourceRef="Task_F22" targetRef="Task_F29" />
+    <bpmn:sequenceFlow id="Flow_F40" sourceRef="Task_F29" targetRef="Task_F30" />
+    <bpmn:sequenceFlow id="Flow_F41" sourceRef="Task_F30" targetRef="Task_F23" />
+    <bpmn:sequenceFlow id="Flow_F42" sourceRef="Task_F23" targetRef="GW_F09" />
+    <bpmn:sequenceFlow id="Flow_F43" sourceRef="GW_F09" targetRef="Task_F31">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Không có yêu cầu hủy</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F44" sourceRef="GW_F09" targetRef="Task_F36" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Có yêu cầu hủy / đổi địa chỉ</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F45" sourceRef="Task_F31" targetRef="GW_F12" />
+    <bpmn:sequenceFlow id="Flow_F46" sourceRef="Task_F36" targetRef="Task_F32" />
+    <bpmn:sequenceFlow id="Flow_F47" sourceRef="GW_F12" targetRef="Task_F17">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Giao thành công</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F48" sourceRef="GW_F12" targetRef="Task_F32" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Giao thất bại</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F49" sourceRef="Task_F32" targetRef="Task_F24" />
+    <bpmn:sequenceFlow id="Flow_F50" sourceRef="Task_F24" targetRef="GW_F13" />
+    <bpmn:sequenceFlow id="Flow_F51" sourceRef="GW_F13" targetRef="Task_F04">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Còn hàng – tạo lượt giao lại</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F52" sourceRef="GW_F13" targetRef="Task_F38" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Không đủ hàng</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F53" sourceRef="Task_F13" targetRef="GW_F14" />
+    <bpmn:sequenceFlow id="Flow_F54" sourceRef="GW_F14" targetRef="Task_F14">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">Đã thu tiền trước</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F55" sourceRef="GW_F14" targetRef="Task_F15" default="true">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="vn">COD – chưa thu tiền</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_F56" sourceRef="Task_F14" targetRef="Task_F15" />
+    <bpmn:sequenceFlow id="Flow_F57" sourceRef="Task_F15" targetRef="End_F02" />
+    <bpmn:sequenceFlow id="Flow_F58" sourceRef="Task_F38" targetRef="Task_F41" />
+    <bpmn:sequenceFlow id="Flow_F59" sourceRef="Task_F41" targetRef="Task_F40" />
+    <bpmn:sequenceFlow id="Flow_F60" sourceRef="Task_F40" targetRef="End_F03" />
+    <bpmn:sequenceFlow id="Flow_F61" sourceRef="Task_F17" targetRef="Task_F18" />
+    <bpmn:sequenceFlow id="Flow_F62" sourceRef="Task_F18" targetRef="End_F01" />
+    <bpmn:sequenceFlow id="Flow_0pillfb" sourceRef="Task_F11" targetRef="Task_F12" />
+    <bpmn:sequenceFlow id="Flow_06khluu" sourceRef="Task_F11" targetRef="Task_F26" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_FulfillmentFlow">
+    <bpmndi:BPMNPlane id="BPMNPlane_FulfillmentFlow" bpmnElement="Process_FulfillmentFlow">
+      <bpmndi:BPMNShape id="Lane_F03_di" bpmnElement="Lane_F03" isHorizontal="true">
+        <dc:Bounds x="160" y="820" width="5340" height="260" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_F02_di" bpmnElement="Lane_F02" isHorizontal="true">
+        <dc:Bounds x="160" y="400" width="5340" height="420" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_F01_di" bpmnElement="Lane_F01" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="5340" height="320" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_F01_di" bpmnElement="Start_F01" isHorizontal="true">
+        <dc:Bounds x="210" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="185" y="178" width="87" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F01_di" bpmnElement="GW_F01" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="720" y="135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="702" y="106.5" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F04_di" bpmnElement="Task_F04">
+        <dc:Bounds x="890" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F19_di" bpmnElement="Task_F19">
+        <dc:Bounds x="2590" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F22_di" bpmnElement="Task_F22">
+        <dc:Bounds x="3440" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F23_di" bpmnElement="Task_F23">
+        <dc:Bounds x="3610" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F26_di" bpmnElement="Task_F26">
+        <dc:Bounds x="2080" y="420" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F07_di" bpmnElement="GW_F07" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="2420" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2401" y="485" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F31_di" bpmnElement="Task_F31">
+        <dc:Bounds x="3950" y="720" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F12_di" bpmnElement="GW_F12" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="4120" y="735" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4168" y="746.5" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F03_di" bpmnElement="Task_F03">
+        <dc:Bounds x="890" y="300" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F01_di" bpmnElement="Task_F01">
+        <dc:Bounds x="335" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F02_di" bpmnElement="Task_F02">
+        <dc:Bounds x="505" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F04_di" bpmnElement="GW_F04" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="1095" y="315" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1078.5" y="374.5" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F06_di" bpmnElement="Task_F06">
+        <dc:Bounds x="1400" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F05_di" bpmnElement="Task_F05">
+        <dc:Bounds x="1225" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F10_di" bpmnElement="Task_F10">
+        <dc:Bounds x="2080" y="600" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F07_di" bpmnElement="Task_F07">
+        <dc:Bounds x="1400" y="520" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F08_di" bpmnElement="Task_F08">
+        <dc:Bounds x="1585" y="520" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F09_di" bpmnElement="Task_F09">
+        <dc:Bounds x="1765" y="520" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F02_di" bpmnElement="GW_F02" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="1910" y="535" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1970" y="546.5" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F05_di" bpmnElement="GW_F05" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="2275" y="615" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2315" y="656" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F06_di" bpmnElement="GW_F06" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="2275" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2266.5" y="416.5" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F10_di" bpmnElement="GW_F10" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="2795" y="135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2788" y="97.5" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F35_di" bpmnElement="Task_F35">
+        <dc:Bounds x="3270" y="720" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F28_di" bpmnElement="Task_F28">
+        <dc:Bounds x="3440" y="720" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F29_di" bpmnElement="Task_F29">
+        <dc:Bounds x="3610" y="720" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F36_di" bpmnElement="Task_F36">
+        <dc:Bounds x="3950" y="520" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F32_di" bpmnElement="Task_F32">
+        <dc:Bounds x="4290" y="850" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F09_di" bpmnElement="GW_F09" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="3890" y="135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3872" y="85" width="85" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F17_di" bpmnElement="Task_F17">
+        <dc:Bounds x="4080" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_F01_di" bpmnElement="End_F01" isHorizontal="true">
+        <dc:Bounds x="4467" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4444" y="104.5" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F18_di" bpmnElement="Task_F18">
+        <dc:Bounds x="4290" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F20_di" bpmnElement="Task_F20">
+        <dc:Bounds x="3270" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F30_di" bpmnElement="Task_F30">
+        <dc:Bounds x="3765" y="720" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F13_di" bpmnElement="Task_F13">
+        <dc:Bounds x="4630" y="200" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F13_di" bpmnElement="GW_F13" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="4485" y="315" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4470" y="277.5" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F38_di" bpmnElement="Task_F38">
+        <dc:Bounds x="4630" y="300" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F14_di" bpmnElement="Task_F14">
+        <dc:Bounds x="4970" y="200" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F14_di" bpmnElement="GW_F14" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="4800" y="215" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4787" y="274.5" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F15_di" bpmnElement="Task_F15">
+        <dc:Bounds x="5140" y="200" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_F02_di" bpmnElement="End_F02" isHorizontal="true">
+        <dc:Bounds x="5310" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="5285" y="258" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F41_di" bpmnElement="Task_F41">
+        <dc:Bounds x="4970" y="300" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F40_di" bpmnElement="Task_F40">
+        <dc:Bounds x="5140" y="300" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_F03_di" bpmnElement="End_F03" isHorizontal="true">
+        <dc:Bounds x="5310" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="5284" y="358" width="88" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F24_di" bpmnElement="Task_F24">
+        <dc:Bounds x="4290" y="300" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F21_di" bpmnElement="Task_F21">
+        <dc:Bounds x="2895" y="300" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_F11_di" bpmnElement="GW_F11" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="3100" y="315" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3090" y="277.5" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F33_di" bpmnElement="Task_F33">
+        <dc:Bounds x="2955" y="520" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F12_di" bpmnElement="Task_F12">
+        <dc:Bounds x="2705" y="520" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_F11_di" bpmnElement="Task_F11">
+        <dc:Bounds x="2445" y="520" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_F01_di" bpmnElement="Flow_F01">
+        <di:waypoint x="246" y="160" />
+        <di:waypoint x="335" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F02_di" bpmnElement="Flow_F02">
+        <di:waypoint x="465" y="160" />
+        <di:waypoint x="505" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F03_di" bpmnElement="Flow_F03">
+        <di:waypoint x="635" y="160" />
+        <di:waypoint x="720" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F04_di" bpmnElement="Flow_F04">
+        <di:waypoint x="770" y="160" />
+        <di:waypoint x="890" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="668" y="61" width="98" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F05_di" bpmnElement="Flow_F05">
+        <di:waypoint x="745" y="185" />
+        <di:waypoint x="745" y="340" />
+        <di:waypoint x="890" y="340" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="624" y="161" width="146" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F06_di" bpmnElement="Flow_F06">
+        <di:waypoint x="1020" y="340" />
+        <di:waypoint x="1095" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F07_di" bpmnElement="Flow_F07">
+        <di:waypoint x="1120" y="315" />
+        <di:waypoint x="1120" y="190" />
+        <di:waypoint x="1020" y="190" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="726" y="120" width="178" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F08_di" bpmnElement="Flow_F08">
+        <di:waypoint x="1145" y="340" />
+        <di:waypoint x="2410" y="340" />
+        <di:waypoint x="2410" y="260" />
+        <di:waypoint x="4630" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2712" y="113" width="116" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F09_di" bpmnElement="Flow_F09">
+        <di:waypoint x="1020" y="160" />
+        <di:waypoint x="1225" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F10_di" bpmnElement="Flow_F10">
+        <di:waypoint x="1355" y="160" />
+        <di:waypoint x="1400" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F11_di" bpmnElement="Flow_F11">
+        <di:waypoint x="1465" y="200" />
+        <di:waypoint x="1465" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F12_di" bpmnElement="Flow_F12">
+        <di:waypoint x="1530" y="560" />
+        <di:waypoint x="1585" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F13_di" bpmnElement="Flow_F13">
+        <di:waypoint x="1715" y="560" />
+        <di:waypoint x="1765" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F14_di" bpmnElement="Flow_F14">
+        <di:waypoint x="1895" y="560" />
+        <di:waypoint x="1910" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F15_di" bpmnElement="Flow_F15">
+        <di:waypoint x="1935" y="535" />
+        <di:waypoint x="1935" y="460" />
+        <di:waypoint x="2080" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1806" y="361" width="154" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F16_di" bpmnElement="Flow_F16">
+        <di:waypoint x="1935" y="585" />
+        <di:waypoint x="1935" y="640" />
+        <di:waypoint x="2080" y="640" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1775" y="461" width="186" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F17_di" bpmnElement="Flow_F17">
+        <di:waypoint x="2210" y="640" />
+        <di:waypoint x="2275" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F19_di" bpmnElement="Flow_F19">
+        <di:waypoint x="2300" y="615" />
+        <di:waypoint x="2300" y="570" />
+        <di:waypoint x="2445" y="570" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2245" y="411" width="109" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F20_di" bpmnElement="Flow_F20">
+        <di:waypoint x="2325" y="640" />
+        <di:waypoint x="3020" y="640" />
+        <di:waypoint x="3020" y="600" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2330" y="407" width="109" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F21_di" bpmnElement="Flow_F21">
+        <di:waypoint x="2300" y="665" />
+        <di:waypoint x="2300" y="700" />
+        <di:waypoint x="4585" y="700" />
+        <di:waypoint x="4585" y="260" />
+        <di:waypoint x="4630" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3271" y="511" width="78" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F23_di" bpmnElement="Flow_F23">
+        <di:waypoint x="2705" y="560" />
+        <di:waypoint x="2575" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F24_di" bpmnElement="Flow_F24">
+        <di:waypoint x="3020" y="600" />
+        <di:waypoint x="3020" y="740" />
+        <di:waypoint x="1160" y="740" />
+        <di:waypoint x="1160" y="180" />
+        <di:waypoint x="1020" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1710" y="499" width="194" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F25_di" bpmnElement="Flow_F25">
+        <di:waypoint x="2210" y="460" />
+        <di:waypoint x="2275" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F26_di" bpmnElement="Flow_F26">
+        <di:waypoint x="2325" y="460" />
+        <di:waypoint x="2420" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2162" y="361" width="138" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F27_di" bpmnElement="Flow_F27">
+        <di:waypoint x="2300" y="485" />
+        <di:waypoint x="2300" y="570" />
+        <di:waypoint x="2145" y="570" />
+        <di:waypoint x="2145" y="600" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2025" y="411" width="130" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F28_di" bpmnElement="Flow_F28">
+        <di:waypoint x="2470" y="460" />
+        <di:waypoint x="2485" y="460" />
+        <di:waypoint x="2485" y="160" />
+        <di:waypoint x="2590" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2332" y="61" width="138" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F29_di" bpmnElement="Flow_F29">
+        <di:waypoint x="2445" y="435" />
+        <di:waypoint x="2445" y="220" />
+        <di:waypoint x="4630" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3328" y="109" width="154" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F30_di" bpmnElement="Flow_F30">
+        <di:waypoint x="2720" y="160" />
+        <di:waypoint x="2795" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F31_di" bpmnElement="Flow_F31">
+        <di:waypoint x="2845" y="160" />
+        <di:waypoint x="3270" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2830" y="61" width="194" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F32_di" bpmnElement="Flow_F32">
+        <di:waypoint x="2820" y="185" />
+        <di:waypoint x="2820" y="340" />
+        <di:waypoint x="2895" y="340" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2673" y="261" width="137" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F33_di" bpmnElement="Flow_F33">
+        <di:waypoint x="3025" y="340" />
+        <di:waypoint x="3100" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F34_di" bpmnElement="Flow_F34">
+        <di:waypoint x="3125" y="365" />
+        <di:waypoint x="3125" y="440" />
+        <di:waypoint x="2655" y="440" />
+        <di:waypoint x="2655" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2730" y="306" width="154" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F35_di" bpmnElement="Flow_F35">
+        <di:waypoint x="3150" y="340" />
+        <di:waypoint x="3180" y="340" />
+        <di:waypoint x="3180" y="760" />
+        <di:waypoint x="3270" y="760" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3012" y="561" width="138" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F36_di" bpmnElement="Flow_F36">
+        <di:waypoint x="3400" y="760" />
+        <di:waypoint x="3440" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F37_di" bpmnElement="Flow_F37">
+        <di:waypoint x="3505" y="720" />
+        <di:waypoint x="3505" y="460" />
+        <di:waypoint x="3335" y="460" />
+        <di:waypoint x="3335" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3114" y="328" width="170" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F38_di" bpmnElement="Flow_F38">
+        <di:waypoint x="3400" y="160" />
+        <di:waypoint x="3440" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F39_di" bpmnElement="Flow_F39">
+        <di:waypoint x="3570" y="160" />
+        <di:waypoint x="3590" y="160" />
+        <di:waypoint x="3590" y="760" />
+        <di:waypoint x="3610" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F40_di" bpmnElement="Flow_F40">
+        <di:waypoint x="3740" y="760" />
+        <di:waypoint x="3765" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F41_di" bpmnElement="Flow_F41">
+        <di:waypoint x="3830" y="720" />
+        <di:waypoint x="3830" y="460" />
+        <di:waypoint x="3675" y="460" />
+        <di:waypoint x="3675" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F42_di" bpmnElement="Flow_F42">
+        <di:waypoint x="3740" y="160" />
+        <di:waypoint x="3890" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F43_di" bpmnElement="Flow_F43">
+        <di:waypoint x="3915" y="185" />
+        <di:waypoint x="3915" y="760" />
+        <di:waypoint x="3950" y="760" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3621" y="48" width="178" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F44_di" bpmnElement="Flow_F44">
+        <di:waypoint x="3940" y="160" />
+        <di:waypoint x="4015" y="160" />
+        <di:waypoint x="4015" y="520" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3630" y="58" width="178" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F45_di" bpmnElement="Flow_F45">
+        <di:waypoint x="4080" y="760" />
+        <di:waypoint x="4120" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F46_di" bpmnElement="Flow_F46">
+        <di:waypoint x="4080" y="560" />
+        <di:waypoint x="4355" y="560" />
+        <di:waypoint x="4355" y="850" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F47_di" bpmnElement="Flow_F47">
+        <di:waypoint x="4145" y="735" />
+        <di:waypoint x="4145" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3828" y="421" width="138" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F48_di" bpmnElement="Flow_F48">
+        <di:waypoint x="4145" y="785" />
+        <di:waypoint x="4145" y="890" />
+        <di:waypoint x="4290" y="890" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4061" y="761" width="109" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F49_di" bpmnElement="Flow_F49">
+        <di:waypoint x="4420" y="890" />
+        <di:waypoint x="4450" y="890" />
+        <di:waypoint x="4450" y="480" />
+        <di:waypoint x="4355" y="480" />
+        <di:waypoint x="4355" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F50_di" bpmnElement="Flow_F50">
+        <di:waypoint x="4420" y="340" />
+        <di:waypoint x="4485" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F51_di" bpmnElement="Flow_F51">
+        <di:waypoint x="4510" y="365" />
+        <di:waypoint x="4510" y="965" />
+        <di:waypoint x="1200" y="965" />
+        <di:waypoint x="1200" y="170" />
+        <di:waypoint x="1020" y="170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2552" y="850" width="170" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F52_di" bpmnElement="Flow_F52">
+        <di:waypoint x="4535" y="340" />
+        <di:waypoint x="4630" y="340" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4388" y="261" width="122" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F53_di" bpmnElement="Flow_F53">
+        <di:waypoint x="4760" y="240" />
+        <di:waypoint x="4800" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F54_di" bpmnElement="Flow_F54">
+        <di:waypoint x="4850" y="240" />
+        <di:waypoint x="4970" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4696" y="161" width="154" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F55_di" bpmnElement="Flow_F55">
+        <di:waypoint x="4825" y="215" />
+        <di:waypoint x="4825" y="160" />
+        <di:waypoint x="5205" y="160" />
+        <di:waypoint x="5205" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4765" y="211" width="170" height="24" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F56_di" bpmnElement="Flow_F56">
+        <di:waypoint x="5100" y="240" />
+        <di:waypoint x="5140" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F57_di" bpmnElement="Flow_F57">
+        <di:waypoint x="5270" y="240" />
+        <di:waypoint x="5310" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F58_di" bpmnElement="Flow_F58">
+        <di:waypoint x="4760" y="340" />
+        <di:waypoint x="4970" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F59_di" bpmnElement="Flow_F59">
+        <di:waypoint x="5100" y="340" />
+        <di:waypoint x="5140" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F60_di" bpmnElement="Flow_F60">
+        <di:waypoint x="5270" y="340" />
+        <di:waypoint x="5310" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F61_di" bpmnElement="Flow_F61">
+        <di:waypoint x="4210" y="160" />
+        <di:waypoint x="4290" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F62_di" bpmnElement="Flow_F62">
+        <di:waypoint x="4420" y="160" />
+        <di:waypoint x="4467" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pillfb_di" bpmnElement="Flow_0pillfb">
+        <di:waypoint x="2575" y="560" />
+        <di:waypoint x="2705" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06khluu_di" bpmnElement="Flow_06khluu">
+        <di:waypoint x="2445" y="540" />
+        <di:waypoint x="2145" y="540" />
+        <di:waypoint x="2145" y="500" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
