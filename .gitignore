@@ -14,6 +14,8 @@ wp-content/plugins/*
 !wp-content/plugins/kleer-plugin/**
 !wp-content/plugins/kleer-payments/
 !wp-content/plugins/kleer-payments/**
+!wp-content/plugins/kleer-mailer/
+!wp-content/plugins/kleer-mailer/**
 wp-content/themes/*
 !wp-content/themes/kleer-theme/
 !wp-content/themes/kleer-theme/**
@@ -43,7 +45,7 @@ deploy/.env
 deploy/nginx.https.conf
 
 # === Cache & Temp ===
-cache/
+/cache/
 tmp/
 *.log
 

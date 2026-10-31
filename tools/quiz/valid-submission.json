@@ -1,0 +1,11 @@
+{
+  "session_id": "11111111-2222-4333-8444-555555555555",
+  "consent": {"policy_accepted": true, "marketing_opt_in": false},
+  "answers": [
+    {"question_id": "q1_skin_feeling", "answer": "greasy_all"},
+    {"question_id": "q2_pore_sebum", "answer": "large_pores"},
+    {"question_id": "q3_sensitivity", "answer": "rarely_never"},
+    {"question_id": "q4_main_concern", "answer": "acne_blemish"},
+    {"question_id": "q5_routine_goal", "answer": "intensive"}
+  ]
+}

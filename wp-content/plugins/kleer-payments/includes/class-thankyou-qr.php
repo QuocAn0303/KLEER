@@ -160,24 +160,21 @@ class ThankYou_QR {
 
 		$context = $this->bank_account->qr_context();
 
-		try {
-			$payload = $this->qr_payload->build(
-				$amount,
-				$order->get_order_number(),
-				$context['bank_bin'],
-				$context['bin_location'],
-				$context['merchant_name'],
-				$context['city'],
-				$context['account_type']
-			);
-		} catch ( \InvalidArgumentException $e ) {
-			return null;
-		}
-
 		$content = $this->qr_payload->build_transfer_content(
 			$context['transfer_prefix'],
 			$order->get_order_number()
 		);
+
+		try {
+			$payload = $this->qr_payload->build(
+				$amount,
+				$context['bank_bin'],
+				$context['account_number'],
+				$content
+			);
+		} catch ( \InvalidArgumentException $e ) {
+			return null;
+		}
 
 		return array(
 			'order'      => $order,

@@ -1,0 +1,457 @@
+openapi: 3.0.3
+info:
+  title: KLEER Skincare Quiz & Routine Recommendation REST API
+  description: |
+    Tài liệu kỹ thuật REST API phục vụ Luồng L01 (Quiz chẩn đoán da & Phác đồ Routine cá nhân hóa)
+    của dự án KLEER Unisex Skincare (EC312).
+
+    Phân định kiến trúc:
+    - Namespace duy nhất: `kleer/v1` (theo quyết định namespace-decision-stt1.md).
+    - Client hỗ trợ: Khách vãng lai (Guest, không bắt buộc đăng nhập) và Khách hàng đã đăng nhập.
+    - CORS Policy: Giới hạn theo domain cấu hình tại `CorsService` với allow-headers `Content-Type, X-WP-Nonce, X-KLEER-Session`.
+    - Phân biệt với 3 API WooCommerce REST chuẩn (do Tuyền phụ trách): Endpoint này là custom domain service của kleer-plugin, không can thiệp vào WC REST API gốc.
+  version: 1.0.0
+  contact:
+    name: Bùi Hiếu Nhân (Plugin Dev 1)
+    email: nhan.bui@kleer.local
+servers:
+  - url: http://localhost:80/wp-json/kleer/v1
+    description: Môi trường Docker Local Development (điều chỉnh theo NGINX_PORT nếu khác mặc định 80)
+  - url: https://kleer.local/wp-json/kleer/v1
+    description: Môi trường Local Testing / Staging
+
+paths:
+  /skin-quiz:
+    post:
+      summary: Chẩn đoán da và gợi ý phác đồ Routine
+      description: |
+        Tiếp nhận câu trả lời khảo sát, xác thực dữ liệu qua JSON Schema và chạy thuật toán phân tích
+        để trả về mã hồ sơ da cùng danh mục sản phẩm chăm sóc da phù hợp.
+      operationId: submitSkinQuiz
+      parameters:
+        - name: version
+          in: query
+          required: false
+          description: "Phiên bản thuật toán ('v1' cho bản chính thức 5 câu, 'v4' cho bản nháp 6 câu của PO Phát)."
+          schema:
+            type: string
+            enum: [v1, v4]
+            default: v1
+        - name: X-WP-Nonce
+          in: header
+          required: false
+          description: WordPress REST API Nonce (tùy chọn cho khách vãng lai, bắt buộc nếu có cookie phiên).
+          schema:
+            type: string
+        - name: X-KLEER-Session
+          in: header
+          required: false
+          description: Session UUID của khách truy cập để ghi nhận và đối soát lịch sử.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        description: Dữ liệu câu trả lời và thông tin phiên tuân thủ quiz-submission.schema.json
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizSubmissionRequest'
+            examples:
+              oilySkinSubmission:
+                summary: "Ví dụ khách da dầu mụn chọn phác đồ chuyên sâu 4 bước (gọi kèm ?version=v1)"
+                value:
+                  session_id: "11111111-2222-4333-8444-555555555555"
+                  consent:
+                    policy_accepted: true
+                    marketing_opt_in: false
+                  context:
+                    locale: "vi-VN"
+                    device: "mobile"
+                  answers:
+                    - question_id: "q1_skin_feeling"
+                      answer: "greasy_all"
+                    - question_id: "q2_pore_sebum"
+                      answer: "large_pores"
+                    - question_id: "q3_sensitivity"
+                      answer: "rarely_never"
+                    - question_id: "q4_main_concern"
+                      answer: "acne_blemish"
+                    - question_id: "q5_routine_goal"
+                      answer: "intensive"
+              v4DraftSubmission:
+                summary: "Ví dụ bản nháp v4 (6 câu / 27 lựa chọn, gọi kèm ?version=v4)"
+                value:
+                  session_id: "33333333-4444-4555-8666-777777777777"
+                  consent:
+                    policy_accepted: true
+                    marketing_opt_in: true
+                  context:
+                    locale: "vi-VN"
+                    device: "desktop"
+                  answers:
+                    - question_id: "q1"
+                      answer: "1C"
+                    - question_id: "q2"
+                      answer: "2A"
+                    - question_id: "q3"
+                      answer: "3D"
+                    - question_id: "q4"
+                      answer: "4A"
+                    - question_id: "q5"
+                      answer: "5C"
+                    - question_id: "q6"
+                      answer: "6B"
+      responses:
+        '200':
+          description: Phân tích thành công, trả về hồ sơ da và phác đồ Routine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSubmissionResponse'
+              examples:
+                successOilyResponse:
+                  summary: Phản hồi thành công cho hồ sơ Da dầu mụn
+                  value:
+                    status: "ok"
+                    data:
+                      submission_id: 849201
+                      skin_profile:
+                        code: "oily_acne"
+                        label: "Da dầu (Ưu tiên mụn & bã nhờn)"
+                        concerns:
+                          - "Mụn viêm & sợi bã nhờn bít tắc"
+                          - "Độ bóng nhờn cao toàn mặt"
+                      recommended_products:
+                        - id: 1
+                          name: "Sữa Rửa Mặt CeraVe Foaming Cleanser"
+                          price: 380000
+                          routine_step: "cleanser"
+                          reason: "Làm sạch sâu bã nhờn, kiềm dầu thừa hiệu quả."
+                        - id: 15
+                          name: "Toner Some By Mi AHA-BHA-PHA 30 Days"
+                          price: 350000
+                          routine_step: "treatment"
+                          reason: "Kháng viêm và làm sạch tế bào chết bít tắc."
+                        - id: 13
+                          name: "Kem Dưỡng Dạng Gel Neutrogena Hydro Boost"
+                          price: 350000
+                          routine_step: "moisturizer"
+                          reason: "Cấp nước dạng gel mỏng nhẹ, không gây bít tắc lỗ chân lông."
+                        - id: 28
+                          name: "Gel Chống Nắng Eucerin Sun Dry Touch"
+                          price: 500000
+                          routine_step: "sunscreen"
+                          reason: "Bảo vệ phổ rộng, kiềm dầu khô thoáng bề mặt da."
+                      disclaimer: "Phác đồ được xây dựng dựa trên thuật toán da liễu tham vấn từ chuyên gia KLEER. Vui lòng thử trước một lượng nhỏ sản phẩm lên vùng da dưới quai hàm 24h trước khi sử dụng toàn mặt."
+        '400':
+          description: Dữ liệu gửi lên không hợp lệ (sai schema hoặc vi phạm ràng buộc nghiệp vụ)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              examples:
+                validationError:
+                  summary: Lỗi thiếu câu hỏi hoặc sai kiểu dữ liệu
+                  value:
+                    code: "kleer_invalid_payload"
+                    message: "Dữ liệu gửi lên không hợp lệ theo schema của API."
+                    data:
+                      status: 400
+                      errors:
+                        - pointer: "/answers"
+                          keyword: "required"
+                          message: "Thiếu câu hỏi bắt buộc: q5_routine_goal."
+        '500':
+          description: Lỗi nội bộ máy chủ (không làm lộ exception hay SQL trace)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              examples:
+                serverError:
+                  value:
+                    code: "kleer_quiz_engine_error"
+                    message: "Đã xảy ra lỗi nội bộ trong quá trình phân tích phác đồ da."
+                    data:
+                      status: 500
+
+  /recommend:
+    post:
+      summary: Endpoint Alias của /skin-quiz
+      description: Alias duy trì tính tương thích ngược cho các client cũ hoặc script kiểm thử L01.
+      deprecated: true
+      operationId: submitSkinQuizAlias
+      requestBody:
+        $ref: '#/paths/~1skin-quiz/post/requestBody'
+      responses:
+        '200':
+          $ref: '#/paths/~1skin-quiz/post/responses/200'
+        '400':
+          $ref: '#/paths/~1skin-quiz/post/responses/400'
+        '500':
+          $ref: '#/paths/~1skin-quiz/post/responses/500'
+
+  /health:
+    get:
+      summary: Kiểm tra trạng thái hệ thống và cache
+      description: Endpoint giám sát hoạt động của Plugin, kiểm tra kết nối cache và các hook quan trọng.
+      operationId: getHealthStatus
+      responses:
+        '200':
+          description: Hệ thống hoạt động bình thường
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  version:
+                    type: string
+                    example: "0.1.0"
+                  php_version:
+                    type: string
+                    example: "8.2.12"
+                  cache:
+                    type: object
+                    properties:
+                      available:
+                        type: boolean
+                        example: true
+
+components:
+  schemas:
+    QuizSubmissionRequest:
+      type: object
+      required:
+        - session_id
+        - answers
+        - consent
+      additionalProperties: false
+      properties:
+        session_id:
+          type: string
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+          description: "UUID định danh phiên của khách truy cập."
+        consent:
+          type: object
+          additionalProperties: false
+          required:
+            - policy_accepted
+            - marketing_opt_in
+          properties:
+            policy_accepted:
+              type: boolean
+              enum: [true]
+              description: "Người dùng chủ động đồng ý chính sách bảo mật (Bắt buộc = true)."
+            marketing_opt_in:
+              type: boolean
+              description: "Đồng ý nhận email tiếp thị."
+        context:
+          type: object
+          additionalProperties: false
+          properties:
+            locale:
+              type: string
+              pattern: '^[a-z]{2}(-[A-Z]{2})?$'
+              example: "vi-VN"
+            device:
+              type: string
+              enum: [mobile, tablet, desktop]
+            referrer:
+              type: string
+              maxLength: 255
+              description: "Đường dẫn trang gửi đến Quiz."
+        answers:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: object
+            additionalProperties: false
+            required:
+              - question_id
+              - answer
+            properties:
+              question_id:
+                type: string
+                pattern: '^[a-z0-9_]{1,64}$'
+              answer:
+                oneOf:
+                  - type: string
+                    maxLength: 255
+                  - type: number
+                  - type: boolean
+                  - type: array
+                    minItems: 1
+                    maxItems: 20
+                    items:
+                      type: string
+                      maxLength: 255
+              note:
+                type: string
+                maxLength: 500
+
+    QuizSubmissionResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        data:
+          type: object
+          additionalProperties: false
+          required:
+            - submission_id
+            - skin_profile
+            - recommended_products
+          properties:
+            submission_id:
+              type: integer
+              minimum: 1
+              description: "Mã định danh bản giao phác đồ để tra cứu lại lịch sử."
+            version:
+              type: string
+              maxLength: 32
+              description: "Phiên bản nghiệp vụ của kết quả (ví dụ: v4-draft)."
+            skin_profile:
+              type: object
+              additionalProperties: false
+              required:
+                - code
+                - label
+              properties:
+                code:
+                  type: string
+                  description: "Mã hồ sơ da (ví dụ: oily_acne, dry_aging)."
+                label:
+                  type: string
+                  description: "Tên hồ sơ da trình bày cho người dùng."
+                concerns:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: string
+                    maxLength: 80
+                  description: "Danh sách vấn đề da ưu tiên cải thiện."
+                primary_type:
+                  type: string
+                  enum: [oily, dry, combination, normal, sensitive]
+                  description: "Loại da chính (v4)."
+                primary_concern:
+                  type: string
+                  maxLength: 32
+                  description: "Vấn đề da chính (v4)."
+                is_sensitive:
+                  type: boolean
+                  description: "Cờ nhạy cảm (v4)."
+                sensitivity_score:
+                  type: integer
+                  minimum: 0
+                  description: "Điểm nhạy cảm (v4)."
+            recommended_products:
+              type: array
+              maxItems: 20
+              description: "Có thể rỗng với v4 khi kho chưa có SKU phù hợp; warnings/missing_steps mô tả lý do."
+              items:
+                $ref: '#/components/schemas/RecommendedProduct'
+            routine_steps_requested:
+              type: integer
+              minimum: 1
+              maximum: 6
+              description: "Số bước Routine khách đã chọn (v4)."
+            routine_steps_selected:
+              type: array
+              maxItems: 6
+              items:
+                type: string
+                enum: [makeup_remover, cleanser, toner, serum, treatment, moisturizer, sunscreen]
+              description: "Các bước Routine được chọn (v4)."
+            missing_steps:
+              type: array
+              maxItems: 6
+              items:
+                type: string
+                enum: [makeup_remover, cleanser, toner, serum, treatment, moisturizer, sunscreen]
+              description: "Các bước chưa có SKU phù hợp (v4)."
+            warnings:
+              type: array
+              maxItems: 10
+              items:
+                type: string
+                maxLength: 500
+              description: "Cảnh báo về dữ liệu/routine (v4)."
+            disclaimer:
+              type: string
+              description: "Khuyến cáo y khoa / hướng dẫn an toàn từ chuyên gia."
+
+    RecommendedProduct:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - routine_step
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          description: "Product ID chuẩn trong CSDL WooCommerce."
+        stt:
+          type: integer
+          description: "Số thứ tự tham chiếu trong danh mục mẫu."
+        name:
+          type: string
+          maxLength: 255
+          description: "Tên thương mại của sản phẩm."
+        price:
+          type: integer
+          minimum: 0
+          description: "Đơn giá tính theo đơn vị VND."
+        routine_step:
+          type: string
+          enum: [cleanser, makeup_remover, toner, serum, treatment, moisturizer, sunscreen]
+          description: "Bước chăm sóc da tương ứng trong quy trình."
+        reason:
+          type: string
+          description: "Lý do chuyên gia lựa chọn sản phẩm cho hồ sơ da này."
+
+    ApiErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+        - data
+      properties:
+        code:
+          type: string
+          description: "Mã định danh lỗi (ví dụ: kleer_invalid_payload, kleer_quiz_engine_error)."
+        message:
+          type: string
+          description: "Thông điệp mô tả lỗi có thể đọc được."
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+              description: "Mã trạng thái HTTP tương ứng (400, 500)."
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  pointer:
+                    type: string
+                    description: "JSON Pointer RFC 6901 chỉ rõ vị trí lỗi trong body request."
+                  keyword:
+                    type: string
+                    description: "Từ khóa Schema bị vi phạm."
+                  message:
+                    type: string
+                    description: "Chi tiết lỗi vi phạm."

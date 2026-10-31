@@ -27,6 +27,7 @@ if ( ! defined( 'KLEER_PAYMENTS_URL' ) ) {
 	define( 'KLEER_PAYMENTS_URL', plugin_dir_url( __FILE__ ) );
 }
 
+require_once KLEER_PAYMENTS_DIR . 'includes/class-vnpay-signature.php';
 require_once KLEER_PAYMENTS_DIR . 'includes/class-qr-payload.php';
 require_once KLEER_PAYMENTS_DIR . 'includes/class-bank-account.php';
 require_once KLEER_PAYMENTS_DIR . 'includes/class-gateways.php';

@@ -50,7 +50,12 @@ class Gateways {
 			return $gateways;
 		}
 
-		$gateways[] = $this->bank_account->gateway_definition();
+		if ( class_exists( 'WC_Payment_Gateway' ) ) {
+			require_once KLEER_PAYMENTS_DIR . 'includes/class-vietqr-settings.php';
+			require_once KLEER_PAYMENTS_DIR . 'includes/class-vnpay-gateway.php';
+			$gateways[] = VietQR_Settings::class;
+			$gateways[] = VNPay_Gateway::class;
+		}
 
 		return $gateways;
 	}
@@ -73,7 +78,9 @@ class Gateways {
 				'description'  => __( 'Ban thanh toan tien mat cho nhan vien giao hang. Vui long chuan bi tien mat.', 'kleer-payments' ),
 				'instructions' => __( 'Khach tra tien mat khi nhan hang.', 'kleer-payments' ),
 				'enable_for_methods' => array(),
-				'enable_for_virtual'  => 'no',
+				// COD chi hien khi gio hang can van chuyen; shop chua cau hinh phuong thuc ship (L06)
+				// thi gio hang bi coi la "khong can ship" va COD bi an. Dat 'yes' de COD luon hien.
+				'enable_for_virtual'  => 'yes',
 			)
 		);
 
