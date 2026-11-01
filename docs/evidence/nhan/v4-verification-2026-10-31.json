@@ -1,0 +1,37 @@
+{
+    "checked_at_utc": "2026-10-31T08:09:40+00:00",
+    "source_url": "https://docs.google.com/spreadsheets/d/14cv_y-ps5W_KFH9b2cHPd8E1U7MneYuCR12XN9Wqj1Q/edit",
+    "source_captured_on": "2026-10-31",
+    "source_sha256": "7541427df79153039808cab8bd2ae8c1c352e3f0725dde76bbe27e57c1d88d69",
+    "verifier_sha256": "53e118f49b958d4111f3e3c4697119fb783918c17e3188d6bbc33cb6fe60c686",
+    "implementation_sha256": {
+        "QuizQuestions.php": "22ce3ed84e4ed170f0aca5f029dc2c3856befaccf0ffc907656f4c1595111b75",
+        "QuizEngineService.php": "5bcca9c27b94cc6aa54f2f089119325b158ba1699016462071408c68ee1baa9c"
+    },
+    "mode": "isolated_cli_fixture_only",
+    "php_version": "8.2.12",
+    "version": "v4",
+    "questions": 6,
+    "options": 27,
+    "combinations_checked": 7500,
+    "combinations_passed": 7500,
+    "workbook_anchor_cases_passed": 11,
+    "invalid_answer_cases_passed": 6,
+    "assertions": 67600,
+    "failures": 0,
+    "first_failures": [],
+    "sample_catalog_products": 30,
+    "routines_with_missing_steps_on_sample_catalog": 5700,
+    "routines_below_two_products_on_sample_catalog": 0,
+    "assumptions": [
+        "Eligibility filters by skin type before product scoring (QA A-01; consistent with the eleven source cases).",
+        "Specific skin type means fewer than all five types; all-five source rows map to all_skin_types.",
+        "Equal score and price are resolved by lower ID; source states only the price tie-break."
+    ],
+    "limits": [
+        "No WordPress, WooCommerce database, HTTP, menu, cart, or performance acceptance.",
+        "Source IDs 1..30 are fixture row IDs, never asserted to be live WooCommerce IDs.",
+        "Passing logic with missing-step warnings is not proof that every answer has a complete purchasable routine.",
+        "User selected v4; PO/SM G3 approval and acceptance of the explicit assumptions remain separate."
+    ]
+}
