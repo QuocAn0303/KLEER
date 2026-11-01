@@ -28,6 +28,7 @@ function theme_setup(): void
 
     register_nav_menus([
         'primary_menu' => __('Primary Menu', 'kleer-theme'),
+        'footer_menu'  => __('Footer Menu', 'kleer-theme'),
     ]);
 }
 add_action('after_setup_theme', __NAMESPACE__ . '\\theme_setup');
@@ -37,6 +38,33 @@ add_action('after_setup_theme', __NAMESPACE__ . '\\theme_setup');
  */
 function enqueue_assets(): void
 {
+    // 1. Google Fonts (Fraunces & Outfit)
+    wp_enqueue_style(
+        'kleer-google-fonts',
+        'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Outfit:wght@300;400;500;600;700&display=swap',
+        [],
+        null
+    );
+
+    // 2. CSS Global (Navbar, Footer, Hệ thống màu Ombre)
+    wp_enqueue_style(
+        'kleer-global-style',
+        get_template_directory_uri() . '/css/global.css',
+        ['kleer-google-fonts'],
+        KLEER_THEME_VERSION
+    );
+
+    // 3. CSS Trang chủ (Chỉ nạp khi ở Front Page)
+    if (is_front_page()) {
+        wp_enqueue_style(
+            'kleer-homepage-style',
+            get_template_directory_uri() . '/css/homepage.css',
+            ['kleer-global-style'],
+            KLEER_THEME_VERSION
+        );
+    }
+
+    // 4. File CSS/JS Main của dự án
     wp_enqueue_style(
         'kleer-main-style',
         get_template_directory_uri() . '/assets/css/main.css',
@@ -87,6 +115,10 @@ function enqueue_assets(): void
 add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets');
 
 // Nạp file đăng ký script & style cho Quiz SPA
+<<<<<<< HEAD
 require_once get_template_directory() . '/inc/quiz-assets.php';
 
 require_once get_template_directory() . '/inc/ajax-catalog-filter.php';
+=======
+require_once get_template_directory() . '/inc/quiz-assets.php';
+>>>>>>> 504140c (feat: cap nhat giao dien homepage theme KLEER)
