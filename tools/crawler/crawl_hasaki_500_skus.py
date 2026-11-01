@@ -244,12 +244,24 @@ def process_and_save_image(img_url: str, sku: str) -> str:
         try:
             img = Image.open(io.BytesIO(img_data))
             w, h = img.size
-            min_dim = min(w, h)
-            left = (w - min_dim) // 2
-            top = (h - min_dim) // 2
-            img_cropped = img.crop((left, top, left + min_dim, top + min_dim))
+            aspect_ratio = w / h
             
-            if min_dim > 600:
+            # Cắt ảnh thông minh (Smart Crop)
+            if aspect_ratio > 1.3:
+                # Banner ngang rộng (như og-image-auto): Sản phẩm nằm trọn vẹn ở khối vuông bên trái
+                img_cropped = img.crop((0, 0, h, h))
+            elif aspect_ratio < 0.77:
+                # Banner dọc: Cắt giữa theo chiều dọc
+                top = (h - w) // 2
+                img_cropped = img.crop((0, top, w, top + w))
+            else:
+                # Ảnh vuông hoặc gần vuông: Cắt giữa cân đối
+                min_dim = min(w, h)
+                left = (w - min_dim) // 2
+                top = (h - min_dim) // 2
+                img_cropped = img.crop((left, top, left + min_dim, top + min_dim))
+            
+            if max(img_cropped.size) > 600:
                 img_cropped = img_cropped.resize((600, 600), Image.Resampling.LANCZOS)
                 
             if img_cropped.mode in ("RGBA", "P"):
