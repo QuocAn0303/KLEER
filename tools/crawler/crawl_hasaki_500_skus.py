@@ -26,7 +26,6 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 OUTPUT_CSV = "data/woocommerce_500_skus.csv"
-BACKUP_CSV = "data/hasaki_500_skus.csv"
 IMG_UPLOADS_DIR = "wp-content/uploads/products"
 IMG_DATA_DIR = "data/images/products"
 
@@ -458,16 +457,13 @@ def run_crawler():
         "Source URL", "Image Source URL"
     ]
     
-    for path in [OUTPUT_CSV, BACKUP_CSV]:
-        with open(path, "w", newline="", encoding="utf-8-sig") as f:
-            writer = csv.DictWriter(f, fieldnames=headers)
-            writer.writeheader()
-            for p in all_products:
-                writer.writerow(p)
-                
-    print(f"Đã xuất dữ liệu thành công ra:")
-    print(f"  1. {OUTPUT_CSV}")
-    print(f"  2. {BACKUP_CSV}")
+    with open(OUTPUT_CSV, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(f, fieldnames=headers)
+        writer.writeheader()
+        for p in all_products:
+            writer.writerow(p)
+            
+    print(f"Đã xuất dữ liệu thành công ra: {OUTPUT_CSV}")
 
 if __name__ == "__main__":
     run_crawler()
