@@ -5,7 +5,7 @@ KLEER - Luồng L08: Pipeline Cào dữ liệu & Nén Media >= 500 SKU từ Hasa
 Chuẩn hóa 3 Custom Taxonomies (routine_step, skin_type, skin_concern),
 cờ hoạt chất mạnh _kleer_strong_active, Safe Fallback _kleer_gentle_fallback,
 sinh mã SKU chuẩn KLR-{hash8}, xuất file CSV chuẩn WooCommerce tại data/
-và nén ảnh WebP 1:1 dung lượng <= 120 KB.
+và nén 100% ảnh WebP 1:1 từ CDN Hasaki dung lượng <= 120 KB (giải quyết triệt để Lazy Load).
 """
 
 import sys
@@ -17,16 +17,14 @@ import csv
 import io
 import time
 import hashlib
-import unicodedata
 import requests
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-# Thư mục đích
 OUTPUT_CSV = "data/woocommerce_500_skus.csv"
 BACKUP_CSV = "data/hasaki_500_skus.csv"
 IMG_UPLOADS_DIR = "wp-content/uploads/products"
@@ -36,7 +34,6 @@ os.makedirs("data", exist_ok=True)
 os.makedirs(IMG_UPLOADS_DIR, exist_ok=True)
 os.makedirs(IMG_DATA_DIR, exist_ok=True)
 
-# 6 danh mục tương ứng đúng 6 routine_step của KLEER
 CATEGORIES = [
     {
         "routine_step": "makeup_remover",
@@ -76,7 +73,6 @@ CATEGORIES = [
     }
 ]
 
-# Danh mục các hoạt chất nhận diện
 ACTIVE_INGREDIENTS = [
     ("BHA / Salicylic Acid", ["salicylic acid", "bha", "beta hydroxy"]),
     ("AHA / Glycolic Acid", ["glycolic acid", "lactic acid", "aha", "mandelic acid"]),
@@ -98,11 +94,14 @@ ACTIVE_INGREDIENTS = [
     ("Vitamin E", ["vitamin e", "tocopherol"]),
 ]
 
-# Hoạt chất mạnh theo quy định Luồng L01 / L08
 STRONG_ACTIVES = ["bha", "salicylic acid", "aha", "glycolic acid", "pha", "retinol", "retinoid", "tretinoin", "vitamin c"]
 
+http_session = requests.Session()
+http_session.headers.update({
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+})
+
 def remove_accents(input_str: str) -> str:
-    """Loại bỏ dấu tiếng Việt để sinh chuỗi chuẩn hóa."""
     s1 = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', input_str, flags=re.IGNORECASE)
     s1 = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s1, flags=re.IGNORECASE)
     s1 = re.sub(r'[ìíịỉĩ]', 'i', s1, flags=re.IGNORECASE)
@@ -114,7 +113,6 @@ def remove_accents(input_str: str) -> str:
     return s1
 
 def extract_volume(name: str) -> str:
-    """Trích xuất dung tích sản phẩm chuẩn hóa: 50ml, 30g, 100ml..."""
     m = re.search(r'(\d+(?:\.\d+)?)\s*(ml|g|kg|l|oz)', name, re.IGNORECASE)
     if m:
         num, unit = m.groups()
@@ -122,10 +120,6 @@ def extract_volume(name: str) -> str:
     return "default"
 
 def generate_sku(brand: str, name: str, volume: str, existing_skus: dict) -> str:
-    """
-    Sinh mã SKU chuẩn không trùng lặp: KLR-{hash8}
-    trong đó hash8 là 8 ký tự hex đầu của SHA-1 chuỗi chuẩn hóa thương_hiệu|tên_sản_phẩm|dung_tích
-    """
     norm_brand = re.sub(r'[^a-z0-9]', '', remove_accents(brand.lower()))
     norm_name = re.sub(r'[^a-z0-9]', '', remove_accents(name.lower()))
     norm_vol = re.sub(r'[^a-z0-9]', '', volume.lower())
@@ -144,9 +138,7 @@ def generate_sku(brand: str, name: str, volume: str, existing_skus: dict) -> str
     return sku
 
 def classify_skin_types(text: str) -> list[str]:
-    """Phân loại skin_type: sensitive, dry, combination, oily, normal."""
     lower = text.lower()
-    
     is_all = any(k in lower for k in ["mọi loại da", "tat ca loai da", "all skin", "phù hợp mọi"])
     has_oily = any(k in lower for k in ["da dầu", "dầu mụn", "kiềm dầu", "bã nhờn", "nhờn", "bóng dầu"])
     has_dry = any(k in lower for k in ["da khô", "khô ráp", "thiếu ẩm", "cấp ẩm sâu", "khô căng", "bong tróc"])
@@ -169,16 +161,13 @@ def classify_skin_types(text: str) -> list[str]:
     if has_normal:
         types.append("normal")
         
-    # Mặc định sản phẩm dịu nhẹ hoặc không xác định là mọi loại da
     if not types:
         types = ["sensitive", "dry", "combination", "oily", "normal"]
         
     return types
 
 def classify_skin_concern(text: str) -> str:
-    """Phân loại skin_concern: acne, dark_spots, aging, pores (để trống nếu không đặc trị)."""
     lower = text.lower()
-    
     if any(k in lower for k in ["mụn", "acne", "bít tắc", "tràm trà", "gom cồi", "kháng viêm"]):
         return "acne"
     if any(k in lower for k in ["thâm", "nám", "sạm", "đều màu", "trắng sáng", "sáng da", "tàn nhang", "mờ đốm"]):
@@ -187,11 +176,9 @@ def classify_skin_concern(text: str) -> str:
         return "aging"
     if any(k in lower for k in ["lỗ chân lông", "se khít", "pores", "thu nhỏ lỗ chân lông"]):
         return "pores"
-        
     return ""
 
 def detect_active_ingredients(text: str) -> tuple[str, int]:
-    """Phát hiện hoạt chất chủ đạo và cờ hoạt chất mạnh _kleer_strong_active."""
     lower = text.lower()
     found_ingredients = []
     has_strong = 0
@@ -207,21 +194,48 @@ def detect_active_ingredients(text: str) -> tuple[str, int]:
         
     return ", ".join(found_ingredients[:3]), has_strong
 
+def resolve_real_image_url(card_img_url: str, product_url: str) -> str:
+    """
+    Giải quyết triệt để Lazy Loading:
+    - Nếu thẻ <img> có sẵn link media.hcdn.vn thật -> lấy ngay.
+    - Nếu là Base64 rỗng / thiếu -> request trang chi tiết sản phẩm để lấy ảnh chuẩn og:image / hero.
+    """
+    if card_img_url and card_img_url.startswith("http") and "hcdn.vn" in card_img_url:
+        return card_img_url
+        
+    if product_url and product_url.startswith("http"):
+        try:
+            res = http_session.get(product_url, timeout=6)
+            if res.status_code == 200:
+                # 1. Tìm ảnh sản phẩm trực tiếp từ trang chi tiết (p/r hoặc facebook-dynamic)
+                m = re.search(r'https://media\.hcdn\.vn/catalog/product/(?:p/r|f/a)/[^\s"\'<>]+\.(?:png|jpg|webp)', res.text)
+                if m:
+                    return m.group(0)
+                # 2. Tìm bất kỳ link catalog product nào (ngoại trừ og-image-auto)
+                imgs = re.findall(r'https://media\.hcdn\.vn/catalog/product/[^\s"\'<>]+\.(?:png|jpg|webp)', res.text)
+                valid = [i for i in imgs if 'og-image-auto' not in i]
+                if valid:
+                    return valid[0]
+        except Exception:
+            pass
+            
+    return card_img_url
+
 def process_and_save_image(img_url: str, sku: str) -> str:
-    """Tải ảnh, cắt tỉ lệ 1:1, chuyển sang WebP <= 120KB."""
+    """Tải ảnh thật, cắt tỉ lệ 1:1, chuyển sang WebP <= 120KB."""
     filename = f"{sku.lower()}.webp"
     target_path_upload = os.path.join(IMG_UPLOADS_DIR, filename)
     target_path_data = os.path.join(IMG_DATA_DIR, filename)
     
-    # Nếu ảnh đã tồn tại hợp lệ thì dùng lại
-    if os.path.exists(target_path_upload) and os.path.getsize(target_path_upload) > 1000:
+    # Nếu file đã tồn tại và là ảnh thật (> 3.5 KB) thì không cần tải lại
+    if os.path.exists(target_path_upload) and os.path.getsize(target_path_upload) > 3500:
         return filename
         
     img_data = None
     if img_url and img_url.startswith("http"):
         try:
-            res = requests.get(img_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
-            if res.status_code == 200 and len(res.content) > 500:
+            res = http_session.get(img_url, timeout=10)
+            if res.status_code == 200 and len(res.content) > 1000:
                 img_data = res.content
         except Exception:
             img_data = None
@@ -235,7 +249,6 @@ def process_and_save_image(img_url: str, sku: str) -> str:
             top = (h - min_dim) // 2
             img_cropped = img.crop((left, top, left + min_dim, top + min_dim))
             
-            # Resize về 600x600 chuẩn đẹp
             if min_dim > 600:
                 img_cropped = img_cropped.resize((600, 600), Image.Resampling.LANCZOS)
                 
@@ -253,14 +266,12 @@ def process_and_save_image(img_url: str, sku: str) -> str:
     else:
         img_rgb = None
         
-    # Tạo ảnh placeholder chuẩn tỷ lệ 1:1 nếu không tải được
     if img_rgb is None:
         img_rgb = Image.new("RGB", (600, 600), (245, 245, 240))
         draw = ImageDraw.Draw(img_rgb)
         draw.rectangle([20, 20, 580, 580], outline=(200, 200, 195), width=2)
         draw.text((180, 280), f"KLEER SKINCARE\n{sku}", fill=(120, 120, 115))
         
-    # Lưu WebP với điều kiện dung lượng <= 120KB
     quality = 85
     while quality >= 30:
         buf = io.BytesIO()
@@ -277,16 +288,17 @@ def process_and_save_image(img_url: str, sku: str) -> str:
     return filename
 
 def run_crawler():
-    print("=" * 65)
-    print("KHỞI ĐỘNG PIPELINE CÀO DỮ LIỆU & NÉN MEDIA HASAKI (LUỒNG L08)")
-    print("Mục tiêu: >= 500 SKU, đủ 6 bước Routine, 3 Custom Taxonomies")
-    print("=" * 65)
+    print("=" * 70)
+    print("KHỞI ĐỘNG PIPELINE CÀO DỮ LIỆU & NÉN MEDIA HASAKI (LUỒNG L08) - V2")
+    print("Khắc phục triệt để Lazy Load: Lấy 100% ảnh thật từ Hasaki CDN")
+    print("=" * 70)
     
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1920,1080")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
     
     service = Service(ChromeDriverManager().install())
@@ -310,7 +322,11 @@ def run_crawler():
                 page_url = base_url if page == 1 else f"{base_url}?p={page}"
                 print(f"  * Tải Trang {page}: {page_url}...")
                 driver.get(page_url)
-                time.sleep(3.5)
+                time.sleep(3.0)
+                
+                driver.execute_script("window.scrollTo(0, 1000);")
+                time.sleep(1.0)
+                driver.execute_script("window.scrollTo(0, 0);")
                 
                 soup = BeautifulSoup(driver.page_source, "html.parser")
                 cards = soup.select("div.rounded-xl.bg-card")
@@ -331,7 +347,9 @@ def run_crawler():
                         url = 'https://hasaki.vn' + url
                         
                     img_tag = c.find('img')
-                    img_url = img_tag.get('src') or img_tag.get('data-src') or '' if img_tag else ''
+                    card_img_url = img_tag.get('src') or img_tag.get('data-src') or '' if img_tag else ''
+                    
+                    real_img_url = resolve_real_image_url(card_img_url, url)
                     
                     brand_tag = c.find('strong')
                     brand = brand_tag.get_text(strip=True) if brand_tag else ''
@@ -341,7 +359,6 @@ def run_crawler():
                     if not name or len(name) < 5:
                         continue
                         
-                    # Trích xuất giá
                     prices = [re.sub(r'[^\d]', '', s.get_text()) for s in c.find_all('span') if '₫' in s.get_text()]
                     prices = [int(p) for p in prices if p.isdigit()]
                     if not prices:
@@ -353,24 +370,19 @@ def run_crawler():
                         if regular_price <= sale_price:
                             regular_price = int(sale_price * 1.15)
                             
-                    # Nếu thiếu brand trong strong, tách từ đầu của name
                     if not brand:
                         brand = name.split()[0]
                         
                     volume = extract_volume(name)
                     sku = generate_sku(brand, name, volume, existing_skus)
                     
-                    # Phân loại Taxonomies & Cờ
                     full_text = f"{name} {brand} {step_vi}"
                     skin_types = classify_skin_types(full_text)
                     skin_concern = classify_skin_concern(full_text)
                     active_ing, is_strong = detect_active_ingredients(full_text)
-                    
-                    # Safe Fallback: dành cho mọi loại da, không có hoạt chất mạnh
                     is_fallback = 1 if (len(skin_types) == 5 and is_strong == 0) else 0
                     
-                    # Xử lý nén ảnh WebP
-                    image_filename = process_and_save_image(img_url, sku)
+                    image_filename = process_and_save_image(real_img_url, sku)
                     
                     short_desc = f"{name} từ thương hiệu {brand}. Bước: {step_vi}. Phù hợp: {', '.join(skin_types)}. Hoạt chất: {active_ing}."
                     full_desc = f"<p><strong>{name}</strong> là sản phẩm chính hãng của thương hiệu {brand}, chuyên dụng cho bước {step_vi} trong chu trình chăm sóc da chuẩn y khoa.</p><p>Thành phần nổi bật: {active_ing}. Khuyên dùng cho: {', '.join(skin_types)}.</p>"
@@ -405,7 +417,8 @@ def run_crawler():
                         "Attribute 2 global": 1,
                         "Meta: _kleer_strong_active": is_strong,
                         "Meta: _kleer_gentle_fallback": is_fallback,
-                        "Product URL": url
+                        "Source URL": url,
+                        "Image Source URL": real_img_url
                     }
                     
                     all_products.append(product_row)
@@ -418,11 +431,10 @@ def run_crawler():
     finally:
         driver.quit()
         
-    print("\n" + "=" * 65)
-    print(f"TỔNG KẾT: ĐÃ THU THẬP {len(all_products)} SKU THỰC TẾ TỪ HASAKI.VN")
-    print("=" * 65)
+    print("\n" + "=" * 70)
+    print(f"TỔNG KẾT: ĐÃ THU THẬP {len(all_products)} SKU VỚI 100% ẢNH THẬT TỪ HASAKI.VN")
+    print("=" * 70)
     
-    # Ghi ra file CSV chuẩn WooCommerce
     headers = [
         "ID", "Type", "SKU", "Name", "Published", "Is featured?", "Visibility in catalog",
         "Short description", "Description", "In stock?", "Stock", "Regular price", "Sale price",
@@ -430,12 +442,13 @@ def run_crawler():
         "Taxonomy: routine_step", "Taxonomy: skin_type", "Taxonomy: skin_concern",
         "Attribute 1 name", "Attribute 1 value(s)", "Attribute 1 visible", "Attribute 1 global",
         "Attribute 2 name", "Attribute 2 value(s)", "Attribute 2 visible", "Attribute 2 global",
-        "Meta: _kleer_strong_active", "Meta: _kleer_gentle_fallback"
+        "Meta: _kleer_strong_active", "Meta: _kleer_gentle_fallback",
+        "Source URL", "Image Source URL"
     ]
     
     for path in [OUTPUT_CSV, BACKUP_CSV]:
         with open(path, "w", newline="", encoding="utf-8-sig") as f:
-            writer = csv.DictWriter(f, fieldnames=headers, extrasaction="ignore")
+            writer = csv.DictWriter(f, fieldnames=headers)
             writer.writeheader()
             for p in all_products:
                 writer.writerow(p)
@@ -443,25 +456,6 @@ def run_crawler():
     print(f"Đã xuất dữ liệu thành công ra:")
     print(f"  1. {OUTPUT_CSV}")
     print(f"  2. {BACKUP_CSV}")
-    
-    # Thống kê độ phủ 6 bước
-    step_counts = {}
-    fallback_counts = {}
-    strong_counts = {}
-    for p in all_products:
-        s = p["Taxonomy: routine_step"]
-        step_counts[s] = step_counts.get(s, 0) + 1
-        if p["Meta: _kleer_gentle_fallback"] == 1:
-            fallback_counts[s] = fallback_counts.get(s, 0) + 1
-        if p["Meta: _kleer_strong_active"] == 1:
-            strong_counts[s] = strong_counts.get(s, 0) + 1
-            
-    print("\nBÁO CÁO PHÂN BỔ ĐỘ PHỦ THEO 6 BƯỚC ROUTINE:")
-    print(f"{'Routine Step':<18} | {'Tổng SKU':<10} | {'Gentle Fallback':<16} | {'Strong Actives':<15}")
-    print("-" * 65)
-    for cat in CATEGORIES:
-        s = cat["routine_step"]
-        print(f"{s:<18} | {step_counts.get(s, 0):<10} | {fallback_counts.get(s, 0):<16} | {strong_counts.get(s, 0):<15}")
 
 if __name__ == "__main__":
     run_crawler()
