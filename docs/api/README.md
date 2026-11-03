@@ -1,6 +1,31 @@
 # Tích hợp KLEER Routine API
 
-Người chuẩn bị: Bùi Hiếu Nhân. Phiên bản 0.2.0, ngày 26/10/2026. Gói này mô tả hành vi code hiện tại; G3 và quy tắc nghiệp vụ còn chờ PO/SM phê duyệt. Chưa có kết quả nghiệm thu API 200 trên sản phẩm thật hoặc tiêu chí HTTP dưới 300 ms.
+## Bổ sung nghiệm thu v4 — 03/11/2026
+
+Theo xác nhận của người dùng ngày 03/11, phiên bản làm việc là **v4**. Đây không phải chữ ký G3 thay PO/SM. API mặc định vẫn giữ v1 để bảo toàn client cũ; client v4 gửi query `version=v4`.
+
+- Import `KLEER-Routine-v4.postman_collection.json`: 9 request thành công/validation/nonce/Origin/version; đổi `base_url` theo môi trường.
+- Payload mẫu: `tools/quiz/valid-submission-v4.json` (6 câu, không có version trong JSON body).
+- Reader v4 đọc hết các trang simple products publish/instock, loại sản phẩm ẩn hoặc giá không hợp lệ; taxonomy đọc theo một lô. Các term legacy được đọc khi sản phẩm không có term chuẩn, không sửa dữ liệu.
+- Meta chuẩn của CSV là `_kleer_strong_active`; chỉ đọc `_kleer_has_strong_actives` để tương thích khi key chuẩn chưa có. Chuỗi `0`/`false` không bật cờ. Khi CSV gắn đủ 5 loại da, reader quy về `all_skin_types` để không cộng nhầm điểm dành riêng loại da.
+- Cache catalog v4 đổi key sang `catalog_live_v3_*`, TTL 60 giây, vẫn thuộc nhóm `kleer_products` đang có invalidation.
+
+```powershell
+& 'C:\xampp\php\php.exe' wp-content/plugins/kleer-plugin/tests/run_v4_repository_tests.php
+python -m unittest discover -s tools/quiz -p test_benchmark.py -v
+python tools/quiz/check-v4-http.py --base-url http://127.0.0.1:8082 --output ../deliverables/kleer-nhan-v4-2026-11-03/http-v4.json
+python tools/quiz/benchmark.py --base-url http://127.0.0.1:8082 --version v4 --samples 20 --output ../deliverables/kleer-nhan-v4-2026-11-03/benchmark-v4.json
+```
+
+`--allow-missing-steps` chỉ dùng khi người nghiệm thu chấp nhận routine thiếu bước; không dùng để tuyên bố routine đầy đủ. Một phản hồi lỗi hoặc không đủ số mẫu không được tính đạt hiệu năng. Lượt đầu chỉ được gọi là cold nếu catalog cache đã rỗng trước lần đo. Công cụ `verify-v4-runtime.php` kiểm catalog và 7.500 tổ hợp trong process; thời gian đó không phải thời gian HTTP.
+
+Đợt kiểm tra ngày 03/11 dùng database/Redis/volume riêng ở cổng 8082, WooCommerce 11.2.1 và 498 sản phẩm từ các dòng CSV không trùng SKU. 406 sản phẩm có bước routine hợp lệ. Không nhập/xóa/sửa sản phẩm, tồn kho, tài khoản hay taxonomy trên database nhóm ở cổng 8081. Báo cáo đầy đủ tại `docs/tasks/NHAN_L01_G5_05_V4_HANDOVER_2026-11-03.md`.
+
+## Hồ sơ v0.2 ngày 26/10/2026
+
+Phần dưới giữ nội dung và giới hạn của đợt 26/10; kết quả thử v4 mới xem mục bổ sung phía trên.
+
+Người chuẩn bị: Bùi Hiếu Nhân. Phiên bản 0.2.0, ngày 26/10/2026. G3 và quy tắc nghiệp vụ khi lập hồ sơ còn chờ PO/SM phê duyệt. Đợt 26/10 chưa có kết quả nghiệm thu API 200 trên sản phẩm thật hoặc tiêu chí HTTP dưới 300 ms.
 
 ## Phiên bản và tích hợp develop
 

@@ -1,0 +1,12 @@
+{
+  "session_id": "33333333-4444-4555-8666-777777777777",
+  "consent": {"policy_accepted": true, "marketing_opt_in": false},
+  "answers": [
+    {"question_id": "q1", "answer": "1C"},
+    {"question_id": "q2", "answer": "2A"},
+    {"question_id": "q3", "answer": "3D"},
+    {"question_id": "q4", "answer": "4A"},
+    {"question_id": "q5", "answer": "5C"},
+    {"question_id": "q6", "answer": "6B"}
+  ]
+}
