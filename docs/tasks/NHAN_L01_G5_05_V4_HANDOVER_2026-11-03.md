@@ -1,6 +1,6 @@
 # Bàn giao L01-G5-05 — Routine Query Engine và REST API v4
 
-Ngày: 03/11/2026. Phần công việc của Bùi Hiếu Nhân. Trạng thái bàn giao: **hoàn thành code và kiểm thử v4 trên môi trường riêng; PR gửi nhóm trưởng review/merge**.
+Ngày: 03/11/2026. Phần công việc của Bùi Hiếu Nhân. Trạng thái bàn giao: **hoàn thành code và kiểm thử v4 trên môi trường riêng; nhánh feature đã push, chờ tạo PR và nhóm trưởng review/merge**.
 
 Người dùng đã xác nhận dùng v4 trong trao đổi ngày 03/11. Xác nhận này được ghi nhận làm phạm vi triển khai; không tự thay chữ ký hoặc biên bản G3 của PO/SM.
 
@@ -34,7 +34,7 @@ Người dùng đã xác nhận dùng v4 trong trao đổi ngày 03/11. Xác nh�
 | docs/api/README.md | Hướng dẫn v4 mới, lệnh chạy và giới hạn; phân biệt hồ sơ lịch sử 26/10 với kết quả mới. |
 | docs/tasks/NHAN_L01_G5_05_V4_HANDOVER_2026-11-03.md | Báo cáo bàn giao này. |
 
-**Không thay trọng số hoặc thuật toán QuizQuestions/QuizEngineService, không đổi contract route mặc định v1, không sửa source theme/core hoặc module thanh toán/email.** Các thay đổi local .gitignore, setup.ps1 và hai file core chưa theo dõi có sẵn được giữ nguyên. Giai đoạn kiểm thử ban đầu chưa commit/push. Theo yêu cầu bàn giao ngày 03/11, bộ thay đổi được phát hành trên nhánh feature/nhan-l01-g5-05-v4, mở PR vào develop và ghi nhận Hoàn thành ở đúng task L01-G5-05, kèm phạm vi kiểm thử. Không ký thay G3 hoặc ghi rằng PR đã merge.
+**Không thay trọng số hoặc thuật toán QuizQuestions/QuizEngineService, không đổi contract route mặc định v1, không sửa source theme/core hoặc module thanh toán/email.** Các thay đổi local .gitignore, setup.ps1 và hai file core chưa theo dõi có sẵn được giữ nguyên. Giai đoạn kiểm thử ban đầu chưa commit/push. Theo yêu cầu bàn giao ngày 03/11, bộ thay đổi được phát hành trên nhánh feature/nhan-l01-g5-05-v4, chuẩn bị PR vào develop và ghi nhận Hoàn thành ở đúng task L01-G5-05, kèm phạm vi kiểm thử. Không ký thay G3 hoặc ghi rằng PR đã merge.
 
 ## 3. Môi trường kiểm thử và dữ liệu
 
@@ -149,6 +149,14 @@ Bằng chứng được commit tại docs/evidence/nhan/v4-2026-11-03/ và lưu 
 - http-v4.json: lượt đầu chậm trước điều chỉnh Nginx test, được giữ để minh bạch điều kiện.
 - shared-data-integrity.json: so sánh bản ghi nhóm trước/sau.
 - quiz-v4-result.jpg: ảnh giao diện kết quả.
-- changed-files.json: danh sách/hash các file kỹ thuật bàn giao. Bản patch review được cung cấp trong gói Drive; source chính nằm trên nhánh feature của PR.
+- changed-files.json: danh sách/hash các file kỹ thuật bàn giao. Bản patch review được cung cấp trong gói Drive; source chính nằm trên nhánh feature đã push.
 
 Bản ghi thay đổi giữ riêng phần code của nhiệm vụ; không chứa .env, SQL dump, credentials hoặc những thay đổi local có sẵn.
+
+## 9. Kết quả phát hành Git ngày 03/11/2026
+
+- Đã push nhánh feature/nhan-l01-g5-05-v4: https://github.com/QuocAn0303/KLEER/tree/feature/nhan-l01-g5-05-v4
+- Commit mã và bằng chứng: 846fc68a496b693e9d04636a0913168203089709.
+- So sánh để tạo PR vào develop: https://github.com/QuocAn0303/KLEER/compare/develop...feature/nhan-l01-g5-05-v4?expand=1
+- Chưa tạo được PR: GitHub connector trả 403 Resource not accessible by integration; phiên trình duyệt trong ứng dụng chưa đăng nhập và điều khiển Chrome bị dừng do không xác định chắc URL. Nhóm trưởng/Nhân có thể mở liên kết so sánh và tạo PR từ nội dung pr-payload.json trong gói bằng chứng. Không có merge vào develop.
+- Drive bàn giao: https://drive.google.com/drive/folders/18O1YD-cVcsDbOxmrvvYEPK2so7oTSMmL (Hiếu Nhân).
