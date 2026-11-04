@@ -115,10 +115,6 @@ function enqueue_assets(): void
 add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets');
 
 // Nạp file đăng ký script & style cho Quiz SPA
-<<<<<<< HEAD
 require_once get_template_directory() . '/inc/quiz-assets.php';
-
 require_once get_template_directory() . '/inc/ajax-catalog-filter.php';
-=======
-require_once get_template_directory() . '/inc/quiz-assets.php';
->>>>>>> 504140c (feat: cap nhat giao dien homepage theme KLEER)
+
