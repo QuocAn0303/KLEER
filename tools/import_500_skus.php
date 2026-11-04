@@ -268,6 +268,14 @@ while (($row = fgetcsv($handle)) !== false) {
     $assign_attr('brand', $brand);
     $assign_attr('active_ingredient', $active_ing);
 
+    // Đồng thời gán vào taxonomy chuẩn WooCommerce 'product_brand' (hiển thị cột Product brands trong Admin)
+    if (!empty($brand)) {
+        $brand_terms = array_filter(array_map('trim', explode(',', $brand)));
+        if (!empty($brand_terms)) {
+            wp_set_object_terms($saved_id, $brand_terms, 'product_brand', false);
+        }
+    }
+
     // Cập nhật attributes cho product
     $product = wc_get_product($saved_id);
     if (!empty($wc_attributes)) {
