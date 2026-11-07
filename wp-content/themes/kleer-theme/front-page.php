@@ -5,7 +5,7 @@ get_header();
 
 <main>
     <!-- 1. HERO BANNER -->
-    <section class="hero" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/hero-bg.jpg');">
+    <section class="hero" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg.jpg');">
         <div class="hero__container container">
             <div class="hero__content">
                 <p class="hero__subtitle">NƯỚC CẤT THỰC VẬT & LÂM SÀNG</p>
@@ -19,11 +19,11 @@ get_header();
 
             <div class="hero__showcase">
                 <div class="hero__card hero__card--large">
-                    <img src="<?php echo get_template_directory_uri(); ?>/images/hero-product-1.jpg" alt="Sản phẩm Kleer 1">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-product-1.jpg" alt="Sản phẩm Kleer 1">
                 </div>
                 <div class="hero__col-small">
                     <div class="hero__card hero__card--small">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/hero-product-2.jpg" alt="Sản phẩm Kleer 2">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-product-2.jpg" alt="Sản phẩm Kleer 2">
                     </div>
                     <div class="hero__info-box">
                         <div class="hero__info-header">
@@ -43,7 +43,7 @@ get_header();
     <section class="philosophy-sec ombre-bg-1">
         <div class="container philosophy__inner">
             <div class="philosophy__image-col">
-                <img src="<?php echo get_template_directory_uri(); ?>/images/philosophy-img.jpg" alt="Triết lý Kleer" class="philosophy__img">
+                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/philosophy-img.jpg" alt="Triết lý Kleer" class="philosophy__img">
             </div>
             <div class="philosophy__content-col">
                 <h2 class="philosophy__title">Triết lý của chúng tôi</h2>
@@ -110,7 +110,7 @@ get_header();
     </section>
 
     <!-- 4. BANNER CAM KẾT THƯƠNG HIỆU -->
-    <section class="brand-banner" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/brand-banner-bg.jpg');">
+    <section class="brand-banner" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/brand-banner-bg.jpg');">
         <div class="container">
             <div class="brand-banner__grid">
                 <div class="brand-banner__item">
@@ -141,7 +141,7 @@ get_header();
             <div class="ingredients__grid">
                 <div class="ingredient-card">
                     <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/ingredient-1.jpg" alt="Trà xanh cổ thụ">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ingredient-1.jpg" alt="Trà xanh cổ thụ">
                     </div>
                     <div class="ingredient-card__body">
                         <h3 class="ingredient-card__title">Trà xanh cổ thụ</h3>
@@ -150,7 +150,7 @@ get_header();
                 </div>
                 <div class="ingredient-card">
                     <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/ingredient-2.jpg" alt="Vitamin C sinh học">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ingredient-2.jpg" alt="Vitamin C sinh học">
                     </div>
                     <div class="ingredient-card__body">
                         <h3 class="ingredient-card__title">Vitamin C sinh học</h3>
@@ -159,7 +159,7 @@ get_header();
                 </div>
                 <div class="ingredient-card">
                     <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/ingredient-3.jpg" alt="Nha đam lên men">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ingredient-3.jpg" alt="Nha đam lên men">
                     </div>
                     <div class="ingredient-card__body">
                         <h3 class="ingredient-card__title">Nha đam lên men</h3>
@@ -168,7 +168,7 @@ get_header();
                 </div>
                 <div class="ingredient-card">
                     <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/ingredient-4.jpg" alt="Tinh dầu Jojoba vàng">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ingredient-4.jpg" alt="Tinh dầu Jojoba vàng">
                     </div>
                     <div class="ingredient-card__body">
                         <h3 class="ingredient-card__title">Tinh dầu Jojoba vàng</h3>
@@ -193,7 +193,7 @@ get_header();
                     <div class="testimonial-card__stars">★★★★★</div>
                     <p class="testimonial-card__quote">"Hương đất và kết cấu ẩm mịn đã thay đổi hoàn toàn thói quen skincare ban đêm của tôi. Làn da thức dậy thực sự dịu mát, bớt hẳn các vết ửng đỏ sau một ngày dài bụi bặm."</p>
                     <div class="testimonial-card__author">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/avatar-1.jpg" alt="Minh Anh" class="testimonial-card__avatar">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/avatar-1.jpg" alt="Minh Anh" class="testimonial-card__avatar">
                         <div class="testimonial-card__info">
                             <h4 class="testimonial-card__name">Minh Anh</h4>
                             <span class="testimonial-card__location">Hà Nội, Việt Nam</span>
@@ -204,7 +204,7 @@ get_header();
                     <div class="testimonial-card__stars">★★★★★</div>
                     <p class="testimonial-card__quote">"Tôi thích sự tối giản về mặt thiết kế lẫn danh sách thành phần. Không hề có cảm giác bóng nhờn, tía tô giúp da tôi thông thoáng hơn hẳn giữa khí hậu nóng ẩm miền Nam."</p>
                     <div class="testimonial-card__author">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/avatar-2.jpg" alt="Trần Hải" class="testimonial-card__avatar">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/avatar-2.jpg" alt="Trần Hải" class="testimonial-card__avatar">
                         <div class="testimonial-card__info">
                             <h4 class="testimonial-card__name">Trần Hải</h4>
                             <span class="testimonial-card__location">TP. Hồ Chí Minh</span>
@@ -241,7 +241,7 @@ get_header();
     </section>
 
     <!-- 8. ĐĂNG KÝ NHẬN THÔNG TIN -->
-    <section class="newsletter-sec" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/newsletter-bg.jpg');">
+    <section class="newsletter-sec" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/newsletter-bg.jpg');">
         <div class="container">
             <div class="newsletter__content">
                 <h2 class="newsletter__title">Đăng ký nhận thông tin từ KLEER</h2>
