@@ -2,28 +2,26 @@
 /* Template Name: Trang Chủ KLEER */
 get_header(); 
 ?>
-
 <main>
-    <!-- 1. HERO BANNER -->
-    <section class="hero" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/hero-bg.jpg');">
+    <!-- 1. HERO BANNER (Height 663px) -->
+    <section class="hero" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg.jpg');">
         <div class="hero__container container">
             <div class="hero__content">
                 <p class="hero__subtitle">NƯỚC CẤT THỰC VẬT & LÂM SÀNG</p>
                 <h1 class="hero__title">Làn da thuần khiết,<br>từ thiên nhiên<br>sâu thẳm.</h1>
                 <p class="hero__desc">Công thức chăm sóc da unisex vượt thời gian, kết hợp giữa tinh túy của các loại thực vật rừng ôn đới và nghiên cứu sinh học lạnh tân tiến nhất.</p>
                 <div class="hero__btn-group">
-                    <a href="#" class="btn btn--white">KHÁM PHÁ NGAY</a>
-                    <a href="#" class="btn btn--transparent">TÌM HIỂU KHOA HỌC</a>
+                    <a href="<?php echo function_exists('wc_get_page_id') ? get_permalink(wc_get_page_id('shop')) : '#'; ?>" class="btn btn--white">KHÁM PHÁ NGAY</a>
+                    <a href="<?php echo function_exists('wc_get_page_id') ? get_permalink(wc_get_page_id('shop')) : '#'; ?>" class="btn btn--outline">XEM SẢN PHẨM</a>
                 </div>
             </div>
-
             <div class="hero__showcase">
                 <div class="hero__card hero__card--large">
-                    <img src="<?php echo get_template_directory_uri(); ?>/images/hero-product-1.jpg" alt="Sản phẩm Kleer 1">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-product-1.jpg" alt="Sản phẩm Kleer 1">
                 </div>
                 <div class="hero__col-small">
                     <div class="hero__card hero__card--small">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/hero-product-2.jpg" alt="Sản phẩm Kleer 2">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-product-2.jpg" alt="Sản phẩm Kleer 2">
                     </div>
                     <div class="hero__info-box">
                         <div class="hero__info-header">
@@ -39,11 +37,11 @@ get_header();
         </div>
     </section>
 
-    <!-- 2. TRIẾT LÝ CỦA CHÚNG TÔI -->
+    <!-- 2. TRIẾT LÝ CỦA CHÚNG TÔI (Height 663px) -->
     <section class="philosophy-sec ombre-bg-1">
         <div class="container philosophy__inner">
             <div class="philosophy__image-col">
-                <img src="<?php echo get_template_directory_uri(); ?>/images/philosophy-img.jpg" alt="Triết lý Kleer" class="philosophy__img">
+                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/philosophy-img.jpg" alt="Triết lý Kleer" class="philosophy__img">
             </div>
             <div class="philosophy__content-col">
                 <h2 class="philosophy__title">Triết lý của chúng tôi</h2>
@@ -51,18 +49,18 @@ get_header();
                 <hr class="philosophy__divider">
                 <div class="philosophy__block">
                     <h3>Nguồn gốc tự nhiên & Minh bạch</h3>
-                    <p>Từng thành phần trong chai thủy tinh mờ đều được thu mua một cách nhân văn và kiểm định nghiêm ngặt tại các phòng thí nghiệm chuyên sâu.</p>
+                    <p>Từng thành phần trong chai thủy tinh mờ đều được thu mua một cách nhân văn và kiểm định nghiêm ngặt tại các phòng thí nghiệm chuyên sâu. Chúng tôi loại bỏ hoàn toàn các chất phụ gia tổng hợp và hương liệu nhân tạo gây căng thẳng cho làn da nhạy cảm.</p>
                 </div>
                 <div class="philosophy__block">
                     <h3>Bền vững & Tối giản</h3>
-                    <p>Chai thủy tinh của KLEER có thể tái chế vô hạn cùng hệ thống nhãn giấy hữu cơ tự phân hủy.</p>
+                    <p>Chai thủy tinh của KLEER có thể tái chế vô hạn cùng hệ thống nhãn giấy hữu cơ tự phân hủy. Chúng tôi cam kết bù đắp lượng carbon trong mọi khâu đóng gói và vận chuyển.</p>
                 </div>
                 <a href="#" class="btn btn--outline philosophy__btn">KHÁM PHÁ HÀNH TRÌNH</a>
             </div>
         </div>
     </section>
 
-    <!-- 3. SẢN PHẨM NỔI BẬT (Đã tích hợp sẵn WooCommerce Query động) -->
+    <!-- 3. SẢN PHẨM NỔI BẬT (Height 663px) -->
     <section class="products-sec ombre-bg-2">
         <div class="container">
             <div class="products__header">
@@ -73,7 +71,6 @@ get_header();
                 </div>
                 <a href="<?php echo function_exists('wc_get_page_id') ? get_permalink(wc_get_page_id('shop')) : '#'; ?>" class="btn btn--outline products__btn-more">XEM TẤT CẢ SẢN PHẨM</a>
             </div>
-
             <div class="products__grid">
                 <?php
                 if (class_exists('WooCommerce')) {
@@ -110,7 +107,7 @@ get_header();
     </section>
 
     <!-- 4. BANNER CAM KẾT THƯƠNG HIỆU -->
-    <section class="brand-banner" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/brand-banner-bg.jpg');">
+    <section class="brand-banner" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/brand-banner-bg.jpg');">
         <div class="container">
             <div class="brand-banner__grid">
                 <div class="brand-banner__item">
@@ -129,57 +126,7 @@ get_header();
         </div>
     </section>
 
-    <!-- 5. THÀNH PHẦN TINH TÚY -->
-    <section class="ingredients-sec ombre-bg-3">
-        <div class="container">
-            <div class="ingredients__header">
-                <h2 class="ingredients__title">Thành phần tinh túy</h2>
-                <p class="ingredients__subtitle">Chúng tôi tuyển chọn thủ công các nguồn dược liệu bền vững có kiểm chứng lâm sàng tối ưu.</p>
-                <hr class="ingredients__divider">
-            </div>
-
-            <div class="ingredients__grid">
-                <div class="ingredient-card">
-                    <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/ingredient-1.jpg" alt="Trà xanh cổ thụ">
-                    </div>
-                    <div class="ingredient-card__body">
-                        <h3 class="ingredient-card__title">Trà xanh cổ thụ</h3>
-                        <p class="ingredient-card__desc">Thu hoạch tại các vùng núi cao phía Bắc Việt Nam, mang hàm lượng chất chống oxy hóa Polyphenol cực đại để bảo vệ các liên kết collagen.</p>
-                    </div>
-                </div>
-                <div class="ingredient-card">
-                    <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/ingredient-2.jpg" alt="Vitamin C sinh học">
-                    </div>
-                    <div class="ingredient-card__body">
-                        <h3 class="ingredient-card__title">Vitamin C sinh học</h3>
-                        <p class="ingredient-card__desc">Phái sinh ổn định cao từ chiết xuất mận hoang dã Kakadu, làm sáng da, mờ thâm nám và tăng sinh elastin một cách bền vững.</p>
-                    </div>
-                </div>
-                <div class="ingredient-card">
-                    <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/ingredient-3.jpg" alt="Nha đam lên men">
-                    </div>
-                    <div class="ingredient-card__body">
-                        <h3 class="ingredient-card__title">Nha đam lên men</h3>
-                        <p class="ingredient-card__desc">Ứng dụng công nghệ lên men lạnh giúp tăng cường lượng khoáng chất và axit amin, thẩm sâu hơn gấp 3 lần so với chiết xuất thông thường.</p>
-                    </div>
-                </div>
-                <div class="ingredient-card">
-                    <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/ingredient-4.jpg" alt="Tinh dầu Jojoba vàng">
-                    </div>
-                    <div class="ingredient-card__body">
-                        <h3 class="ingredient-card__title">Tinh dầu Jojoba vàng</h3>
-                        <p class="ingredient-card__desc">Ép lạnh nguyên chất từ hạt jojoba bán hoang mạc, có cấu trúc tương thích gần như tuyệt đối với bã nhờn tự nhiên của người.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 6. TRẢI NGHIỆM TỪ KHÁCH HÀNG -->
+    <!-- 5. TRẢI NGHIỆM TỪ KHÁCH HÀNG (Height 663px) -->
     <section class="testimonials-sec ombre-bg-4">
         <div class="container">
             <div class="testimonials__header">
@@ -187,13 +134,12 @@ get_header();
                 <p class="testimonials__subtitle">Chia sẻ thực tế từ cộng đồng KLEER sau khi chuyển đổi sang liệu trình sinh học tối giản.</p>
                 <hr class="testimonials__divider">
             </div>
-
             <div class="testimonials__grid">
                 <div class="testimonial-card">
                     <div class="testimonial-card__stars">★★★★★</div>
                     <p class="testimonial-card__quote">"Hương đất và kết cấu ẩm mịn đã thay đổi hoàn toàn thói quen skincare ban đêm của tôi. Làn da thức dậy thực sự dịu mát, bớt hẳn các vết ửng đỏ sau một ngày dài bụi bặm."</p>
                     <div class="testimonial-card__author">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/avatar-1.jpg" alt="Minh Anh" class="testimonial-card__avatar">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/avatar-1.jpg" alt="Minh Anh" class="testimonial-card__avatar">
                         <div class="testimonial-card__info">
                             <h4 class="testimonial-card__name">Minh Anh</h4>
                             <span class="testimonial-card__location">Hà Nội, Việt Nam</span>
@@ -204,7 +150,7 @@ get_header();
                     <div class="testimonial-card__stars">★★★★★</div>
                     <p class="testimonial-card__quote">"Tôi thích sự tối giản về mặt thiết kế lẫn danh sách thành phần. Không hề có cảm giác bóng nhờn, tía tô giúp da tôi thông thoáng hơn hẳn giữa khí hậu nóng ẩm miền Nam."</p>
                     <div class="testimonial-card__author">
-                        <img src="<?php echo get_template_directory_uri(); ?>/images/avatar-2.jpg" alt="Trần Hải" class="testimonial-card__avatar">
+                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/avatar-2.jpg" alt="Trần Hải" class="testimonial-card__avatar">
                         <div class="testimonial-card__info">
                             <h4 class="testimonial-card__name">Trần Hải</h4>
                             <span class="testimonial-card__location">TP. Hồ Chí Minh</span>
@@ -215,7 +161,7 @@ get_header();
         </div>
     </section>
 
-    <!-- 7. CHẨN ĐOÁN DA / SMART QUIZ -->
+    <!-- 6. CHẨN ĐOÁN DA / SMART QUIZ (Height 663px) -->
     <section class="quiz-sec ombre-bg-1">
         <div class="container">
             <div class="quiz__inner">
@@ -240,8 +186,8 @@ get_header();
         </div>
     </section>
 
-    <!-- 8. ĐĂNG KÝ NHẬN THÔNG TIN -->
-    <section class="newsletter-sec" style="background-image: url('<?php echo get_template_directory_uri(); ?>/images/newsletter-bg.jpg');">
+    <!-- 7. ĐĂNG KÝ NHẬN THÔNG TIN -->
+    <section class="newsletter-sec" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/newsletter-bg.jpg');">
         <div class="container">
             <div class="newsletter__content">
                 <h2 class="newsletter__title">Đăng ký nhận thông tin từ KLEER</h2>
@@ -254,5 +200,4 @@ get_header();
         </div>
     </section>
 </main>
-
 <?php get_footer(); ?>

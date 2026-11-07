@@ -38,10 +38,10 @@
 
             <div class="header__icons">
                 <a href="<?php echo function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#'; ?>" class="icon-holder" title="Giỏ hàng">
-                    <img src="<?php echo get_template_directory_uri(); ?>/images/icon-cart.svg" alt="Giỏ hàng" class="icon-img icon-cart">
+                    <img src="<?php echo get_template_directory_uri(); ?>assets/images/shopping-cart.png" alt="Giỏ hàng" class="icon-img icon-cart">
                 </a>
                 <a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')); ?>" class="icon-holder" title="Tài khoản">
-                    <img src="<?php echo get_template_directory_uri(); ?>/images/icon-avatar.svg" alt="Tài khoản" class="icon-img icon-avatar">
+                    <img src="<?php echo get_template_directory_uri(); ?>assets/images/avatar.png" alt="Tài khoản" class="icon-img icon-avatar">
                 </a>
             </div>
         </div>

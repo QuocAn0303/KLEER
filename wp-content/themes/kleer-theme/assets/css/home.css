@@ -1,69 +1,592 @@
-:root {
-    --bg-main: #325736;         
-    --color-white: #ffffff;
-    --color-black: #060606;
-    --btn-light: #F5F2EB;
-    --btn-dark: #112215;
-    --price-color: #B8D0BB;
-    --card-glass: rgba(23, 48, 29, 0.43); 
-    --font-logo: 'Fraunces', serif;
-    --font-body: 'Outfit', sans-serif;
+/* ==========================================================================
+   KLEER HOMEPAGE STYLES - CHUẨN ĐỒNG BỘ CHIỀU CAO 930PX CHO TOÀN TRANG CHỦ
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CHỈ ÉP CHIỀU CAO 930PX CHO CÁC SECTION NỘI DUNG LỚN
+   ========================================================================== */
+.hero,
+.philosophy-sec,
+.products-sec,
+.testimonials-sec,
+.quiz-sec {
+    min-height: 930px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    position: relative;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background-color: var(--bg-main); color: var(--color-white); font-family: var(--font-body); overflow-x: hidden; line-height: 1.6; }
-.container { max-width: 1440px; margin: 0 auto; padding: 0 40px; }
-.btn { display: inline-block; padding: 14px 32px; font-size: 16px; font-weight: 600; border-radius: 30px; text-decoration: none; cursor: pointer; border: none; transition: all 0.3s ease; font-family: var(--font-body); }
-.btn--primary { background-color: var(--btn-light); color: var(--color-black); }
-.btn--secondary { background-color: var(--btn-dark); color: var(--color-white); }
 
-/* NAVBAR */
-.header { position: sticky; top: 0; z-index: 100; background-color: rgba(50, 87, 54, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); }
-.header__inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
-.header__logo { font-family: var(--font-logo); font-size: 36px; font-weight: 700; color: var(--color-white); text-decoration: none; }
-.header__nav { display: flex; gap: 32px; }
-.header__nav a { color: var(--color-white); font-size: 17px; font-weight: 600; text-decoration: none; }
-.header__actions { display: flex; align-items: center; gap: 20px; }
-.search-bar { border: 1.5px solid var(--color-white); background: transparent; color: var(--color-white); padding: 8px 16px; border-radius: 20px; font-family: var(--font-body); width: 200px; }
+/* --------------------------------------------------------------------------
+   1. HERO BANNER SECTION (930PX)
+   -------------------------------------------------------------------------- */
+.hero {
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    padding: 60px 0 !important;
+}
 
-/* HERO */
-.hero { padding: 100px 0; text-align: center; }
-.hero__subtitle { font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 16px; letter-spacing: 1px; }
-.hero__title { font-family: var(--font-logo); font-size: 64px; font-weight: 400; margin-bottom: 24px; line-height: 1.1; }
-.hero__desc { font-size: 18px; font-weight: 500; max-width: 650px; margin: 0 auto 40px; }
-.hero .btn-group { display: flex; gap: 16px; justify-content: center; }
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(18, 42, 26, 0.45) 0%, rgba(12, 30, 17, 0.65) 100%) !important;
+    z-index: 1;
+}
 
-/* TRIẾT LÝ & SẢN PHẨM */
-.philosophy { padding: 80px 0; text-align: center; }
-.philosophy__title { font-family: var(--font-logo); font-size: 48px; margin-bottom: 24px; }
-.philosophy__content { font-size: 18px; max-width: 800px; margin: 0 auto 40px; color: rgba(255,255,255,0.9); }
-.products { position: relative; padding: 80px 0; overflow: hidden; }
-.products__bg { position: absolute; top: 10%; left: 20%; width: 500px; height: 500px; background: linear-gradient(135deg, #FFD700 0%, #F5F2EB 100%); transform: rotate(-15deg); border-radius: 60px; z-index: -1; opacity: 0.3; }
-.products__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-.product-card { background-color: var(--card-glass); padding: 24px; border-radius: 16px; backdrop-filter: blur(10px); text-align: center; }
-.product-card img { width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 16px; }
-.product-card h3 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
-.product-card .price { color: var(--price-color); font-size: 20px; font-weight: 600; }
+.hero__container {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 60px;
+    align-items: center;
+    width: 100%;
+}
 
-/* BANNERS & FEATURES - Dùng link ảnh tương đối */
-.middle-banner { width: 100%; height: 249px; background: url('../images/banner-computer.jpg') center/cover no-repeat; margin: 40px 0; }
-.features { padding: 60px 0; }
-.features__grid { display: flex; justify-content: space-between; gap: 24px; }
-.feature-box { width: 302px; height: 271px; background-color: var(--btn-light); border-radius: 16px; position: relative; color: var(--color-black); text-align: center; }
-.feature-box__top { width: 100%; height: 107px; background: url('../images/feature-oil.jpg') center/cover; border-radius: 16px 16px 0 0; }
-.feature-box__circle { width: 56px; height: 56px; border-radius: 28px; background-color: var(--bg-main); position: absolute; top: 79px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
-.feature-box__content { padding: 40px 16px 16px; }
-.feature-box__content h3 { font-size: 18px; margin-bottom: 8px; }
+.hero__subtitle {
+    font-size: 15px !important;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
 
-/* TESTIMONIALS & QUIZ & FOOTER */
-.testimonials { padding: 80px 0; text-align: center; position: relative; }
-.testi-card { width: 624px; height: 279px; background-color: var(--btn-light); border-radius: 12px; margin: 0 auto; color: var(--color-black); padding: 40px; display: flex; flex-direction: column; justify-content: center; position: relative; }
-.testi-card p { font-size: 18px; font-style: italic; margin-bottom: 24px; }
-.testi-arrow { position: absolute; right: -60px; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; background-color: var(--btn-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-black); font-size: 24px; cursor: pointer; border: none; }
-.quiz-section { padding: 80px 0; text-align: center; }
-.quiz-section h2 { font-family: var(--font-logo); font-size: 48px; margin-bottom: 16px; }
-.quiz-section p { font-size: 18px; margin-bottom: 32px; }
-.newsletter { height: 280px; background-color: var(--btn-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.newsletter h2 { font-family: var(--font-logo); font-size: 36px; margin-bottom: 12px; }
-.newsletter__form { display: flex; gap: 8px; margin-top: 16px; }
-.newsletter__input { width: 300px; padding: 14px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); background: transparent; color: white; font-family: var(--font-body); }
-.footer { height: 474px; background-color: #0B170E; display: flex; align-items: center; justify-content: center; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+.hero__title {
+    font-family: var(--font-logo);
+    font-size: 58px !important;
+    font-weight: 400;
+    line-height: 1.15 !important;
+    color: #FFFFFF;
+    margin-bottom: 24px;
+}
+
+.hero__desc {
+    font-size: 17px !important;
+    line-height: 1.7 !important;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 560px !important;
+    margin-bottom: 40px;
+}
+
+.hero__btn-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.hero__showcase {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 24px;
+    height: 660px !important;
+}
+
+.hero__card--large {
+    height: 100%;
+    border-radius: 18px !important;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+.hero__card--large img,
+.hero__card--small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.hero__col-small {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: 100%;
+}
+
+.hero__card--small {
+    height: 360px !important;
+    border-radius: 18px !important;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero__info-box {
+    flex: 1;
+    background-color: rgba(15, 34, 21, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 18px !important;
+    padding: 26px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.hero__info-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.hero__info-header h4 {
+    font-size: 15px !important;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.hero__info-box p {
+    font-size: 13.5px !important;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. TRIẾT LÝ CỦA CHÚNG TÔI SECTION (930PX)
+   -------------------------------------------------------------------------- */
+.philosophy-sec {
+    padding: 60px 0 !important;
+}
+
+.philosophy__inner {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 70px !important;
+    align-items: center;
+    width: 100%;
+}
+
+.philosophy__image-col .philosophy__img {
+    width: 100%;
+    max-height: 650px !important;
+    object-fit: cover;
+    border-radius: 20px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.philosophy__title {
+    font-family: var(--font-logo);
+    font-size: 48px !important;
+    margin-bottom: 20px !important;
+    color: #FFFFFF;
+}
+
+.philosophy__lead {
+    font-size: 18px !important;
+    line-height: 1.6 !important;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 30px !important;
+}
+
+.philosophy__divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 32px !important;
+}
+
+.philosophy__block {
+    margin-bottom: 30px !important;
+}
+
+.philosophy__block h3 {
+    font-family: var(--font-logo);
+    font-size: 24px !important;
+    color: #FFFFFF;
+    margin-bottom: 10px !important;
+}
+
+.philosophy__block p {
+    font-size: 15.5px !important;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.7 !important;
+}
+
+.philosophy__btn {
+    margin-top: 10px !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. SẢN PHẨM NỔI BẬT SECTION (930PX)
+   -------------------------------------------------------------------------- */
+.products-sec {
+    padding: 60px 0 !important;
+}
+
+.products-sec .container {
+    width: 100%;
+}
+
+.products__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 50px !important;
+}
+
+.products__title {
+    font-family: var(--font-logo);
+    font-size: 48px !important;
+    color: #FFFFFF;
+    margin-bottom: 12px !important;
+}
+
+.products__subtitle {
+    font-size: 16px !important;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.products__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px !important;
+}
+
+.product-card {
+    background: rgba(23, 48, 29, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 18px !important;
+    padding: 22px !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 520px !important; /* Tăng chiều cao card sản phẩm */
+}
+
+.product-card__img-wrap img {
+    width: 100%;
+    height: 270px !important; /* Tăng ảnh sản phẩm lên 270px */
+    object-fit: cover;
+    border-radius: 12px !important;
+}
+
+.product-card__title {
+    font-size: 18px !important;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 18px 0 8px !important;
+    line-height: 1.3;
+}
+
+.product-card__price {
+    font-size: 17px !important;
+    font-weight: 700;
+    color: #F3C649 !important;
+    margin-bottom: 12px !important;
+}
+
+.product-card__desc {
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.5;
+    margin-bottom: 20px !important;
+}
+
+
+/* ==========================================================================
+   2. THU GỌN BANNER CAM KẾT THƯƠNG HIỆU VỀ KÍCH THƯỚC CHUẨN
+   ========================================================================== */
+.brand-banner {
+    min-height: auto !important;
+    padding: 90px 0 !important;
+    display: block !important;
+    background-size: cover;
+    background-position: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.brand-banner__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.brand-banner__item {
+    background: rgba(15, 34, 21, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 32px 28px;
+}
+
+.brand-banner__title {
+    font-family: var(--font-logo);
+    font-size: 22px;
+    color: #FFFFFF;
+    margin-bottom: 12px;
+}
+
+.brand-banner__desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin: 0;
+} 
+
+/* --------------------------------------------------------------------------
+   5. TRẢI NGHIỆM TỪ KHÁCH HÀNG SECTION (930PX)
+   -------------------------------------------------------------------------- */
+.testimonials-sec {
+    padding: 60px 0 !important;
+}
+
+.testimonials-sec .container {
+    width: 100%;
+}
+
+.testimonials__header {
+    margin-bottom: 50px !important;
+}
+
+.testimonials__title {
+    font-family: var(--font-logo);
+    font-size: 48px !important;
+    color: #FFFFFF;
+    margin-bottom: 12px !important;
+}
+
+.testimonials__subtitle {
+    font-size: 16px !important;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.testimonials__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px !important;
+}
+
+.testimonial-card {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 20px !important;
+    padding: 42px !important; /* Phóng to khung đánh giá */
+}
+
+.testimonial-card__stars {
+    color: #F3C649 !important;
+    font-size: 22px !important;
+    margin-bottom: 20px !important;
+}
+
+.testimonial-card__quote {
+    font-style: italic;
+    font-size: 17px !important;
+    line-height: 1.7 !important;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 28px !important;
+}
+
+.testimonial-card__author {
+    display: flex;
+    align-items: center;
+    gap: 18px !important;
+}
+
+.testimonial-card__avatar {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50%;
+}
+
+.testimonial-card__name {
+    font-size: 17px !important;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 4px 0;
+}
+
+.testimonial-card__location {
+    font-size: 13.5px !important;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+
+/* --------------------------------------------------------------------------
+   6. CHẨN ĐOÁN DA / SMART QUIZ SECTION (930PX - SỬA LỖI HÌNH BỊ LỌT LỌM)
+   -------------------------------------------------------------------------- */
+.quiz-sec {
+    padding: 60px 0 !important;
+}
+
+.quiz-sec .container {
+    width: 100%;
+}
+
+.quiz__inner {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 60px !important;
+    align-items: center;
+    width: 100%;
+}
+
+.quiz__tag {
+    font-size: 14px !important;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.85);
+    display: inline-block;
+    margin-bottom: 20px !important;
+}
+
+.quiz__title {
+    font-family: var(--font-logo);
+    font-size: 54px !important; /* Tăng tiêu đề chẩn đoán da từ nhỏ lên 54px */
+    line-height: 1.18 !important;
+    color: #FFFFFF;
+    margin-bottom: 24px !important;
+}
+
+.quiz__desc {
+    font-size: 17px !important;
+    line-height: 1.7 !important;
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 580px;
+    margin-bottom: 40px !important;
+}
+
+.quiz__btn-group {
+    display: flex;
+    gap: 20px;
+}
+
+.quiz__card {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 20px !important;
+    padding: 46px !important; /* Phóng to ô "Bạn sẽ nhận được" */
+}
+
+.quiz__card-title {
+    font-family: var(--font-logo);
+    font-size: 26px !important;
+    color: #FFFFFF;
+    margin-bottom: 24px !important;
+}
+
+.quiz__list li {
+    margin-bottom: 18px !important;
+    font-size: 16px !important;
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.6;
+    list-style-type: disc;
+    margin-left: 22px;
+}
+
+
+/* ==========================================================================
+   3. THU GỌN FORM ĐĂNG KÝ NHẬN THÔNG TIN (NEWSLETTER)
+   ========================================================================== */
+.newsletter-sec {
+    min-height: auto !important;
+    padding: 100px 0 !important;
+    display: block !important;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+}
+
+.newsletter__content {
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.newsletter__title {
+    font-family: var(--font-logo);
+    font-size: 40px;
+    color: #FFFFFF;
+    margin-bottom: 16px;
+}
+
+.newsletter__desc {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+}
+
+.newsletter__form {
+    display: flex;
+    gap: 14px;
+    margin-top: 30px;
+}
+
+.newsletter__input {
+    flex: 1;
+    height: 52px;
+    border-radius: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0 24px;
+    font-size: 15px;
+    color: #FFFFFF;
+}
+
+.newsletter__btn {
+    height: 52px;
+    border-radius: 26px;
+    padding: 0 34px;
+    background: #F5F2EB;
+    color: #112215;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   DÙNG CHUNG: QUY ĐỊNH NÚT BẤM (BUTTONS) TRÊN TOÀN TRANG CHỦ
+   -------------------------------------------------------------------------- */
+.btn,
+.btn--white,
+.btn--outline,
+.btn--transparent,
+.product-card__btn {
+    text-decoration: none !important;
+    border-bottom: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50px !important;
+    padding: 16px 40px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    transition: all 0.25s ease !important;
+}
+
+.btn--white,
+.product-card__btn {
+    background-color: #F5F2EB !important;
+    color: #112215 !important;
+    border: 1px solid #F5F2EB !important;
+}
+
+.btn--white:hover,
+.product-card__btn:hover {
+    background-color: #FFFFFF !important;
+    color: #112215 !important;
+    box-shadow: 0 4px 18px rgba(255, 255, 255, 0.3) !important;
+}
+
+.btn--outline,
+.btn--transparent {
+    background-color: transparent !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+}
+
+.btn--outline:hover,
+.btn--transparent:hover {
+    border-color: #FFFFFF !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}

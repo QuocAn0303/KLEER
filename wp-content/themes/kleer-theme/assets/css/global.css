@@ -1,0 +1,343 @@
+/* DESIGN TOKENS */
+:root {
+    --bg-main: #325736;         
+    --color-white: #ffffff;
+    --color-black: #060606;
+    --btn-light: #F5F2EB;
+    --btn-dark: #112215;
+    --price-color: #B8D0BB;
+    --card-glass: rgba(23, 48, 29, 0.43); 
+    --font-logo: 'Fraunces', serif;
+    --font-body: 'Outfit', sans-serif;
+}
+
+/* RESET & BASE (Đã sửa lỗi gạch ngang "-" thành dấu sao "*") */
+*, *::before, *::after { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+/* ÉP ẢNH TỰ CO GIẢN - TRÁNH TRÀN MÀN HÌNH */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+body { 
+    background-color: var(--bg-main); 
+    color: var(--color-white); 
+    font-family: var(--font-body); 
+    overflow-x: hidden; 
+    line-height: 1.6; 
+}
+
+/* -------------------------------------------------------------
+   VỊ TRÍ CHỈNH ĐỘ RỘNG TOÀN TRANG:
+   Bạn có thể đổi 1600px thành 1500px, 1700px hoặc 95% tùy ý.
+------------------------------------------------------------- */
+.container { 
+    max-width: 1600px; /* <--- Chỉnh con số này để nới rộng/bóp hẹp trang */
+    margin: 0 auto; 
+    padding: 0 40px; 
+    width: 100%;
+}
+
+/* ÉP KÍCH THƯỚC ẢNH SẢN PHẨM NHỎ GỌN NHƯ DEMO */
+.woocommerce ul.products li.product img,
+.product-card__img,
+.product-image img,
+.attachment-woocommerce_thumbnail {
+    width: 100% !important;
+    height: 220px !important; /* Chiều cao ảnh gọn gàng */
+    object-fit: contain !important; /* Giữ nguyên tỉ lệ ảnh không bị móp */
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.btn--outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    white-space: nowrap;
+    border: 1px solid #FFFFFF;
+    color: #FFFFFF !important;
+    background-color: transparent;
+    border-radius: 50px;
+    padding: 14px 36px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    transition: all 0.3s ease;
+}
+
+.btn--outline:hover {
+    background-color: #F5F2EB;
+    color: #122818 !important;
+    border-color: #F5F2EB;
+    box-shadow: 0 0 15px rgba(245, 242, 235, 0.4);
+    text-decoration: none !important;
+}
+
+/* ==========================================================================
+   NAVBAR 
+   ========================================================================== */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: rgba(46, 98, 53, 0.6); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    gap: 24px;
+}
+
+/* BRAND LOGO */
+.header__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.header__logo {
+    font-family: 'Fraunces', serif; 
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-white);
+    letter-spacing: 1px;
+}
+
+.header__leaf-icon {
+    width: 22px;
+    height: 22px;
+}
+
+/* THANH TÌM KIẾM */
+.header__search {
+    position: relative;
+    width: 320px;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 0 16px 0 38px;
+    color: var(--color-white);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Outfit', sans-serif;
+}
+
+/* MENU BÊN PHẢI */
+.header__right {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+}
+
+.header__nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-link {
+    color: var(--color-white);
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    opacity: 1;
+}
+
+.header__icons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-holder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.icon-img {
+    display: block;
+    object-fit: contain;
+}
+
+.icon-cart { width: 26px; height: 26px; }
+.icon-avatar { width: 30px; height: 30px; border-radius: 50%; }
+
+/* ==========================================================================
+   FOOTER DÙNG CHUNG (GLOBAL FOOTER)
+   ========================================================================== */
+.footer {
+    background-color: #0A190E;
+    padding: 80px 0 36px;
+    color: #FFFFFF;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 60px;
+    margin-bottom: 48px;
+}
+
+/* CỘT LOGO & MÔ TẢ */
+.footer__brand {
+    max-width: 380px;
+}
+
+.footer__logo {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-decoration: none !important;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.footer__desc {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* CÁC CỘT DANH MỤC LINK */
+.footer__nav-groups {
+    display: flex;
+    gap: 64px;
+}
+
+.footer__col-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 22px;
+    text-transform: uppercase;
+}
+
+.footer__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.footer__links a {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none !important;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.footer__links a:hover {
+    color: #FFFFFF;
+    opacity: 1;
+    text-decoration: none !important;
+}
+
+/* ĐƯỜNG KẺ PHÂN CÁCH */
+.footer__divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-bottom: 28px;
+}
+
+/* BOTTOM FOOTER (COPYRIGHT & LEGAL) */
+.footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.footer__copyright {
+    margin: 0;
+}
+
+.footer__legal-links {
+    display: flex;
+    gap: 28px;
+}
+
+.footer__legal-links a {
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none !important;
+    transition: color 0.2s ease;
+}
+
+.footer__legal-links a:hover {
+    color: #FFFFFF;
+    text-decoration: none !important;
+}
+
+/* ==========================================================================
+   HỆ THỐNG MÀU NỀN OMBRE
+   ========================================================================== */
+body {
+    background: linear-gradient(160deg, #1B3621 0%, #2A4E30 45%, #60733C 85%, #7D914A 100%);
+    background-attachment: fixed;
+    color: var(--color-white);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+.ombre-bg-1 { background: linear-gradient(105deg, #1B3621 0%, #2B5032 40%, #7D914A 100%); }
+.ombre-bg-2 { background: linear-gradient(285deg, #1B3621 0%, #2B5032 40%, #7D914A 100%); }
+.ombre-bg-3 { background: linear-gradient(255deg, #1B3621 0%, #2B5032 40%, #7D914A 100%); }
+.ombre-bg-4 { background: linear-gradient(45deg, #1B3621 0%, #2B5032 40%, #7D914A 100%); }
