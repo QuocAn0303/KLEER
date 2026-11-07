@@ -31,6 +31,11 @@
           "minimum": 1,
           "description": "Khoa dinh danh ban giao, dung de doi soat va mo lai lich su Quiz."
         },
+        "version": {
+          "type": "string",
+          "maxLength": 32,
+          "description": "Phien ban nghiep vu cua ket qua (vi du: v4-draft). Tuy chon."
+        },
         "skin_profile": {
           "type": "object",
           "additionalProperties": false,
@@ -57,13 +62,37 @@
                 "maxLength": 80
               },
               "description": "Danh sach van de da duoc phat hien. Tuy chon."
+            },
+            "primary_type": {
+              "type": "string",
+              "enum": [
+                "oily",
+                "dry",
+                "combination",
+                "normal",
+                "sensitive"
+              ],
+              "description": "Loai da chinh (v4). Tuy chon."
+            },
+            "primary_concern": {
+              "type": "string",
+              "maxLength": 32,
+              "description": "Van de da chinh (v4). Tuy chon."
+            },
+            "is_sensitive": {
+              "type": "boolean",
+              "description": "Co nhanh cam (v4). Tuy chon."
+            },
+            "sensitivity_score": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Diem nhanh cam (v4). Tuy chon."
             }
           }
         },
         "recommended_products": {
           "type": "array",
-          "description": "Danh sach san pham goi y theo thu tu uu tien.",
-          "minItems": 1,
+          "description": "Danh sach san pham goi y theo thu tu uu tien. v4 co the rong neu kho chua co SKU phu hop; khi do warnings/missing_steps mo ta ly do.",
           "maxItems": 20,
           "items": {
             "type": "object",
@@ -78,6 +107,11 @@
                 "type": "integer",
                 "minimum": 1
               },
+              "stt": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "So thu tu trong danh muc mau. Tuy chon."
+              },
               "name": {
                 "type": "string",
                 "maxLength": 255
@@ -90,7 +124,10 @@
               "routine_step": {
                 "type": "string",
                 "enum": [
+                  "makeup_remover",
                   "cleanser",
+                  "toner",
+                  "serum",
                   "treatment",
                   "moisturizer",
                   "sunscreen"
@@ -104,6 +141,55 @@
               }
             }
           }
+        },
+        "routine_steps_requested": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "So buoc Routine khach da chon (v4). Tuy chon."
+        },
+        "routine_steps_selected": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "enum": [
+              "makeup_remover",
+              "cleanser",
+              "toner",
+              "serum",
+              "treatment",
+              "moisturizer",
+              "sunscreen"
+            ]
+          },
+          "description": "Cac buoc Routine duoc chon (v4). Tuy chon."
+        },
+        "missing_steps": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "enum": [
+              "makeup_remover",
+              "cleanser",
+              "toner",
+              "serum",
+              "treatment",
+              "moisturizer",
+              "sunscreen"
+            ]
+          },
+          "description": "Cac buoc chua co SKU phu hop (v4). Tuy chon."
+        },
+        "warnings": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "description": "Canh bao ve du lieu/routine (v4). Tuy chon."
         },
         "disclaimer": {
           "type": "string",

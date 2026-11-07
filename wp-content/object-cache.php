@@ -16,6 +16,11 @@ declare(strict_types=1);
 
 defined('ABSPATH') || exit;
 
+// Drop-in nam o namespace global trong khi KleerCache dang nam trong namespace
+// cua plugin. `use` nay giup tat ca cac tham chieu KleerCache ben duoi tro dung
+// classname du (Kleer\Support\Cache\KleerCache) thay vi \KleerCache khong ton tai.
+use Kleer\Support\Cache\KleerCache;
+
 if (!defined('KLEER_REDIS_AVAILABLE')) {
     // Redis bat buoc phai co san truoc khi nap drop-in, neu khong thi bo qua de
     // WordPress dung cache mac dinh thay vi sinh loi fatal.
@@ -25,6 +30,20 @@ if (!defined('KLEER_REDIS_AVAILABLE')) {
 
     define('KLEER_REDIS_AVAILABLE', true);
     define('KLEER_REDIS_DROPIN_FILE', __FILE__);
+}
+
+// Drop-in duoc WordPress nap TRUOC khi cac plugin/mu-plugin khoi dong, nen class
+// KleerCache cua plugin phai duoc require tai day, khong duoc cho plugin tu load.
+// Neu file cua plugin khong ton tai thi return som de WordPress dung cache trong
+// bo nho mac dinh thay vi chet voi fatal "Class KleerCache not found".
+if (!class_exists('Kleer\\Support\\Cache\\KleerCache')) {
+    $kleerCacheSource = __DIR__ . '/plugins/kleer-plugin/src/Support/Cache/KleerCache.php';
+
+    if (!file_exists($kleerCacheSource)) {
+        return;
+    }
+
+    require_once $kleerCacheSource;
 }
 
 /**

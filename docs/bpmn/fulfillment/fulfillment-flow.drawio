@@ -1,0 +1,361 @@
+<mxfile host="app.diagrams.net" agent="KLEER-EC312-ToolDesigner" type="device">
+  <diagram id="fulfillment-flow" name="Fulfillment Flow - KLEER">
+    <mxGraphModel dx="2400" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="Fulfillment Flow – KLEER" style="shape=pool;startSize=30;horizontal=1;container=1;collapsible=0;swimlaneLine=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="5340" height="900" as="geometry" />
+        </mxCell>
+        <mxCell id="Lane_F01" value="Hệ thống xử lý (WooCommerce / Plugin / Integration)" style="swimlane;startSize=30;container=1;collapsible=0;horizontal=1;fillColor=none;strokeColor=#666666;fontStyle=1;" vertex="1" parent="pool">
+          <mxGeometry x="0" y="0" width="5340" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="Lane_F02" value="Nhân sự Kho" style="swimlane;startSize=30;container=1;collapsible=0;horizontal=1;fillColor=none;strokeColor=#666666;fontStyle=1;" vertex="1" parent="pool">
+          <mxGeometry x="0" y="300" width="5340" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="Lane_F03" value="Đối tác 3PL" style="swimlane;startSize=30;container=1;collapsible=0;horizontal=1;fillColor=none;strokeColor=#666666;fontStyle=1;" vertex="1" parent="pool">
+          <mxGeometry x="0" y="590" width="5340" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="Start_F01" value="Đơn hàng chuyển sang trạng thái Processing" style="shape=mxgraph.bpmn.shape;perimeter=ellipsePerimeter;outline=standard;symbol=general;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="50" y="32" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F01" value="Chốt trạng thái Processing" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="220" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F02" value="Kiểm tra tồn kho khả dụng" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="390" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F01" value="Tồn kho hệ thống có đủ?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="560" y="25" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F04" value="Ghi nhận đơn vào hàng đợi xuất kho" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="730" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F05" value="Trừ tồn kho kho lưu trữ" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="900" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F06" value="Kết xuất CSV Pick-list" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="1240" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F19" value="Gọi API 3PL tạo vận đơn" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="2430" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F10" value="Tạo vận đơn thành công?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="2600" y="25" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F20" value="Ghi mã vận đơn vào đơn hàng" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="3110" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F22" value="Gửi email vận chuyển" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="3280" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F23" value="Nhận webhook trạng thái 3PL" style="shape=mxgraph.bpmn.task;taskMarker=receive;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="3450" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F09" value="Yêu cầu hủy / đổi địa chỉ sau bàn giao?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="3620" y="25" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F03" value="Chuyển đơn sang On-hold" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="730" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F04" value="Kiểm kê đủ hàng thực tế?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="900" y="125" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F17" value="Cập nhật trạng thái Completed" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="3790" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F18" value="Gửi email hoàn tất đơn" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="3960" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="End_F01" value="Giao thành công – Completed" style="shape=mxgraph.bpmn.shape;perimeter=ellipsePerimeter;outline=end;symbol=general;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4130" y="132" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F13" value="Hủy đơn và hoàn tồn kho" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4470" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F14" value="Đơn đã thu tiền trước?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4640" y="125" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F14" value="Hoàn tiền đơn bị hủy" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4810" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F15" value="Gửi email thông báo hủy đơn" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4980" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="End_F02" value="Đơn bị hủy – đã hoàn tồn và hoàn tiền" style="shape=mxgraph.bpmn.shape;perimeter=ellipsePerimeter;outline=end;symbol=general;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="5150" y="132" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F21" value="Retry tạo vận đơn" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="2770" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F11" value="Đã retry đủ số lần?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="2940" y="225" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F24" value="Nhập lại tồn kho hàng hoàn" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4130" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F13" value="Còn hàng đủ để giao lại?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4300" y="225" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F38" value="Chuyển trạng thái Refunded" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4470" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F41" value="Hoàn tiền đơn giao thất bại" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4810" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F40" value="Gửi email thông báo hoàn tiền" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="4980" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="End_F03" value="Giao thất bại – hoàn kho và hoàn tiền" style="shape=mxgraph.bpmn.shape;perimeter=ellipsePerimeter;outline=end;symbol=general;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="Lane_F01">
+          <mxGeometry x="5150" y="232" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F07" value="Mở Pick-list và chốt đơn gộp" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="1240" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F08" value="Lấy hàng theo Pick-list (Picking)" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="1410" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F09" value="Đối chiếu số lượng thực lấy" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="1580" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F02" value="Số lượng thực lấy khớp đơn?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="1750" y="25" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F26" value="Đóng gói và dán nhãn (Packing)" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="1920" y="10" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F06" value="Hàng nguyên vẹn sau đóng gói?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="2090" y="25" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F07" value="Khách có yêu cầu hủy đơn?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="2260" y="25" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F10" value="Kiểm kê và ghi nhận lệch tồn kho" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="1920" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F05" value="Cách xử lý lệch tồn kho?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="2090" y="125" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F11" value="Đổi SKU thay thế trong kho" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="2260" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F12" value="Tách lô giao một phần" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="2430" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F33" value="Ghi nhận yêu cầu nhập bổ sung" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="2600" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F35" value="Tiếp nhận cảnh báo và tạo vận đơn tay" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="3110" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F28" value="Nhập mã vận đơn tay vào đơn hàng" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="3280" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F29" value="Bàn gàng hàng cho 3PL" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="3450" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F36" value="Chuyển yêu cầu hủy thành đơn hoàn hàng" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F02">
+          <mxGeometry x="3790" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F30" value="Tiếp nhận và nhập kho vận đơn" style="shape=mxgraph.bpmn.task;taskMarker=receive;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F03">
+          <mxGeometry x="3620" y="20" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F31" value="Giao hàng và thu tiền COD" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F03">
+          <mxGeometry x="3790" y="20" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GW_F12" value="Kết quả giao hàng?" style="shape=mxgraph.bpmn.shape;perimeter=rhombusPerimeter;outline=standard;symbol=exclusiveGw;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="Lane_F03">
+          <mxGeometry x="3960" y="35" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Task_F32" value="Hoàn hàng về kho" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="Lane_F03">
+          <mxGeometry x="4130" y="120" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Flow_F01" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Start_F01" target="Task_F01">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="86" y="50" /><mxPoint x="220" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F02" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F01" target="Task_F02">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="350" y="50" /><mxPoint x="390" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F03" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F02" target="GW_F01">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="520" y="50" /><mxPoint x="560" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F04" value="Tồn kho đủ" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F01" target="Task_F04">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="610" y="37" /><mxPoint x="625" y="37" /><mxPoint x="625" y="50" /><mxPoint x="730" y="50" /><mxGeometry relative="1" as="geometry"><mxPoint x="677" y="34" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F05" value="Không đủ tồn kho" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F01" target="Task_F03">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="610" y="63" /><mxPoint x="638" y="63" /><mxPoint x="638" y="150" /><mxPoint x="730" y="150" /><mxGeometry relative="1" as="geometry"><mxPoint x="657" y="134" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F06" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F03" target="GW_F04">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="860" y="150" /><mxPoint x="900" y="150" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F07" value="Kiểm kê đủ hàng thực tế" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F04" target="Task_F04">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="900" y="150" /><mxPoint x="870" y="150" /><mxPoint x="870" y="50" /><mxPoint x="860" y="50" /><mxGeometry relative="1" as="geometry"><mxPoint x="775" y="93" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F08" value="Vẫn thiếu hàng" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F04" target="Task_F13">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="925" y="125" /><mxPoint x="925" y="102" /><mxPoint x="4535" y="102" /><mxPoint x="4535" y="110" /><mxGeometry relative="1" as="geometry"><mxPoint x="2730" y="86" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F09" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F04" target="Task_F05">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="860" y="50" /><mxPoint x="900" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F10" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F05" target="Task_F06">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1030" y="50" /><mxPoint x="1240" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F11" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F06" target="Task_F07">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1305" y="90" /><mxPoint x="1305" y="390" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F12" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F07" target="Task_F08">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1370" y="350" /><mxPoint x="1410" y="350" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F13" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F08" target="Task_F09">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1540" y="350" /><mxPoint x="1580" y="350" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F14" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F09" target="GW_F02">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1710" y="350" /><mxPoint x="1750" y="350" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F15" value="Số lượng khớp đơn" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F02" target="Task_F26">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1800" y="337" /><mxPoint x="1815" y="337" /><mxPoint x="1815" y="350" /><mxPoint x="1920" y="350" /><mxGeometry relative="1" as="geometry"><mxPoint x="1843" y="334" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F16" value="Lệch số lượng thực tế" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F02" target="Task_F10">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1800" y="363" /><mxPoint x="1828" y="363" /><mxPoint x="1828" y="450" /><mxPoint x="1920" y="450" /><mxGeometry relative="1" as="geometry"><mxPoint x="1828" y="434" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F17" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F10" target="GW_F05">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2050" y="450" /><mxPoint x="2090" y="450" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F18" value="Còn hàng thay thế" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F05" target="Task_F11">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2140" y="450" /><mxPoint x="2260" y="450" /><mxGeometry relative="1" as="geometry"><mxPoint x="2191" y="434" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F19" value="Giao một phần" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F05" target="Task_F12">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2115" y="425" /><mxPoint x="2115" y="400" /><mxPoint x="2405" y="400" /><mxPoint x="2405" y="450" /><mxPoint x="2430" y="450" /><mxGeometry relative="1" as="geometry"><mxPoint x="2259" y="384" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F20" value="Chờ nhập hàng" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F05" target="Task_F33">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2115" y="425" /><mxPoint x="2115" y="396" /><mxPoint x="2575" y="396" /><mxPoint x="2575" y="450" /><mxPoint x="2600" y="450" /><mxGeometry relative="1" as="geometry"><mxPoint x="2344" y="380" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F21" value="Hủy đơn" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F05" target="Task_F13">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2115" y="475" /><mxPoint x="2115" y="500" /><mxPoint x="4425" y="500" /><mxPoint x="4425" y="170" /><mxPoint x="4470" y="170" /><mxGeometry relative="1" as="geometry"><mxPoint x="3270" y="484" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F22" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F11" target="Task_F26">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2325" y="410" /><mxPoint x="2325" y="295" /><mxPoint x="2060" y="295" /><mxPoint x="2060" y="350" /><mxPoint x="2050" y="350" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F23" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F12" target="Task_F26">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2495" y="490" /><mxPoint x="2495" y="498" /><mxPoint x="2060" y="498" /><mxPoint x="2060" y="350" /><mxPoint x="2050" y="350" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F24" value="Nhập đủ – gộp lại hàng đợi" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F33" target="Task_F04">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2665" y="490" /><mxPoint x="2665" y="504" /><mxPoint x="870" y="504" /><mxPoint x="870" y="50" /><mxPoint x="860" y="50" /><mxGeometry relative="1" as="geometry"><mxPoint x="1767" y="472" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F25" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F26" target="GW_F06">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2050" y="350" /><mxPoint x="2090" y="350" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F26" value="Hàng nguyên vẹn" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F06" target="GW_F07">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2140" y="350" /><mxPoint x="2260" y="350" /><mxGeometry relative="1" as="geometry"><mxPoint x="2191" y="334" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F27" value="Hỏng / hư hỏng" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F06" target="Task_F10">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2115" y="375" /><mxPoint x="2115" y="400" /><mxPoint x="1985" y="400" /><mxPoint x="1985" y="410" /><mxGeometry relative="1" as="geometry"><mxPoint x="2050" y="384" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F28" value="Khách không hủy" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F07" target="Task_F19">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2310" y="350" /><mxPoint x="2325" y="350" /><mxPoint x="2325" y="50" /><mxPoint x="2430" y="50" /><mxGeometry relative="1" as="geometry"><mxPoint x="2361" y="34" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F29" value="Khách yêu cầu hủy" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F07" target="Task_F13">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2285" y="325" /><mxPoint x="2285" y="98" /><mxPoint x="4445" y="98" /><mxPoint x="4445" y="130" /><mxPoint x="4470" y="130" /><mxGeometry relative="1" as="geometry"><mxPoint x="3365" y="82" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F30" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F19" target="GW_F10">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2560" y="50" /><mxPoint x="2600" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F31" value="Tạo vận đơn thành công" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F10" target="Task_F20">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2650" y="37" /><mxPoint x="2665" y="37" /><mxPoint x="2665" y="50" /><mxPoint x="3110" y="50" /><mxGeometry relative="1" as="geometry"><mxPoint x="2887" y="34" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F32" value="Lỗi / timeout API" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F10" target="Task_F21">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2650" y="63" /><mxPoint x="2678" y="63" /><mxPoint x="2678" y="250" /><mxPoint x="2770" y="250" /><mxGeometry relative="1" as="geometry"><mxPoint x="2701" y="234" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F33" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F21" target="GW_F11">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2900" y="250" /><mxPoint x="2940" y="250" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F34" value="Chưa đạt giới hạn" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F11" target="Task_F19">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2965" y="275" /><mxPoint x="2965" y="295" /><mxPoint x="2570" y="295" /><mxPoint x="2570" y="50" /><mxPoint x="2560" y="50" /><mxGeometry relative="1" as="geometry"><mxPoint x="2767" y="279" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F35" value="Đã đạt giới hạn" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F11" target="Task_F35">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2990" y="250" /><mxPoint x="3005" y="250" /><mxPoint x="3005" y="550" /><mxPoint x="3110" y="550" /><mxGeometry relative="1" as="geometry"><mxPoint x="3041" y="534" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F36" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F35" target="Task_F28">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3240" y="550" /><mxPoint x="3280" y="550" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F37" value="Nhập mã vận đơn tay" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F28" target="Task_F20">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3280" y="550" /><mxPoint x="3250" y="550" /><mxPoint x="3250" y="50" /><mxPoint x="3240" y="50" /><mxGeometry relative="1" as="geometry"><mxPoint x="3159" y="301" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F38" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F20" target="Task_F22">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3240" y="50" /><mxPoint x="3280" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F39" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F22" target="Task_F29">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3410" y="50" /><mxPoint x="3425" y="50" /><mxPoint x="3425" y="550" /><mxPoint x="3450" y="550" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F40" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F29" target="Task_F30">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3580" y="550" /><mxPoint x="3595" y="550" /><mxPoint x="3595" y="650" /><mxPoint x="3620" y="650" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F41" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F30" target="Task_F23">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3620" y="650" /><mxPoint x="3590" y="650" /><mxPoint x="3590" y="50" /><mxPoint x="3580" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F42" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F23" target="GW_F09">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3580" y="50" /><mxPoint x="3620" y="50" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F43" value="Không có yêu cầu hủy" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F09" target="Task_F31">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3670" y="37" /><mxPoint x="3755" y="37" /><mxPoint x="3755" y="650" /><mxPoint x="3790" y="650" /><mxGeometry relative="1" as="geometry"><mxPoint x="3670" y="21" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F44" value="Có yêu cầu hủy / đổi địa chỉ" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F09" target="Task_F36">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3670" y="63" /><mxPoint x="3768" y="63" /><mxPoint x="3768" y="550" /><mxPoint x="3790" y="550" /><mxGeometry relative="1" as="geometry"><mxPoint x="3679" y="31" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F45" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F31" target="GW_F12">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3920" y="650" /><mxPoint x="3960" y="650" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F46" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F36" target="Task_F32">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3920" y="550" /><mxPoint x="3935" y="550" /><mxPoint x="3935" y="750" /><mxPoint x="4130" y="750" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F47" value="Giao thành công" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F12" target="Task_F17">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3960" y="637" /><mxPoint x="3932" y="637" /><mxPoint x="3932" y="150" /><mxPoint x="3920" y="150" /><mxGeometry relative="1" as="geometry"><mxPoint x="3857" y="394" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F48" value="Giao thất bại" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F12" target="Task_F32">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4010" y="663" /><mxPoint x="4038" y="663" /><mxPoint x="4038" y="750" /><mxPoint x="4130" y="750" /><mxGeometry relative="1" as="geometry"><mxPoint x="4075" y="734" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F49" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F32" target="Task_F24">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4195" y="790" /><mxPoint x="4195" y="290" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F50" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F24" target="GW_F13">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4260" y="250" /><mxPoint x="4300" y="250" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F51" value="Còn hàng – tạo lượt giao lại" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F13" target="Task_F04">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4325" y="275" /><mxPoint x="4325" y="855" /><mxPoint x="870" y="855" /><mxPoint x="870" y="50" /><mxPoint x="860" y="50" /><mxGeometry relative="1" as="geometry"><mxPoint x="2597" y="823" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F52" value="Không đủ hàng" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F13" target="Task_F38">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4350" y="250" /><mxPoint x="4470" y="250" /><mxGeometry relative="1" as="geometry"><mxPoint x="4409" y="234" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F53" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F13" target="GW_F14">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4600" y="150" /><mxPoint x="4640" y="150" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F54" value="Đã thu tiền trước" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F14" target="Task_F14">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4690" y="150" /><mxPoint x="4810" y="150" /><mxGeometry relative="1" as="geometry"><mxPoint x="4733" y="134" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F55" value="COD – chưa thu tiền" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="GW_F14" target="Task_F15">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4665" y="175" /><mxPoint x="4665" y="200" /><mxPoint x="4955" y="200" /><mxPoint x="4955" y="150" /><mxPoint x="4980" y="150" /><mxGeometry relative="1" as="geometry"><mxPoint x="4810" y="184" as="offset" /><mxPoint as="target" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F56" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F14" target="Task_F15">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4940" y="150" /><mxPoint x="4980" y="150" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F57" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F15" target="End_F02">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="5110" y="150" /><mxPoint x="5150" y="150" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F58" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F38" target="Task_F41">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4600" y="250" /><mxPoint x="4810" y="250" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F59" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F41" target="Task_F40">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4940" y="250" /><mxPoint x="4980" y="250" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F60" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F40" target="End_F03">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="5110" y="250" /><mxPoint x="5150" y="250" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F61" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F17" target="Task_F18">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="3920" y="150" /><mxPoint x="3960" y="150" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+        <mxCell id="Flow_F62" value="" style="endArrow=classic;html=1;rounded=0;labelBackgroundColor=#ffffff;fontSize=10;" edge="1" parent="pool" source="Task_F18" target="End_F01">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="4090" y="150" /><mxPoint x="4130" y="150" /><mxGeometry x="0" y="0" relative="1" as="geometry"><mxPoint x="0" y="-16" as="offset" /></mxGeometry></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

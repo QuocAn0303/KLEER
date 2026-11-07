@@ -1,0 +1,637 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "KLEER Routine API",
+    "version": "0.2.0",
+    "description": "Implementation contract prepared by Bui Hieu Nhan. Business G3 approval and successful catalog/performance acceptance are pending. See README.md for plain-permalink URLs, tags, fallback, integration and limits."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8081/wp-json/kleer/v1",
+      "description": "Local example with pretty permalinks. Change host for your environment."
+    }
+  ],
+  "paths": {
+    "/recommend": {
+      "post": {
+        "summary": "Calculate a personalized routine from the five quiz answers",
+        "description": "Public stateless endpoint. Default version v1 requires five known single-choice answers and policy_accepted=true. version=v4 preserves the upstream six-question draft and its missing_steps/warnings contract. Production uses real WooCommerce IDs; missing WooCommerce returns 503 for both versions. For v1, incomplete safe inventory also returns 503. Business rules await G3 approval.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "v1",
+                "v4"
+              ],
+              "default": "v1"
+            },
+            "description": "v1: legacy five questions; v4: upstream six-question draft. Query parameter, never a JSON body property."
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Omit for server clients, or use same-origin/approved CORS origin."
+          },
+          {
+            "name": "X-WP-Nonce",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Required for authenticated browser clients; checked whenever supplied. Action wp_rest."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizSubmission"
+              },
+              "example": {
+                "session_id": "11111111-2222-4333-8444-555555555555",
+                "consent": {
+                  "policy_accepted": true,
+                  "marketing_opt_in": false
+                },
+                "answers": [
+                  {
+                    "question_id": "q1_skin_feeling",
+                    "answer": "greasy_all"
+                  },
+                  {
+                    "question_id": "q2_pore_sebum",
+                    "answer": "large_pores"
+                  },
+                  {
+                    "question_id": "q3_sensitivity",
+                    "answer": "rarely_never"
+                  },
+                  {
+                    "question_id": "q4_main_concern",
+                    "answer": "acne_blemish"
+                  },
+                  {
+                    "question_id": "q5_routine_goal",
+                    "answer": "intensive"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Complete ordered 3/4-step routine. Sensitive profile code is <primary_type>_sensitive; other profiles use <primary_type>_<concern>.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "kleer_invalid_payload (schema/answers, with JSON Pointer), kleer_consent_required or kleer_invalid_version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "kleer_cors_forbidden or rest_cookie_invalid_nonce.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "kleer_woocommerce_unavailable, kleer_catalog_incomplete (missing_steps), or kleer_catalog_unavailable. Do not render a partial routine.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "kleer_quiz_engine_error. Generic message, no internal exception or database details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "recommendRoutine"
+      }
+    },
+    "/skin-quiz": {
+      "post": {
+        "summary": "Calculate a personalized routine from the five quiz answers",
+        "description": "Public stateless endpoint. Default version v1 requires five known single-choice answers and policy_accepted=true. version=v4 preserves the upstream six-question draft and its missing_steps/warnings contract. Production uses real WooCommerce IDs; missing WooCommerce returns 503 for both versions. For v1, incomplete safe inventory also returns 503. Business rules await G3 approval.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "v1",
+                "v4"
+              ],
+              "default": "v1"
+            },
+            "description": "v1: legacy five questions; v4: upstream six-question draft. Query parameter, never a JSON body property."
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Omit for server clients, or use same-origin/approved CORS origin."
+          },
+          {
+            "name": "X-WP-Nonce",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Required for authenticated browser clients; checked whenever supplied. Action wp_rest."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizSubmission"
+              },
+              "example": {
+                "session_id": "11111111-2222-4333-8444-555555555555",
+                "consent": {
+                  "policy_accepted": true,
+                  "marketing_opt_in": false
+                },
+                "answers": [
+                  {
+                    "question_id": "q1_skin_feeling",
+                    "answer": "greasy_all"
+                  },
+                  {
+                    "question_id": "q2_pore_sebum",
+                    "answer": "large_pores"
+                  },
+                  {
+                    "question_id": "q3_sensitivity",
+                    "answer": "rarely_never"
+                  },
+                  {
+                    "question_id": "q4_main_concern",
+                    "answer": "acne_blemish"
+                  },
+                  {
+                    "question_id": "q5_routine_goal",
+                    "answer": "intensive"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Complete ordered 3/4-step routine. Sensitive profile code is <primary_type>_sensitive; other profiles use <primary_type>_<concern>.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "kleer_invalid_payload (schema/answers, with JSON Pointer), kleer_consent_required or kleer_invalid_version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "kleer_cors_forbidden or rest_cookie_invalid_nonce.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "kleer_woocommerce_unavailable, kleer_catalog_incomplete (missing_steps), or kleer_catalog_unavailable. Do not render a partial routine.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "kleer_quiz_engine_error. Generic message, no internal exception or database details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "submitSkinQuiz"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "QuizSubmission": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://kleer.local/schemas/quiz-submission.schema.json",
+        "title": "KLEER Skin Quiz Submission",
+        "description": "Contract duy duong cho POST /wp-json/kleer/v1/skin-quiz. Frontend va Backend cung cap chung file nay; Backend dung no de kiem tra tin trung JSON khi nhan, Frontend dung no de kiem tra payload truoc khi gui.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "session_id",
+          "answers",
+          "consent"
+        ],
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Ma phien Quiz phia Frontend sinh ra (UUID v4) de Backend gom nhom cac request va chay lai.",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "consent": {
+            "type": "object",
+            "description": "Su dong y cua khach hang truoc khi luu ho so phan tich da.",
+            "additionalProperties": false,
+            "required": [
+              "policy_accepted",
+              "marketing_opt_in"
+            ],
+            "properties": {
+              "policy_accepted": {
+                "type": "boolean",
+                "const": true,
+                "description": "Khach hang phai tick dong y chinh sach ban quyen. Bat buoc la true."
+              },
+              "marketing_opt_in": {
+                "type": "boolean",
+                "description": "Khach hang co opt-in nhan tin dien san pham hay khong. Default false."
+              }
+            }
+          },
+          "answers": {
+            "type": "array",
+            "description": "Danh sach cau tra loi theo dung thu tu Frontend hoi.",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "question_id",
+                "answer"
+              ],
+              "properties": {
+                "question_id": {
+                  "type": "string",
+                  "description": "Khoa cua cau hoi, vi du: skin_type.",
+                  "pattern": "^[a-z0-9_]{1,64}$"
+                },
+                "answer": {
+                  "description": "Gia tri tra loi. Cho phep string, number, boolean hoac mang string de bao phu ca cau hoi chon nhieu dap an.",
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "maxLength": 255
+                      }
+                    }
+                  ]
+                },
+                "note": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "description": "Ghi chu tu khach hang. Tuy chon."
+                }
+              }
+            }
+          },
+          "context": {
+            "type": "object",
+            "description": "Ngon canh trinh duyet de Backend uu tien goi y san pham. Toan bo thuoc tinh la tuy chon.",
+            "additionalProperties": false,
+            "properties": {
+              "locale": {
+                "type": "string",
+                "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+                "description": "Ma ngon ngu theo chuan BCP 47, vi du: vi, en, en-US."
+              },
+              "device": {
+                "type": "string",
+                "enum": [
+                  "mobile",
+                  "tablet",
+                  "desktop"
+                ]
+              },
+              "referrer": {
+                "type": "string",
+                "maxLength": 255,
+                "description": "Duong dan trang gui den Quiz. Tuy chon."
+              }
+            }
+          }
+        }
+      },
+      "QuizResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://kleer.local/schemas/quiz-submission-response.schema.json",
+        "title": "KLEER Skin Quiz Submission Response",
+        "description": "Contract duy duong cho phan hoi thanh cong cua POST /wp-json/kleer/v1/skin-quiz. Frontend dung file nay de kiem tra du lieu nhan ve truoc khi ve man hinh ket qua.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ],
+            "description": "Khoa thanh cong. Luon bang chuoi \"ok\" khi HTTP status la 2xx."
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "submission_id",
+              "skin_profile",
+              "recommended_products"
+            ],
+            "properties": {
+              "submission_id": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Khoa dinh danh ban giao, dung de doi soat va mo lai lich su Quiz."
+              },
+              "version": {
+                "type": "string",
+                "maxLength": 32,
+                "description": "Phien ban nghiep vu cua ket qua (vi du: v4-draft). Tuy chon."
+              },
+              "skin_profile": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "label"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Ma ho so da. Vi du: oily_acne.",
+                    "pattern": "^[a-z0-9_]{1,64}$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Ten ho so da ban giao cho nguoi dung."
+                  },
+                  "concerns": {
+                    "type": "array",
+                    "maxItems": 10,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 80
+                    },
+                    "description": "Danh sach van de da duoc phat hien. Tuy chon."
+                  },
+                  "primary_type": {
+                    "type": "string",
+                    "enum": [
+                      "oily",
+                      "dry",
+                      "combination",
+                      "normal",
+                      "sensitive"
+                    ],
+                    "description": "Loai da chinh (v4). Tuy chon."
+                  },
+                  "primary_concern": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "description": "Van de da chinh (v4). Tuy chon."
+                  },
+                  "is_sensitive": {
+                    "type": "boolean",
+                    "description": "Co nhanh cam (v4). Tuy chon."
+                  },
+                  "sensitivity_score": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Diem nhanh cam (v4). Tuy chon."
+                  }
+                }
+              },
+              "recommended_products": {
+                "type": "array",
+                "description": "Danh sach san pham goi y theo thu tu uu tien. v4 co the rong neu kho chua co SKU phu hop; khi do warnings/missing_steps mo ta ly do.",
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "name",
+                    "routine_step"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "stt": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "description": "So thu tu trong danh muc mau. Tuy chon."
+                    },
+                    "name": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "price": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Gia tien dang VND. Tuy chon."
+                    },
+                    "routine_step": {
+                      "type": "string",
+                      "enum": [
+                        "makeup_remover",
+                        "cleanser",
+                        "toner",
+                        "serum",
+                        "treatment",
+                        "moisturizer",
+                        "sunscreen"
+                      ],
+                      "description": "Buoc phac doRoutine, dung cho combobox L03."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "description": "Ly do goi y ngan. Tuy chon."
+                    }
+                  }
+                }
+              },
+              "routine_steps_requested": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 6,
+                "description": "So buoc Routine khach da chon (v4). Tuy chon."
+              },
+              "routine_steps_selected": {
+                "type": "array",
+                "maxItems": 6,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "makeup_remover",
+                    "cleanser",
+                    "toner",
+                    "serum",
+                    "treatment",
+                    "moisturizer",
+                    "sunscreen"
+                  ]
+                },
+                "description": "Cac buoc Routine duoc chon (v4). Tuy chon."
+              },
+              "missing_steps": {
+                "type": "array",
+                "maxItems": 6,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "makeup_remover",
+                    "cleanser",
+                    "toner",
+                    "serum",
+                    "treatment",
+                    "moisturizer",
+                    "sunscreen"
+                  ]
+                },
+                "description": "Cac buoc chua co SKU phu hop (v4). Tuy chon."
+              },
+              "warnings": {
+                "type": "array",
+                "maxItems": 10,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "description": "Canh bao ve du lieu/routine (v4). Tuy chon."
+              },
+              "disclaimer": {
+                "type": "string",
+                "maxLength": 500,
+                "description": "Canh bao nghe nghiep. Tuy chon."
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "data"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer"
+              },
+              "missing_steps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "errors": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

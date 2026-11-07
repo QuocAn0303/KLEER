@@ -1,0 +1,170 @@
+{
+  "info": {
+    "name": "KLEER WooCommerce REST API v3 Automation",
+    "description": "Collection for L10 automation tasks",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Update Order Status to Completed",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "{{WC_CONSUMER_KEY}}",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{WC_CONSUMER_SECRET}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"completed\"\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/wp-json/wc/v3/orders/{{TEST_ORDER_ID}}",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "wp-json",
+            "wc",
+            "v3",
+            "orders",
+            "{{TEST_ORDER_ID}}"
+          ]
+        },
+        "description": "Update order status to completed"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Delete Product Permanently",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "{{WC_CONSUMER_KEY}}",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{WC_CONSUMER_SECRET}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/wp-json/wc/v3/products/{{TEST_DELETE_PRODUCT_ID}}?force=true",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "wp-json",
+            "wc",
+            "v3",
+            "products",
+            "{{TEST_DELETE_PRODUCT_ID}}"
+          ],
+          "query": [
+            {
+              "key": "force",
+              "value": "true"
+            }
+          ]
+        },
+        "description": "Delete product permanently with force=true"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Update Product Stock Quantity",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "{{WC_CONSUMER_KEY}}",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{WC_CONSUMER_SECRET}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"manage_stock\": true,\n  \"stock_quantity\": 88\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/wp-json/wc/v3/products/{{TEST_STOCK_PRODUCT_ID}}",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "wp-json",
+            "wc",
+            "v3",
+            "products",
+            "{{TEST_STOCK_PRODUCT_ID}}"
+          ]
+        },
+        "description": "Update stock quantity to 88"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost"
+    },
+    {
+      "key": "WC_CONSUMER_KEY",
+      "value": ""
+    },
+    {
+      "key": "WC_CONSUMER_SECRET",
+      "value": ""
+    },
+    {
+      "key": "TEST_ORDER_ID",
+      "value": ""
+    },
+    {
+      "key": "TEST_DELETE_PRODUCT_ID",
+      "value": ""
+    },
+    {
+      "key": "TEST_STOCK_PRODUCT_ID",
+      "value": ""
+    }
+  ]
+}

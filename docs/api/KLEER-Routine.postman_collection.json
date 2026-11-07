@@ -1,0 +1,263 @@
+{
+  "info": {
+    "name": "KLEER Routine API by Nhan",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Cases 01-02 require WooCommerce and a real tagged fallback catalog. Do not treat their 503 failures as passed tests. No request creates or changes products. Run shortage cases manually on an isolated inventory copy; never alter shared stock for testing."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Oily acne four steps requires real inventory",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"11111111-2222-4333-8444-555555555555\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1_skin_feeling\",\n      \"answer\": \"greasy_all\"\n    },\n    {\n      \"question_id\": \"q2_pore_sebum\",\n      \"answer\": \"large_pores\"\n    },\n    {\n      \"question_id\": \"q3_sensitivity\",\n      \"answer\": \"rarely_never\"\n    },\n    {\n      \"question_id\": \"q4_main_concern\",\n      \"answer\": \"acne_blemish\"\n    },\n    {\n      \"question_id\": \"q5_routine_goal\",\n      \"answer\": \"intensive\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "const result = pm.response.json();",
+              "pm.test('status ok', function () { pm.expect(result.status).to.eql('ok'); });",
+              "pm.test('4 ordered steps', function () { pm.expect(result.data.recommended_products.map(p => p.routine_step)).to.eql([\"cleanser\", \"treatment\", \"moisturizer\", \"sunscreen\"]); });",
+              "pm.test('Below 300 ms', function () { pm.expect(pm.response.responseTime).to.be.below(300); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Dry sensitive three steps alias",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/?rest_route=/kleer/v1/skin-quiz",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"11111111-2222-4333-8444-555555555555\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1_skin_feeling\",\n      \"answer\": \"tight_dry\"\n    },\n    {\n      \"question_id\": \"q2_pore_sebum\",\n      \"answer\": \"flaky_rough\"\n    },\n    {\n      \"question_id\": \"q3_sensitivity\",\n      \"answer\": \"very_often\"\n    },\n    {\n      \"question_id\": \"q4_main_concern\",\n      \"answer\": \"dehydration\"\n    },\n    {\n      \"question_id\": \"q5_routine_goal\",\n      \"answer\": \"minimal\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "const result = pm.response.json();",
+              "pm.test('status ok', function () { pm.expect(result.status).to.eql('ok'); });",
+              "pm.test('3 ordered steps', function () { pm.expect(result.data.recommended_products.map(p => p.routine_step)).to.eql([\"cleanser\", \"moisturizer\", \"sunscreen\"]); });",
+              "pm.test('Below 300 ms', function () { pm.expect(pm.response.responseTime).to.be.below(300); });",
+              "pm.test('dry_sensitive', function () { pm.expect(pm.response.json().data.skin_profile.code).to.eql('dry_sensitive'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Invalid UUID",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"invalid\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1_skin_feeling\",\n      \"answer\": \"greasy_all\"\n    },\n    {\n      \"question_id\": \"q2_pore_sebum\",\n      \"answer\": \"large_pores\"\n    },\n    {\n      \"question_id\": \"q3_sensitivity\",\n      \"answer\": \"rarely_never\"\n    },\n    {\n      \"question_id\": \"q4_main_concern\",\n      \"answer\": \"acne_blemish\"\n    },\n    {\n      \"question_id\": \"q5_routine_goal\",\n      \"answer\": \"intensive\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Duplicate question",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"11111111-2222-4333-8444-555555555555\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1_skin_feeling\",\n      \"answer\": \"greasy_all\"\n    },\n    {\n      \"question_id\": \"q1_skin_feeling\",\n      \"answer\": \"greasy_all\"\n    },\n    {\n      \"question_id\": \"q3_sensitivity\",\n      \"answer\": \"rarely_never\"\n    },\n    {\n      \"question_id\": \"q4_main_concern\",\n      \"answer\": \"acne_blemish\"\n    },\n    {\n      \"question_id\": \"q5_routine_goal\",\n      \"answer\": \"intensive\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Missing consent",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"11111111-2222-4333-8444-555555555555\",\n  \"consent\": {\n    \"policy_accepted\": false,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1_skin_feeling\",\n      \"answer\": \"greasy_all\"\n    },\n    {\n      \"question_id\": \"q2_pore_sebum\",\n      \"answer\": \"large_pores\"\n    },\n    {\n      \"question_id\": \"q3_sensitivity\",\n      \"answer\": \"rarely_never\"\n    },\n    {\n      \"question_id\": \"q4_main_concern\",\n      \"answer\": \"acne_blemish\"\n    },\n    {\n      \"question_id\": \"q5_routine_goal\",\n      \"answer\": \"intensive\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Forbidden origin",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "https://unapproved.invalid"
+          }
+        ],
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"11111111-2222-4333-8444-555555555555\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1_skin_feeling\",\n      \"answer\": \"greasy_all\"\n    },\n    {\n      \"question_id\": \"q2_pore_sebum\",\n      \"answer\": \"large_pores\"\n    },\n    {\n      \"question_id\": \"q3_sensitivity\",\n      \"answer\": \"rarely_never\"\n    },\n    {\n      \"question_id\": \"q4_main_concern\",\n      \"answer\": \"acne_blemish\"\n    },\n    {\n      \"question_id\": \"q5_routine_goal\",\n      \"answer\": \"intensive\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Invalid nonce",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-WP-Nonce",
+            "value": "not-a-valid-nonce"
+          }
+        ],
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"11111111-2222-4333-8444-555555555555\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1_skin_feeling\",\n      \"answer\": \"greasy_all\"\n    },\n    {\n      \"question_id\": \"q2_pore_sebum\",\n      \"answer\": \"large_pores\"\n    },\n    {\n      \"question_id\": \"q3_sensitivity\",\n      \"answer\": \"rarely_never\"\n    },\n    {\n      \"question_id\": \"q4_main_concern\",\n      \"answer\": \"acne_blemish\"\n    },\n    {\n      \"question_id\": \"q5_routine_goal\",\n      \"answer\": \"intensive\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+[
+  {
+    "case": "01 Oily acne four steps requires real inventory",
+    "expected": 200,
+    "actual": 503,
+    "outcome": "BLOCKED_DEPENDENCY",
+    "code": "kleer_woocommerce_unavailable"
+  },
+  {
+    "case": "02 Dry sensitive three steps alias",
+    "expected": 200,
+    "actual": 503,
+    "outcome": "BLOCKED_DEPENDENCY",
+    "code": "kleer_woocommerce_unavailable"
+  },
+  {
+    "case": "03 Invalid UUID",
+    "expected": 400,
+    "actual": 400,
+    "outcome": "PASS",
+    "code": "kleer_invalid_payload"
+  },
+  {
+    "case": "04 Duplicate question",
+    "expected": 400,
+    "actual": 400,
+    "outcome": "PASS",
+    "code": "kleer_invalid_payload"
+  },
+  {
+    "case": "05 Missing consent",
+    "expected": 400,
+    "actual": 400,
+    "outcome": "PASS",
+    "code": "kleer_invalid_payload"
+  },
+  {
+    "case": "06 Forbidden origin",
+    "expected": 403,
+    "actual": 403,
+    "outcome": "PASS",
+    "code": "kleer_cors_forbidden"
+  },
+  {
+    "case": "07 Invalid nonce",
+    "expected": 403,
+    "actual": 403,
+    "outcome": "PASS",
+    "code": "rest_cookie_invalid_nonce"
+  }
+]

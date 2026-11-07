@@ -1,0 +1,821 @@
+/* ==========================================================================
+   KLEER Skincare Theme - Homepage Stylesheet (BEM Specification)
+   ========================================================================== */
+
+/* 1. HERO BANNER */
+.hero {
+    position: relative;
+    padding: 90px 0 100px;
+    min-height: 640px;
+    display: flex;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 25% 45%, rgba(18, 36, 21, 0.88) 0%, rgba(18, 36, 21, 0.52) 100%);
+    z-index: 1;
+}
+
+.hero__container {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.hero__content {
+    max-width: 580px;
+}
+
+.hero__subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--kleer-accent-green);
+    margin-bottom: 20px;
+}
+
+.hero__title {
+    font-family: var(--font-serif);
+    font-size: 56px;
+    font-weight: 400;
+    line-height: 1.14;
+    color: #ffffff;
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+}
+
+.hero__desc {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--kleer-text-secondary);
+    margin-bottom: 36px;
+    max-width: 500px;
+}
+
+.hero__btn-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.hero__showcase {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 20px;
+    align-items: end;
+}
+
+.hero__card {
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--kleer-border-subtle);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero__card:hover {
+    transform: translateY(-4px);
+}
+
+.hero__card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero__card--large {
+    height: 480px;
+}
+
+.hero__col-small {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.hero__card--small {
+    height: 270px;
+}
+
+.hero__info-box {
+    padding: 22px;
+    border-radius: 16px;
+    background: rgba(18, 36, 21, 0.88);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--kleer-border-subtle);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.hero__info-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.hero__info-header h4 {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.hero__info-box p {
+    font-size: 13px;
+    color: var(--kleer-text-secondary);
+    line-height: 1.5;
+}
+
+/* 2. TRIẾT LÝ CỦA CHÚNG TÔI */
+.philosophy-sec {
+    padding: 120px 0;
+}
+
+.philosophy__inner {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 80px;
+    align-items: center;
+}
+
+.philosophy__image-col {
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--kleer-border-subtle);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+}
+
+.philosophy__img {
+    width: 100%;
+    height: 540px;
+    object-fit: cover;
+}
+
+.philosophy__content-col {
+    max-width: 560px;
+}
+
+.philosophy__title {
+    font-family: var(--font-serif);
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+.philosophy__lead {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--kleer-text-secondary);
+    margin-bottom: 28px;
+}
+
+.philosophy__divider {
+    border: 0;
+    height: 1px;
+    background: var(--kleer-border-subtle);
+    margin-bottom: 32px;
+}
+
+.philosophy__block {
+    margin-bottom: 26px;
+}
+
+.philosophy__block h3 {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--kleer-accent-green);
+}
+
+.philosophy__block p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--kleer-text-muted);
+}
+
+.philosophy__btn {
+    margin-top: 14px;
+}
+
+/* 3. SẢN PHẨM NỔI BẬT */
+.products-sec {
+    padding: 120px 0;
+}
+
+.products__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 56px;
+    gap: 32px;
+}
+
+.products__title {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.products__subtitle {
+    font-size: 16px;
+    color: var(--kleer-text-secondary);
+    max-width: 580px;
+    margin-bottom: 18px;
+}
+
+.products__divider {
+    border: 0;
+    height: 1px;
+    width: 120px;
+    background: var(--kleer-accent-green);
+}
+
+.products__btn-more {
+    flex-shrink: 0;
+}
+
+.products__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+}
+
+.product-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--kleer-border-subtle);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(8px);
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.product-card__img-wrap {
+    width: 100%;
+    height: 230px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.product-card__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12px;
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-card__img-wrap img {
+    transform: scale(1.06);
+}
+
+.product-card__body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-card__title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    min-height: 48px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: #ffffff;
+}
+
+.product-card__price {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--kleer-accent-green);
+    margin-bottom: 12px;
+}
+
+.product-card__price del {
+    opacity: 0.55;
+    font-size: 14px;
+    margin-right: 8px;
+    font-weight: 400;
+    color: #ffffff;
+}
+
+.product-card__price ins {
+    text-decoration: none;
+}
+
+.product-card__desc {
+    font-size: 13px;
+    color: var(--kleer-text-muted);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.product-card__btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 12px;
+}
+
+/* 4. BANNER CAM KẾT THƯƠNG HIỆU */
+.brand-banner {
+    position: relative;
+    padding: 96px 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-top: 1px solid var(--kleer-border-subtle);
+    border-bottom: 1px solid var(--kleer-border-subtle);
+}
+
+.brand-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 28, 17, 0.88);
+}
+
+.brand-banner .container {
+    position: relative;
+    z-index: 2;
+}
+
+.brand-banner__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+}
+
+.brand-banner__item {
+    text-align: center;
+    padding: 0 16px;
+}
+
+.brand-banner__title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    color: var(--kleer-cream);
+}
+
+.brand-banner__desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--kleer-text-secondary);
+}
+
+/* 5. THÀNH PHẦN TINH TÚY */
+.ingredients-sec {
+    padding: 120px 0;
+}
+
+.ingredients__header {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto 64px;
+}
+
+.ingredients__title {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 400;
+    margin-bottom: 14px;
+}
+
+.ingredients__subtitle {
+    font-size: 16px;
+    color: var(--kleer-text-secondary);
+    margin-bottom: 20px;
+}
+
+.ingredients__divider {
+    border: 0;
+    height: 1px;
+    width: 80px;
+    background: var(--kleer-accent-green);
+    margin: 0 auto;
+}
+
+.ingredients__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+}
+
+.ingredient-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--kleer-border-subtle);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.35s ease, border-color 0.35s ease;
+}
+
+.ingredient-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.ingredient-card__img-wrap {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+}
+
+.ingredient-card__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.ingredient-card:hover .ingredient-card__img-wrap img {
+    transform: scale(1.08);
+}
+
+.ingredient-card__body {
+    padding: 24px 20px;
+}
+
+.ingredient-card__title {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.ingredient-card__desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--kleer-text-muted);
+}
+
+/* 6. TRẢI NGHIỆM TỪ KHÁCH HÀNG */
+.testimonials-sec {
+    padding: 120px 0;
+}
+
+.testimonials__header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 64px;
+}
+
+.testimonials__title {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 400;
+    margin-bottom: 14px;
+}
+
+.testimonials__subtitle {
+    font-size: 16px;
+    color: var(--kleer-text-secondary);
+    margin-bottom: 20px;
+}
+
+.testimonials__divider {
+    border: 0;
+    height: 1px;
+    width: 80px;
+    background: var(--kleer-accent-green);
+    margin: 0 auto;
+}
+
+.testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 36px;
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.testimonial-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--kleer-border-subtle);
+    border-radius: 24px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    backdrop-filter: blur(10px);
+}
+
+.testimonial-card__stars {
+    font-size: 18px;
+    color: #e5c378;
+    margin-bottom: 18px;
+    letter-spacing: 3px;
+}
+
+.testimonial-card__quote {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--kleer-text-secondary);
+    margin-bottom: 28px;
+}
+
+.testimonial-card__author {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.testimonial-card__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #24462b 0%, #3d6a45 100%);
+    border: 2px solid var(--kleer-accent-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.testimonial-card__name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 2px;
+}
+
+.testimonial-card__location {
+    font-size: 13px;
+    color: var(--kleer-text-muted);
+}
+
+/* 7. CHẨN ĐOÁN DA / SMART QUIZ */
+.quiz-sec {
+    padding: 120px 0;
+}
+
+.quiz__inner {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 64px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--kleer-border-subtle);
+    border-radius: 32px;
+    padding: 64px;
+    backdrop-filter: blur(12px);
+}
+
+.quiz__tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--kleer-accent-green);
+    margin-bottom: 16px;
+}
+
+.quiz__title {
+    font-family: var(--font-serif);
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 18px;
+}
+
+.quiz__desc {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--kleer-text-secondary);
+    margin-bottom: 32px;
+    max-width: 500px;
+}
+
+.quiz__btn-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.quiz__card {
+    background: rgba(16, 33, 20, 0.75);
+    border: 1px solid var(--kleer-border-subtle);
+    border-radius: 20px;
+    padding: 36px;
+}
+
+.quiz__card-title {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.quiz__list li {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--kleer-text-secondary);
+    line-height: 1.5;
+}
+
+.quiz__list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--kleer-accent-green);
+    font-weight: bold;
+    font-size: 15px;
+}
+
+/* 8. ĐĂNG KÝ NHẬN THÔNG TIN */
+.newsletter-sec {
+    position: relative;
+    padding: 110px 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-top: 1px solid var(--kleer-border-subtle);
+}
+
+.newsletter-sec::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 28, 17, 0.88);
+}
+
+.newsletter-sec .container {
+    position: relative;
+    z-index: 2;
+}
+
+.newsletter__content {
+    max-width: 620px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.newsletter__title {
+    font-family: var(--font-serif);
+    font-size: 40px;
+    font-weight: 400;
+    margin-bottom: 14px;
+}
+
+.newsletter__desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--kleer-text-secondary);
+    margin-bottom: 32px;
+}
+
+.newsletter__form {
+    display: flex;
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.newsletter__input {
+    flex: 1;
+    height: 50px;
+    padding: 0 24px;
+    border-radius: 40px;
+    border: 1px solid var(--kleer-border-subtle);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+.newsletter__input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.newsletter__input:focus {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.newsletter__btn {
+    flex-shrink: 0;
+    padding: 0 32px;
+    height: 50px;
+    background-color: var(--kleer-cream);
+    color: var(--kleer-charcoal);
+}
+
+/* ==========================================================================
+   Responsive Media Queries
+   ========================================================================== */
+@media (max-width: 1200px) {
+    .products__grid,
+    .ingredients__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 991px) {
+    .hero {
+        padding: 80px 0;
+    }
+    .hero__container {
+        grid-template-columns: 1fr;
+        gap: 48px;
+    }
+    .hero__title {
+        font-size: 46px;
+    }
+    .philosophy__inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+    }
+    .philosophy__img {
+        height: 380px;
+    }
+    .brand-banner__grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    .quiz__inner {
+        grid-template-columns: 1fr;
+        padding: 40px;
+        gap: 40px;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero__title {
+        font-size: 36px;
+    }
+    .hero__showcase {
+        grid-template-columns: 1fr;
+    }
+    .hero__card--large {
+        height: 320px;
+    }
+    .hero__card--small {
+        height: 200px;
+    }
+    .products__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    .products__grid,
+    .ingredients__grid,
+    .testimonials__grid {
+        grid-template-columns: 1fr;
+    }
+    .newsletter__form {
+        flex-direction: column;
+    }
+    .newsletter__btn {
+        width: 100%;
+    }
+}

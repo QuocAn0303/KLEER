@@ -58,29 +58,24 @@ class Bank_Account {
 	/**
 	 * Kiem tra du dieu kien de co the sinh QR.
 	 *
-	 * Thieu mot trong ba truong nay thi QR se khong quet duoc.
+	 * Can so tai khoan (4-19 chu so) va Bank BIN (dung 6 chu so).
 	 */
 	public function is_configured(): bool {
-		return '' !== trim( (string) $this->get( 'account_number' ) )
-			&& '' !== trim( (string) $this->get( 'bank_bin' ) )
-			&& '' !== trim( (string) $this->get( 'bin_location' ) );
+		return 1 === preg_match( '/^[0-9]{4,19}$/', trim( (string) $this->get( 'account_number' ) ) )
+			&& 1 === preg_match( '/^[0-9]{6}$/', trim( (string) $this->get( 'bank_bin' ) ) );
 	}
 
 	/**
 	 * Thuoc tinh doc cho viec tao QR.
 	 *
-	 * @return array{account_number: string, bank_bin: string, bin_location: string, account_holder: string, bank_name: string, merchant_name: string, city: string, account_type: string, transfer_prefix: string}
+	 * @return array{account_number: string, bank_bin: string, account_holder: string, bank_name: string, transfer_prefix: string}
 	 */
 	public function qr_context(): array {
 		return array(
-			'account_number' => (string) $this->get( 'account_number' ),
-			'bank_bin'       => (string) $this->get( 'bank_bin' ),
-			'bin_location'   => (string) $this->get( 'bin_location' ),
-			'account_holder' => (string) $this->get( 'account_holder' ),
-			'bank_name'      => (string) $this->get( 'bank_name' ),
-			'merchant_name'  => (string) $this->get( 'merchant_name', 'KLEER' ),
-			'city'           => (string) $this->get( 'city', 'HA NOI' ),
-			'account_type'   => (string) $this->get( 'account_type', '000' ),
+			'account_number'  => trim( (string) $this->get( 'account_number' ) ),
+			'bank_bin'        => trim( (string) $this->get( 'bank_bin' ) ),
+			'account_holder'  => (string) $this->get( 'account_holder' ),
+			'bank_name'       => (string) $this->get( 'bank_name' ),
 			'transfer_prefix' => (string) $this->get( 'transfer_prefix', 'KLEER' ),
 		);
 	}
@@ -108,7 +103,7 @@ class Bank_Account {
 	 *
 	 * @return array<string, array<string, mixed>>
 	 */
-	private function fields(): array {
+	public function fields(): array {
 		return array(
 			'enabled'          => array(
 				'title'   => __( 'Bat/tat VietQR', 'kleer-payments' ),
@@ -133,14 +128,7 @@ class Bank_Account {
 			'bank_bin'         => array(
 				'title'       => __( 'Bank BIN (6 so)', 'kleer-payments' ),
 				'type'        => 'text',
-				'description' => __( '6 so dau cua ngan hang. Vi du VietinBank: 970436', 'kleer-payments' ),
-				'desc_tip'    => true,
-				'default'     => '',
-			),
-			'bin_location'     => array(
-				'title'       => __( 'Ma vung ngan hang (4 so)', 'kleer-payments' ),
-				'type'        => 'text',
-				'description' => __( '4 so ma vung. Vi du: 0208', 'kleer-payments' ),
+				'description' => __( '6 so BIN cua ngan hang thu huong (NAPAS). Vi du: Vietcombank 970436, VietinBank 970415, BIDV 970418, MB 970422, Techcombank 970407', 'kleer-payments' ),
 				'desc_tip'    => true,
 				'default'     => '',
 			),
@@ -151,33 +139,12 @@ class Bank_Account {
 				'desc_tip'    => true,
 				'default'     => '',
 			),
-			'merchant_name'    => array(
-				'title'       => __( 'Ten hien thi trong QR', 'kleer-payments' ),
-				'type'        => 'text',
-				'description' => __( 'Toi da 25 ky tu, khong dau, viet hoa.', 'kleer-payments' ),
-				'desc_tip'    => true,
-				'default'     => 'KLEER',
-			),
-			'city'             => array(
-				'title'       => __( 'Thanh pho trong QR', 'kleer-payments' ),
-				'type'        => 'text',
-				'description' => __( 'Toi da 15 ky tu, khong dau, viet hoa.', 'kleer-payments' ),
-				'desc_tip'    => true,
-				'default'     => 'HA NOI',
-			),
 			'transfer_prefix'  => array(
 				'title'       => __( 'Tien to noi dung chuyen khoan', 'kleer-payments' ),
 				'type'        => 'text',
 				'description' => __( 'VD: KLEER. Noi dung se la "TIEN TO + ma don", toi da 25 ky tu.', 'kleer-payments' ),
 				'desc_tip'    => true,
 				'default'     => 'KLEER',
-			),
-			'account_type'     => array(
-				'title'       => __( 'Loai tai khoan', 'kleer-payments' ),
-				'type'        => 'text',
-				'description' => __( '000 = tai khoan thanh toan, 001 = tiet kiem.', 'kleer-payments' ),
-				'desc_tip'    => true,
-				'default'     => '000',
 			),
 		);
 	}
