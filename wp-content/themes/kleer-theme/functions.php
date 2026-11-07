@@ -49,7 +49,7 @@ function enqueue_assets(): void
     // 2. CSS Global (Navbar, Footer, Hệ thống màu Ombre)
     wp_enqueue_style(
         'kleer-global-style',
-        get_template_directory_uri() . '/css/global.css',
+        get_template_directory_uri() . '/assets/css/global.css',
         ['kleer-google-fonts'],
         KLEER_THEME_VERSION
     );
@@ -58,7 +58,7 @@ function enqueue_assets(): void
     if (is_front_page()) {
         wp_enqueue_style(
             'kleer-homepage-style',
-            get_template_directory_uri() . '/css/homepage.css',
+            get_template_directory_uri() . '/assets/css/homepage.css',
             ['kleer-global-style'],
             KLEER_THEME_VERSION
         );
