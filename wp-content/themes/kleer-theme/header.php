@@ -30,7 +30,7 @@
 
         <div class="header__right">
             <nav class="header__nav">
-                <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-link active">Trang chủ</a>
+                <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-link <?php echo is_front_page() ? 'active' : ''; ?>">Trang chủ</a>
                 <a href="<?php echo esc_url(home_url('/shop')); ?>" class="nav-link">Sản phẩm</a>
                 <a href="<?php echo esc_url(home_url('/contact')); ?>" class="nav-link">Liên hệ</a>
                 <a href="<?php echo esc_url(home_url('/about')); ?>" class="nav-link">Về chúng tôi</a>
@@ -38,10 +38,17 @@
 
             <div class="header__icons">
                 <a href="<?php echo function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#'; ?>" class="icon-holder" title="Giỏ hàng">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon-cart.svg" alt="Giỏ hàng" class="icon-img icon-cart">
+                    <svg class="icon-img icon-cart" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
                 </a>
-                <a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')); ?>" class="icon-holder" title="Tài khoản">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/icon-avatar.svg" alt="Tài khoản" class="icon-img icon-avatar">
+                <a href="<?php echo function_exists('wc_get_page_id') && wc_get_page_id('myaccount') > 0 ? get_permalink(wc_get_page_id('myaccount')) : home_url('/my-account'); ?>" class="icon-holder" title="Tài khoản">
+                    <svg class="icon-img icon-avatar" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
                 </a>
             </div>
         </div>
