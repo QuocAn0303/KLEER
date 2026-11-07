@@ -1,0 +1,9 @@
+test_complete_two_product_v4_is_valid (test_benchmark.BenchmarkValidation.test_complete_two_product_v4_is_valid) ... ok
+test_missing_steps_need_explicit_acceptance_and_warning (test_benchmark.BenchmarkValidation.test_missing_steps_need_explicit_acceptance_and_warning) ... ok
+test_non_object_responses_fail (test_benchmark.BenchmarkValidation.test_non_object_responses_fail) ... ok
+test_wrong_version_empty_duplicate_and_wrong_steps_fail (test_benchmark.BenchmarkValidation.test_wrong_version_empty_duplicate_and_wrong_steps_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

@@ -1,0 +1,61 @@
+{
+  "tables": [
+    {
+      "table": "wp_posts",
+      "before_rows": 4,
+      "after_rows": 4,
+      "unchanged": true,
+      "before_sha256": "19ebebcf72db84f303bec3b6f3f25ce1143c36e5b16da4ef711fdd23d7cab908",
+      "after_sha256": "19ebebcf72db84f303bec3b6f3f25ce1143c36e5b16da4ef711fdd23d7cab908"
+    },
+    {
+      "table": "wp_postmeta",
+      "before_rows": 2,
+      "after_rows": 2,
+      "unchanged": true,
+      "before_sha256": "d7fb8affce04cd77f9be68a6c9ee3f9862454ca7fe22c33d76a00ea60bb68966",
+      "after_sha256": "d7fb8affce04cd77f9be68a6c9ee3f9862454ca7fe22c33d76a00ea60bb68966"
+    },
+    {
+      "table": "wp_users",
+      "before_rows": 1,
+      "after_rows": 1,
+      "unchanged": true,
+      "before_sha256": "346943457a210e1f6031c9c18bda9fb53e3f7ed004e57a19ad2e9a9a2d2e89d5",
+      "after_sha256": "346943457a210e1f6031c9c18bda9fb53e3f7ed004e57a19ad2e9a9a2d2e89d5"
+    },
+    {
+      "table": "wp_usermeta",
+      "before_rows": 20,
+      "after_rows": 20,
+      "unchanged": true,
+      "before_sha256": "987ec1b11e83f1437a806c0958c626fa819b5274b0e69d43e1ad0fa9f3493a05",
+      "after_sha256": "987ec1b11e83f1437a806c0958c626fa819b5274b0e69d43e1ad0fa9f3493a05"
+    },
+    {
+      "table": "wp_terms",
+      "before_rows": 1,
+      "after_rows": 1,
+      "unchanged": true,
+      "before_sha256": "2b75881c665e38200ea839b3b269a31909ba9d39f7d1a86391475c04b9644d4a",
+      "after_sha256": "2b75881c665e38200ea839b3b269a31909ba9d39f7d1a86391475c04b9644d4a"
+    },
+    {
+      "table": "wp_term_taxonomy",
+      "before_rows": 1,
+      "after_rows": 1,
+      "unchanged": true,
+      "before_sha256": "aba83166a585fdec722db72d14eac129e934f2c59acfa3c48afcaca184d4b382",
+      "after_sha256": "aba83166a585fdec722db72d14eac129e934f2c59acfa3c48afcaca184d4b382"
+    },
+    {
+      "table": "wp_term_relationships",
+      "before_rows": 1,
+      "after_rows": 1,
+      "unchanged": true,
+      "before_sha256": "b039076dd2ed67f089a95b76a301c61d1f4cf21962f9b41134cd01b95c2a1808",
+      "after_sha256": "b039076dd2ed67f089a95b76a301c61d1f4cf21962f9b41134cd01b95c2a1808"
+    }
+  ],
+  "all_business_rows_unchanged": true
+}

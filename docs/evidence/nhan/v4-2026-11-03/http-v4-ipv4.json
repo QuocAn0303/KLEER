@@ -1,0 +1,291 @@
+{
+  "base_url": "http://127.0.0.1:8082",
+  "checked_at_utc": "2026-11-03T13:57:22Z",
+  "cases": [
+    {
+      "name": "oily_acne",
+      "expected": 200,
+      "actual": 200,
+      "passed": true,
+      "ms": 285.43,
+      "body": {
+        "status": "ok",
+        "data": {
+          "submission_id": 647939,
+          "version": "v4-draft",
+          "skin_profile": {
+            "code": "oily_acne",
+            "label": "Da dầu (Mụn)",
+            "primary_type": "oily",
+            "primary_concern": "acne",
+            "is_sensitive": false,
+            "sensitivity_score": 0,
+            "concerns": [
+              "Vấn đề ưu tiên: Mụn"
+            ]
+          },
+          "routine_steps_requested": 4,
+          "routine_steps_selected": [
+            "makeup_remover",
+            "cleanser",
+            "toner",
+            "sunscreen"
+          ],
+          "recommended_products": [
+            {
+              "id": 33,
+              "stt": 33,
+              "name": "Nước Tẩy Trang JMsolution Rau Má Cho Da Dầu Mụn 500ml",
+              "price": 112000,
+              "routine_step": "makeup_remover",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước makeup_remover."
+            },
+            {
+              "id": 173,
+              "stt": 173,
+              "name": "Sữa Rửa Mặt Garnier Salicylic Acid Giảm Dầu Mụn 100ml",
+              "price": 83000,
+              "routine_step": "cleanser",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước cleanser."
+            },
+            {
+              "id": 211,
+              "stt": 211,
+              "name": "Toner Compliment Giúp Làm Sạch Sâu, Kiềm Dầu, Giảm Mụn Và Mờ Thâm 200ml",
+              "price": 80000,
+              "routine_step": "toner",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước toner."
+            },
+            {
+              "id": 458,
+              "stt": 458,
+              "name": "Serum Chống Nắng Garnier 12H Kiềm Dầu &amp; Hỗ Trợ Giảm Mụn 30ml",
+              "price": 142000,
+              "routine_step": "sunscreen",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước sunscreen."
+            }
+          ],
+          "missing_steps": [],
+          "warnings": [],
+          "disclaimer": "Bản nháp phác đồ 6 bước v4 (đang chờ PO Nguyễn Tấn Phát phê duyệt chính thức). Vui lòng thử trước sản phẩm 24h trên vùng da quai hàm."
+        }
+      }
+    },
+    {
+      "name": "sensitive_dark_spots_six_steps",
+      "expected": 200,
+      "actual": 200,
+      "passed": true,
+      "ms": 69.81,
+      "body": {
+        "status": "ok",
+        "data": {
+          "submission_id": 647939,
+          "version": "v4-draft",
+          "skin_profile": {
+            "code": "sensitive_dark_spots_sensitive",
+            "label": "Da nhạy cảm (Thâm / Nám)",
+            "primary_type": "sensitive",
+            "primary_concern": "dark_spots",
+            "is_sensitive": true,
+            "sensitivity_score": 10,
+            "concerns": [
+              "Vấn đề ưu tiên: Thâm / Nám",
+              "Cờ nhạy cảm bật (loại bỏ hoạt chất mạnh BHA, AHA, PHA, Vitamin C ≥ 5%)"
+            ]
+          },
+          "routine_steps_requested": 6,
+          "routine_steps_selected": [
+            "makeup_remover",
+            "cleanser",
+            "toner",
+            "serum",
+            "moisturizer",
+            "sunscreen"
+          ],
+          "recommended_products": [
+            {
+              "id": 63,
+              "stt": 63,
+              "name": "Nước Tẩy Trang Bioderma Dành Cho Da Nhạy Cảm 100ml",
+              "price": 171000,
+              "routine_step": "makeup_remover",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước makeup_remover."
+            },
+            {
+              "id": 172,
+              "stt": 172,
+              "name": "Sữa Rửa Mặt Eucerin Tạo Bọt Làm Sáng Da 150g",
+              "price": 430000,
+              "routine_step": "cleanser",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước cleanser."
+            },
+            {
+              "id": 223,
+              "stt": 223,
+              "name": "Nước Hoa Hồng Pond's Sáng Da, Cân Bằng pH 150ml",
+              "price": 64000,
+              "routine_step": "toner",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước toner."
+            },
+            {
+              "id": 307,
+              "stt": 307,
+              "name": "Serum Prettyskin B5 Phục Hồi, Dưỡng Sáng Da 50ml",
+              "price": 375000,
+              "routine_step": "serum",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước serum."
+            },
+            {
+              "id": 366,
+              "stt": 366,
+              "name": "Kem Dưỡng Hatomugi Cấp Ẩm &amp; Làm Sáng Da 300g",
+              "price": 93000,
+              "routine_step": "moisturizer",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước moisturizer."
+            },
+            {
+              "id": 497,
+              "stt": 497,
+              "name": "Chống Nắng Serum Senka 3 In 1 Dưỡng Sáng Da Nâng Tông 40g",
+              "price": 171000,
+              "routine_step": "sunscreen",
+              "reason": "Sản phẩm chuẩn WooCommerce khớp với bước sunscreen."
+            }
+          ],
+          "missing_steps": [],
+          "warnings": [],
+          "disclaimer": "Bản nháp phác đồ 6 bước v4 (đang chờ PO Nguyễn Tấn Phát phê duyệt chính thức). Vui lòng thử trước sản phẩm 24h trên vùng da quai hàm."
+        }
+      }
+    },
+    {
+      "name": "missing_question",
+      "expected": 400,
+      "actual": 400,
+      "passed": true,
+      "ms": 75.8,
+      "body": {
+        "code": "kleer_invalid_payload",
+        "message": "Thiếu câu hỏi bắt buộc: \"q6\". Khách bắt buộc trả lời đủ 6 câu.",
+        "data": {
+          "status": 400,
+          "errors": [
+            {
+              "pointer": "/answers",
+              "keyword": "quiz_answers",
+              "message": "Thiếu câu hỏi bắt buộc: \"q6\". Khách bắt buộc trả lời đủ 6 câu."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "duplicate_question",
+      "expected": 400,
+      "actual": 400,
+      "passed": true,
+      "ms": 66.98,
+      "body": {
+        "code": "kleer_invalid_payload",
+        "message": "Câu hỏi bị lặp lại: \"q1\". Mỗi câu chỉ được trả lời 1 lần.",
+        "data": {
+          "status": 400,
+          "errors": [
+            {
+              "pointer": "/answers",
+              "keyword": "quiz_answers",
+              "message": "Câu hỏi bị lặp lại: \"q1\". Mỗi câu chỉ được trả lời 1 lần."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "invalid_option",
+      "expected": 400,
+      "actual": 400,
+      "passed": true,
+      "ms": 62.83,
+      "body": {
+        "code": "kleer_invalid_payload",
+        "message": "Lựa chọn không hợp lệ \"invalid\" cho câu hỏi \"q1\".",
+        "data": {
+          "status": 400,
+          "errors": [
+            {
+              "pointer": "/answers",
+              "keyword": "quiz_answers",
+              "message": "Lựa chọn không hợp lệ \"invalid\" cho câu hỏi \"q1\"."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "consent_false",
+      "expected": 400,
+      "actual": 400,
+      "passed": true,
+      "ms": 60.69,
+      "body": {
+        "code": "kleer_invalid_payload",
+        "message": "Dữ liệu gửi lên không hợp lệ theo schema của API.",
+        "data": {
+          "status": 400,
+          "errors": [
+            {
+              "pointer": "/consent/policy_accepted",
+              "keyword": "const",
+              "message": "Gia tri phai bang true."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "invalid_nonce",
+      "expected": 403,
+      "actual": 403,
+      "passed": true,
+      "ms": 82.51,
+      "body": {
+        "code": "rest_cookie_invalid_nonce",
+        "message": "Cookie check failed",
+        "data": {
+          "status": 403
+        }
+      }
+    },
+    {
+      "name": "unapproved_origin",
+      "expected": 403,
+      "actual": 403,
+      "passed": true,
+      "ms": 78.71,
+      "body": {
+        "code": "kleer_cors_forbidden",
+        "message": "Origin không được phép.",
+        "data": {
+          "status": 403
+        }
+      }
+    },
+    {
+      "name": "unsupported_version",
+      "expected": 400,
+      "actual": 400,
+      "passed": true,
+      "ms": 90.68,
+      "body": {
+        "code": "kleer_invalid_version",
+        "message": "Phiên bản Quiz không hợp lệ. Chỉ chấp nhận \"v1\" hoặc \"v4\".",
+        "data": {
+          "status": 400
+        }
+      }
+    }
+  ],
+  "passed": 9,
+  "total": 9
+}

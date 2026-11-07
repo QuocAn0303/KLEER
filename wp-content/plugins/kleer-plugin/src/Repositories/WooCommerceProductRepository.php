@@ -78,7 +78,8 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
             return (new RoutineProductRepository())->all();
         }
         $cache = $this->cache ?? KleerCache::fromEnvironment();
-        $cacheKey = 'catalog_live_v2_' . md5(serialize($criteria));
+        // New key prevents reading the former truncated catalog / legacy meta mapping.
+        $cacheKey = 'catalog_live_v3_' . md5(serialize($criteria));
 
         $cached = $cache->get($cacheKey, KleerCache::GROUP_PRODUCTS);
 
@@ -125,22 +126,44 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
             return [];
         }
 
-        $queryArgs = [
-            'status'       => 'publish',
-            'limit'        => $criteria['limit'] ?? 100,
-            'stock_status' => 'instock',
-            'return'       => 'objects',
-        ];
-
         try {
-            /** @var list<\WC_Product> $wcProducts */
-            $wcProducts = wc_get_products($queryArgs);
-        } catch (\Throwable $e) {
-            return [];
-        }
+            // limit is a page size, never a cap on the complete recommendation catalog.
+            $pageSize = max(1, min(500, (int) ($criteria['page_size'] ?? $criteria['limit'] ?? 100)));
+            $wcProducts = [];
+            $page = 1;
+            do {
+                $result = wc_get_products([
+                    'type' => 'simple',
+                    'status' => 'publish',
+                    'limit' => $pageSize,
+                    'page' => $page,
+                    'paginate' => true,
+                    'orderby' => 'ID',
+                    'order' => 'ASC',
+                    'stock_status' => 'instock',
+                    'return' => 'objects',
+                ]);
+                if (!is_object($result) || !isset($result->products, $result->max_num_pages)
+                    || !is_array($result->products)) {
+                    throw new \RuntimeException('Invalid WooCommerce paginated catalog.');
+                }
+                foreach ($result->products as $product) {
+                    $wcProducts[(int) $product->get_id()] = $product;
+                }
+                $page++;
+            } while ($page <= (int) $result->max_num_pages && $result->products !== []);
 
-        if (empty($wcProducts)) {
-            return [];
+            $ids = array_keys($wcProducts);
+            if ($ids === []) {
+                return [];
+            }
+            if (function_exists('update_meta_cache')) {
+                update_meta_cache('post', $ids);
+            }
+            $terms = $this->loadCatalogTerms($ids);
+        } catch (\Throwable $e) {
+            // A failed later page must not masquerade as a genuinely sparse catalog.
+            throw new RoutineUnavailableException([], 'catalog_unavailable');
         }
 
         $catalog = [];
@@ -148,10 +171,19 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
         foreach ($wcProducts as $p) {
             $id = $p->get_id();
 
-            // Đọc 3 Taxonomies chuẩn
-            $skinTypes = $this->getTermsSlugs($id, TaxonomyRegistry::TAXONOMY_SKIN_TYPE);
-            $concerns  = $this->getTermsSlugs($id, TaxonomyRegistry::TAXONOMY_SKIN_CONCERN);
-            $steps     = $this->getTermsSlugs($id, TaxonomyRegistry::TAXONOMY_ROUTINE_STEP);
+            $price = $p->get_price();
+            if (!is_numeric($price) || (float) $price <= 0
+                || in_array($p->get_catalog_visibility(), ['hidden', 'search'], true)) {
+                continue;
+            }
+
+            $skinTypes = $this->productTerms($terms, $id, TaxonomyRegistry::TAXONOMY_SKIN_TYPE);
+            $concerns = $this->productTerms($terms, $id, TaxonomyRegistry::TAXONOMY_SKIN_CONCERN);
+            $steps = $this->productTerms($terms, $id, TaxonomyRegistry::TAXONOMY_ROUTINE_STEP);
+            // CSV's five explicit types mean "all types", not a skin-specific +1 bonus.
+            if (array_diff(['sensitive', 'dry', 'combination', 'oily', 'normal'], $skinTypes) === []) {
+                $skinTypes = ['all_skin_types'];
+            }
 
             // Không gán bừa sản phẩm chưa phân loại vào bước cleanser.
             // Sản phẩm thiếu routine step sẽ không được đưa vào gợi ý.
@@ -190,17 +222,22 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
             $activeIngredients = '';
             if (function_exists('get_post_meta')) {
                 $activeIngredients = (string) get_post_meta($id, '_kleer_active_ingredients', true);
-                $hasStrongActive = (bool) get_post_meta($id, '_kleer_has_strong_actives', true);
+                $flag = get_post_meta($id, '_kleer_strong_active', true);
+                // Support data already stored under the former reader key; canonical 0 wins.
+                if ($flag === '' || $flag === null) {
+                    $flag = get_post_meta($id, '_kleer_has_strong_actives', true);
+                }
+                $hasStrongActive = $this->metaFlag($flag);
             }
 
             $isGentleFallback = in_array('all_skin_types', $skinTypes, true)
                 || in_array('sensitive', $skinTypes, true)
-                || (function_exists('get_post_meta') && (bool) get_post_meta($id, '_kleer_gentle_fallback', true));
+                || (function_exists('get_post_meta') && $this->metaFlag(get_post_meta($id, '_kleer_gentle_fallback', true)));
 
             $catalog[] = [
                 'id'                 => $id,
                 'name'               => $p->get_name(),
-                'price'              => (int) $p->get_price(),
+                'price'              => (int) $price,
                 'routine_step'       => $step,
                 'secondary_step'     => $secondaryStep,
                 'skin_types'         => $skinTypes,
@@ -218,20 +255,44 @@ class WooCommerceProductRepository implements QuizProductRepositoryInterface
     }
 
     /**
-     * @return list<string>
+     * Read all product terms in one call, rather than three queries per SKU.
+     * Existing legacy terms can be read without registering or migrating taxonomies.
+     *
+     * @param list<int> $ids
+     * @return array<int, array<string, list<string>>>
      */
-    private function getTermsSlugs(int $productId, string $taxonomy): array
+    private function loadCatalogTerms(array $ids): array
     {
-        if (!function_exists('wp_get_post_terms')) {
+        $taxonomies = [];
+        foreach (TaxonomyRegistry::getTaxonomySlugs() as $canonical) {
+            foreach ([$canonical, substr($canonical, 3)] as $slug) {
+                if (taxonomy_exists($slug)) {
+                    $taxonomies[] = $slug;
+                }
+            }
+        }
+        if ($taxonomies === []) {
             return [];
         }
-
-        $terms = wp_get_post_terms($productId, $taxonomy, ['fields' => 'slugs']);
-
-        if (is_array($terms) && !is_wp_error($terms)) {
-            return array_values(array_map('strval', $terms));
+        $result = wp_get_object_terms($ids, $taxonomies, ['fields' => 'all_with_object_id']);
+        if (is_wp_error($result) || !is_array($result)) {
+            throw new \RuntimeException('Unable to read product taxonomy terms.');
         }
+        $mapped = [];
+        foreach ($result as $term) {
+            $mapped[(int) $term->object_id][$term->taxonomy][] = $term->slug;
+        }
+        return $mapped;
+    }
 
-        return [];
+    /** @return list<string> */
+    private function productTerms(array $terms, int $id, string $canonical): array
+    {
+        return array_values(array_unique($terms[$id][$canonical] ?? $terms[$id][substr($canonical, 3)] ?? []));
+    }
+
+    private function metaFlag(mixed $value): bool
+    {
+        return in_array(strtolower(trim((string) $value)), ['1', 'yes', 'true', 'on'], true);
     }
 }
