@@ -1,0 +1,36 @@
+{
+    "checked_at_utc": "2026-11-03T13:58:16+00:00",
+    "home": "http://localhost:8082",
+    "php_version": "8.2.34",
+    "wordpress_version": "7.1.2",
+    "woocommerce_version": "11.2.1",
+    "published_products": 498,
+    "taxonomy_registration": {
+        "pa_skin_type": true,
+        "pa_skin_concern": true,
+        "pa_routine_step": true
+    },
+    "catalog_read": {
+        "products": 406,
+        "queries": 35,
+        "ms": 172.92,
+        "note": "Catalog adapter only; not complete HTTP latency."
+    },
+    "catalog_steps": {
+        "makeup_remover": 50,
+        "cleanser": 67,
+        "toner": 62,
+        "serum": 74,
+        "moisturizer": 77,
+        "sunscreen": 76
+    },
+    "strong_active_products": 183,
+    "catalog_max_id": 508,
+    "real_catalog_sweep": {
+        "combinations": 7500,
+        "failures": 0,
+        "routines_with_missing_steps": 0,
+        "routines_below_two_products": 0,
+        "note": "In-process logic over the live WooCommerce catalog; not 7500 HTTP requests or UAT."
+    }
+}

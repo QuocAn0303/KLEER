@@ -5,7 +5,7 @@ Cập nhật 26/10/2026. Chỉ đánh giá task của Bùi Hiếu Nhân; các đ
 ## Những phần đã tự thực hiện
 
 - Kích hoạt riêng `kleer-plugin` trên WordPress local thành công, không có PHP Warning/Notice trong lần kiểm tra. Trạng thái active_plugins cũ được lưu ngoài repo tại `.kleer-backups/nhan-active-plugins-before-2026-10-26.json` trong thư mục project cha.
-- Sau đồng bộ 5 commit mới từ develop, giữ `TaxonomyRegistry` dùng pa_skin_type/pa_skin_concern/pa_routine_step qua WooCommerce API; không thêm bộ taxonomy trùng. Chưa có WooCommerce thì registry chờ, menu thực tế chưa nghiệm thu.
+- **L08-G5-02 / quy ước taxonomy:** tên taxonomy chuẩn trong WooCommerce/DB là `pa_skin_type`, `pa_skin_concern`, `pa_routine_step`; `skin_type`, `skin_concern`, `routine_step` chỉ là khóa logic/API và phải ánh xạ sang `pa_*`. Giữ `TaxonomyRegistry` dùng các taxonomy `pa_*` qua WooCommerce API; không thêm bộ taxonomy trùng. Chưa có WooCommerce thì registry chờ, menu thực tế chưa nghiệm thu.
 - Sửa trọng số flaky_rough và mã `dry_sensitive` theo ca nghiệm thu dự thảo; kiểm tra độc lập toàn bộ 384 tổ hợp trên danh mục đầy đủ và danh mục chỉ có fallback dịu nhẹ.
 - Kiểm tra đủ 5 câu hỏi, lựa chọn, consent, Origin và nonce; kiểm tra schema đầu vào/đầu ra. Thay ID mẫu bằng adapter đọc dữ liệu sản phẩm thật trong đường chạy production.
 - Fallback bỏ lựa chọn bừa sản phẩm không tương thích. Nếu thiếu kho thì trả JSON 503 rõ ràng, không trả routine thiếu hoặc ID giả.
@@ -27,7 +27,7 @@ Code lifecycle/PSR-4 đã có và plugin đã được kích hoạt trên local.
 
 ## Bước 3 Nhận môi trường WooCommerce
 
-Nhờ An cung cấp môi trường WordPress có WooCommerce hoặc hướng dẫn cài trên môi trường nhóm; không cần gửi mật khẩu qua tài liệu này. Nhờ Trí bàn giao dữ liệu L08 có ID thật và đủ taxonomy. Không tự nhập sản phẩm thay Trí. Sau đó mở Products và xác nhận đủ 3 menu taxonomy để đóng L08-G5-02; lưu ảnh/bằng chứng thực tế. Plugin không tự tạo product post type thay WooCommerce.
+Nhờ An cung cấp môi trường WordPress có WooCommerce hoặc hướng dẫn cài trên môi trường nhóm; không cần gửi mật khẩu qua tài liệu này. Nhờ Trí bàn giao dữ liệu L08 có ID thật và đủ taxonomy `pa_skin_type`, `pa_skin_concern`, `pa_routine_step`. Không tự nhập sản phẩm thay Trí. Sau đó mở Products và xác nhận đủ 3 thuộc tính/taxonomy WooCommerce chuẩn trên sản phẩm mẫu để đóng L08-G5-02; lưu ảnh/bằng chứng thực tế. Plugin không tự tạo product post type thay WooCommerce.
 
 ## Bước 4 Chốt thuật toán
 

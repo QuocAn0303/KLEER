@@ -1,0 +1,118 @@
+{
+  "checked_at_utc": "2026-11-03T13:58:15Z",
+  "url": "http://127.0.0.1:8082/?rest_route=/kleer/v1/recommend&version=v4",
+  "version": "v4",
+  "payload_file": "valid-submission-v4.json",
+  "allow_missing_steps": false,
+  "sample_count": 20,
+  "requested_samples": 20,
+  "first_request_ms": 274.18,
+  "warm_median_ms": 74.42,
+  "cold_note": "First request is cold only if the catalog cache was empty before this run.",
+  "median_ms": 75.09,
+  "max_ms": 274.18,
+  "all_successful_complete_routines": true,
+  "all_below_300ms": true,
+  "samples": [
+    {
+      "status": 200,
+      "ms": 274.18,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 85.51,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 84.93,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 75.76,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 74.07,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 74.42,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 76.37,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 63.81,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 80.17,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 62.29,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 216.94,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 60.74,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 73.57,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 73.83,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 77.22,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 64.08,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 76.82,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 78.04,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 63.25,
+      "complete_routine": true
+    },
+    {
+      "status": 200,
+      "ms": 71.73,
+      "complete_routine": true
+    }
+  ]
+}

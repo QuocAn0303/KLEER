@@ -1,0 +1,337 @@
+{
+  "info": {
+    "name": "KLEER Routine v4 - L01-G5-05 acceptance",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Read-only Quiz requests. Use test 8082 first. 8081 currently has no WooCommerce. Does not create orders or change stock. HTTP script evidence is separate from manually running this collection."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8082"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Da dau mun / 4 buoc",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"JSON response\", () => pm.response.json());",
+              "const d = pm.response.json().data;",
+              "pm.test(\"v4 and complete routine\", () => { pm.expect(d.version).to.eql(\"v4-draft\"); pm.expect(d.missing_steps).to.eql([]); pm.expect(d.recommended_products.length).to.eql(d.routine_steps_selected.length); });",
+              "pm.test(\"Real positive IDs and prices\", () => { const ids=d.recommended_products.map(p=>p.id); pm.expect(new Set(ids).size).to.eql(ids.length); d.recommended_products.forEach(p=>{pm.expect(p.id).to.be.above(0);pm.expect(p.price).to.be.above(0);}); });",
+              "pm.test(\"HTTP below 300 ms\", () => pm.expect(pm.response.responseTime).to.be.below(300));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1C\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2A\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3D\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4A\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5C\"\n    },\n    {\n      \"question_id\": \"q6\",\n      \"answer\": \"6B\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=v4"
+      }
+    },
+    {
+      "name": "02 - Da nhay cam / 6 buoc",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"JSON response\", () => pm.response.json());",
+              "const d = pm.response.json().data;",
+              "pm.test(\"v4 and complete routine\", () => { pm.expect(d.version).to.eql(\"v4-draft\"); pm.expect(d.missing_steps).to.eql([]); pm.expect(d.recommended_products.length).to.eql(d.routine_steps_selected.length); });",
+              "pm.test(\"Real positive IDs and prices\", () => { const ids=d.recommended_products.map(p=>p.id); pm.expect(new Set(ids).size).to.eql(ids.length); d.recommended_products.forEach(p=>{pm.expect(p.id).to.be.above(0);pm.expect(p.price).to.be.above(0);}); });",
+              "pm.test(\"HTTP below 300 ms\", () => pm.expect(pm.response.responseTime).to.be.below(300));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1E\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2E\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3A\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4B\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5E\"\n    },\n    {\n      \"question_id\": \"q6\",\n      \"answer\": \"6C\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=v4"
+      }
+    },
+    {
+      "name": "03 - Thieu cau hoi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"JSON response\", () => pm.response.json());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1C\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2A\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3D\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4A\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5C\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=v4"
+      }
+    },
+    {
+      "name": "04 - Trung cau hoi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"JSON response\", () => pm.response.json());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1C\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2A\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3D\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4A\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5C\"\n    },\n    {\n      \"question_id\": \"q6\",\n      \"answer\": \"6B\"\n    },\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1C\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=v4"
+      }
+    },
+    {
+      "name": "05 - Dap an sai",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"JSON response\", () => pm.response.json());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"invalid\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2A\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3D\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4A\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5C\"\n    },\n    {\n      \"question_id\": \"q6\",\n      \"answer\": \"6B\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=v4"
+      }
+    },
+    {
+      "name": "06 - Chua dong y",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"JSON response\", () => pm.response.json());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": false,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1C\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2A\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3D\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4A\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5C\"\n    },\n    {\n      \"question_id\": \"q6\",\n      \"answer\": \"6B\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=v4"
+      }
+    },
+    {
+      "name": "07 - Nonce sai",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 403\", () => pm.response.to.have.status(403));",
+              "pm.test(\"JSON response\", () => pm.response.json());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-WP-Nonce",
+            "value": "invalid"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1C\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2A\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3D\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4A\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5C\"\n    },\n    {\n      \"question_id\": \"q6\",\n      \"answer\": \"6B\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=v4"
+      }
+    },
+    {
+      "name": "08 - Origin bi chan",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 403\", () => pm.response.to.have.status(403));",
+              "pm.test(\"JSON response\", () => pm.response.json());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Origin",
+            "value": "https://unapproved.example"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1C\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2A\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3D\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4A\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5C\"\n    },\n    {\n      \"question_id\": \"q6\",\n      \"answer\": \"6B\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=v4"
+      }
+    },
+    {
+      "name": "09 - Version sai",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"JSON response\", () => pm.response.json());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"33333333-4444-4555-8666-777777777777\",\n  \"consent\": {\n    \"policy_accepted\": true,\n    \"marketing_opt_in\": false\n  },\n  \"answers\": [\n    {\n      \"question_id\": \"q1\",\n      \"answer\": \"1C\"\n    },\n    {\n      \"question_id\": \"q2\",\n      \"answer\": \"2A\"\n    },\n    {\n      \"question_id\": \"q3\",\n      \"answer\": \"3D\"\n    },\n    {\n      \"question_id\": \"q4\",\n      \"answer\": \"4A\"\n    },\n    {\n      \"question_id\": \"q5\",\n      \"answer\": \"5C\"\n    },\n    {\n      \"question_id\": \"q6\",\n      \"answer\": \"6B\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{base_url}}/?rest_route=/kleer/v1/recommend&version=unsupported"
+      }
+    }
+  ]
+}
