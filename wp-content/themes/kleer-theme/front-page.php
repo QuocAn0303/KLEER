@@ -1,6 +1,10 @@
 <?php
 /* Template Name: Trang Chủ KLEER */
 get_header(); 
+
+$shop_url    = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/');
+$quiz_url    = home_url('/quiz/');
+$about_url   = home_url('/about/');
 ?>
 
 <main>
@@ -12,8 +16,8 @@ get_header();
                 <h1 class="hero__title">Làn da thuần khiết,<br>từ thiên nhiên<br>sâu thẳm.</h1>
                 <p class="hero__desc">Công thức chăm sóc da unisex vượt thời gian, kết hợp giữa tinh túy của các loại thực vật rừng ôn đới và nghiên cứu sinh học lạnh tân tiến nhất.</p>
                 <div class="hero__btn-group">
-                    <a href="#" class="btn btn--white">KHÁM PHÁ NGAY</a>
-                    <a href="#" class="btn btn--transparent">TÌM HIỂU KHOA HỌC</a>
+                    <a href="<?php echo esc_url($shop_url); ?>" class="btn btn--white">KHÁM PHÁ NGAY</a>
+                    <a href="<?php echo esc_url($quiz_url); ?>" class="btn btn--transparent">TÌM HIỂU KHOA HỌC</a>
                 </div>
             </div>
 
@@ -57,7 +61,7 @@ get_header();
                     <h3>Bền vững & Tối giản</h3>
                     <p>Chai thủy tinh của KLEER có thể tái chế vô hạn cùng hệ thống nhãn giấy hữu cơ tự phân hủy.</p>
                 </div>
-                <a href="#" class="btn btn--outline philosophy__btn">KHÁM PHÁ HÀNH TRÌNH</a>
+                <a href="<?php echo esc_url($about_url); ?>" class="btn btn--outline philosophy__btn">KHÁM PHÁ HÀNH TRÌNH</a>
             </div>
         </div>
     </section>
@@ -71,7 +75,7 @@ get_header();
                     <p class="products__subtitle">Hệ thống công thức điều trị tối giản, định hình sự phục hồi sinh học tự nhiên.</p>
                     <hr class="products__divider">
                 </div>
-                <a href="<?php echo function_exists('wc_get_page_id') ? get_permalink(wc_get_page_id('shop')) : '#'; ?>" class="btn btn--outline products__btn-more">XEM TẤT CẢ SẢN PHẨM</a>
+                <a href="<?php echo esc_url($shop_url); ?>" class="btn btn--outline products__btn-more">XEM TẤT CẢ SẢN PHẨM</a>
             </div>
 
             <div class="products__grid">
@@ -193,7 +197,7 @@ get_header();
                     <div class="testimonial-card__stars">★★★★★</div>
                     <p class="testimonial-card__quote">"Hương đất và kết cấu ẩm mịn đã thay đổi hoàn toàn thói quen skincare ban đêm của tôi. Làn da thức dậy thực sự dịu mát, bớt hẳn các vết ửng đỏ sau một ngày dài bụi bặm."</p>
                     <div class="testimonial-card__author">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/avatar-1.jpg" alt="Minh Anh" class="testimonial-card__avatar">
+                        <div class="testimonial-card__avatar">MA</div>
                         <div class="testimonial-card__info">
                             <h4 class="testimonial-card__name">Minh Anh</h4>
                             <span class="testimonial-card__location">Hà Nội, Việt Nam</span>
@@ -204,7 +208,7 @@ get_header();
                     <div class="testimonial-card__stars">★★★★★</div>
                     <p class="testimonial-card__quote">"Tôi thích sự tối giản về mặt thiết kế lẫn danh sách thành phần. Không hề có cảm giác bóng nhờn, tía tô giúp da tôi thông thoáng hơn hẳn giữa khí hậu nóng ẩm miền Nam."</p>
                     <div class="testimonial-card__author">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/avatar-2.jpg" alt="Trần Hải" class="testimonial-card__avatar">
+                        <div class="testimonial-card__avatar">TH</div>
                         <div class="testimonial-card__info">
                             <h4 class="testimonial-card__name">Trần Hải</h4>
                             <span class="testimonial-card__location">TP. Hồ Chí Minh</span>
@@ -224,8 +228,8 @@ get_header();
                     <h2 class="quiz__title">Làn da của bạn đang cần gì?</h2>
                     <p class="quiz__desc">Trả lời 5 câu hỏi ngắn để nhận phác đồ chăm sóc da unisex tối giản, khoa học, kèm danh sách sản phẩm gợi ý.</p>
                     <div class="quiz__btn-group">
-                        <a href="#" class="btn btn--white">CHẨN ĐOÁN DA NGAY</a>
-                        <a href="#" class="btn btn--outline">TÌM HIỂU KHOA HỌC</a>
+                        <a href="<?php echo esc_url($quiz_url); ?>" class="btn btn--white">CHẨN ĐOÁN DA NGAY</a>
+                        <a href="<?php echo esc_url($about_url); ?>" class="btn btn--outline">TÌM HIỂU KHOA HỌC</a>
                     </div>
                 </div>
                 <div class="quiz__card">
