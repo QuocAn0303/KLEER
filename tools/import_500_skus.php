@@ -194,29 +194,32 @@ while (($row = fgetcsv($handle)) !== false) {
     // Xử lý danh mục (Categories)
     if (!empty($categories_str)) {
         $cat_ids = [];
-        $parts = array_map('trim', explode('>', $categories_str));
-        $parent_id = 0;
-        foreach ($parts as $part) {
-            $cache_key = $parent_id . '_' . $part;
-            if (isset($cat_cache[$cache_key])) {
-                $parent_id = $cat_cache[$cache_key];
-            } else {
-                $term = term_exists($part, 'product_cat', $parent_id);
-                if ($term) {
-                    $parent_id = (int) (is_array($term) ? $term['term_id'] : $term);
+        $cat_paths = array_map('trim', explode(',', $categories_str));
+        foreach ($cat_paths as $path) {
+            $parts = array_map('trim', explode('>', $path));
+            $parent_id = 0;
+            foreach ($parts as $part) {
+                $cache_key = $parent_id . '_' . $part;
+                if (isset($cat_cache[$cache_key])) {
+                    $parent_id = $cat_cache[$cache_key];
                 } else {
-                    $created = wp_insert_term($part, 'product_cat', ['parent' => $parent_id]);
-                    if (!is_wp_error($created)) {
-                        $parent_id = (int) $created['term_id'];
+                    $term = term_exists($part, 'product_cat', $parent_id);
+                    if ($term) {
+                        $parent_id = (int) (is_array($term) ? $term['term_id'] : $term);
+                    } else {
+                        $created = wp_insert_term($part, 'product_cat', ['parent' => $parent_id]);
+                        if (!is_wp_error($created)) {
+                            $parent_id = (int) $created['term_id'];
+                        }
                     }
+                    $cat_cache[$cache_key] = $parent_id;
                 }
-                $cat_cache[$cache_key] = $parent_id;
-            }
-            if ($parent_id > 0) {
-                $cat_ids[] = $parent_id;
+                if ($parent_id > 0) {
+                    $cat_ids[] = $parent_id;
+                }
             }
         }
-        $product->set_category_ids($cat_ids);
+        $product->set_category_ids(array_unique($cat_ids));
     }
 
     // Xử lý ảnh đại diện
