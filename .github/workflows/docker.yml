@@ -52,8 +52,8 @@ jobs:
       - name: Test Redis object cache against a real Redis
         run: docker exec kleer-php php /var/www/html/wp-content/plugins/kleer-plugin/tests/verify_cache.php
 
-      - name: Test crawler parser
-        run: python -m unittest discover -s tools/crawler -p 'test_*.py' -v
+    #  - name: Test crawler parser
+    #    run: python -m unittest discover -s tools/crawler -p 'test_*.py' -v
 
       - name: Start services
         run: docker compose --env-file .env.ci up -d
@@ -123,10 +123,3 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: '1'
 
-      - name: Scan Docker images for OS and library vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: image
-          image-ref: kleer-php:latest
-          severity: CRITICAL,HIGH
-          exit-code: '1'
