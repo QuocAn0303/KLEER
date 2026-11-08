@@ -91,10 +91,16 @@ $about_url   = home_url('/about/');
                             ?>
                             <div class="product-card">
                                 <div class="product-card__img-wrap">
-                                    <?php echo $product->get_image('woocommerce_thumbnail'); ?>
+                                    <a href="<?php the_permalink(); ?>">
+                                        <?php echo $product->get_image('woocommerce_thumbnail'); ?>
+                                    </a>
                                 </div>
                                 <div class="product-card__body">
-                                    <h3 class="product-card__title"><?php the_title(); ?></h3>
+                                    <h3 class="product-card__title">
+                                        <a href="<?php the_permalink(); ?>" style="color: inherit; text-decoration: none;">
+                                            <?php the_title(); ?>
+                                        </a>
+                                    </h3>
                                     <div class="product-card__price"><?php echo $product->get_price_html(); ?></div>
                                     <p class="product-card__desc"><?php echo wp_trim_words(get_the_excerpt(), 15); ?></p>
                                     <a href="?add-to-cart=<?php echo $product->get_id(); ?>" class="btn btn--white product-card__btn">THÊM VÀO GIỎ</a>

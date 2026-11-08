@@ -63,7 +63,13 @@ function enqueue_assets(): void
     }
 
     // 4. CSS Trang Shop Catalog
-    if (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_taxonomy() || is_post_type_archive('product'))) {
+    if (
+        (function_exists('is_shop') && is_shop()) ||
+        (function_exists('is_product_category') && is_product_category()) ||
+        (function_exists('is_product_taxonomy') && is_product_taxonomy()) ||
+        is_post_type_archive('product') ||
+        is_page('shop')
+    ) {
         wp_enqueue_style(
             'kleer-catalog',
             get_template_directory_uri() . '/assets/css/catalog.css',
@@ -73,7 +79,10 @@ function enqueue_assets(): void
     }
 
     // 5. CSS Trang Chi tiết sản phẩm
-    if (function_exists('is_product') && is_product()) {
+    if (
+        (function_exists('is_product') && is_product()) ||
+        is_singular('product')
+    ) {
         wp_enqueue_style(
             'kleer-product-detail',
             get_template_directory_uri() . '/assets/css/product_detail.css',
@@ -96,7 +105,13 @@ function enqueue_assets(): void
         'nonce'    => wp_create_nonce('kleer_add_routine_to_cart'),
     ]);
 
-    if (function_exists('is_shop') && is_shop()) {
+    if (
+        (function_exists('is_shop') && is_shop()) ||
+        (function_exists('is_product_category') && is_product_category()) ||
+        (function_exists('is_product_taxonomy') && is_product_taxonomy()) ||
+        is_post_type_archive('product') ||
+        is_page('shop')
+    ) {
         wp_enqueue_script(
             'kleer-catalog-filter',
             get_template_directory_uri() . '/assets/js/catalog-filter.js',
@@ -117,13 +132,33 @@ add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets');
 require_once get_template_directory() . '/inc/quiz-assets.php';
 require_once get_template_directory() . '/inc/ajax-catalog-filter.php';
 
-// Ép sử dụng giao diện KLEER cho trang danh mục sản phẩm
+// Ép sử dụng giao diện KLEER cho trang danh mục sản phẩm và chi tiết sản phẩm
 add_filter('template_include', function ($template) {
-    if (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_taxonomy())) {
+    // 1. Danh mục / Shop / Category / Taxonomy
+    if (
+        (function_exists('is_shop') && is_shop()) ||
+        (function_exists('is_product_taxonomy') && is_product_taxonomy()) ||
+        (function_exists('is_product_category') && is_product_category()) ||
+        (function_exists('is_product_tag') && is_product_tag()) ||
+        is_post_type_archive('product') ||
+        is_page('shop')
+    ) {
         $custom_archive = get_template_directory() . '/archive-product.php';
         if (file_exists($custom_archive)) {
             return $custom_archive;
         }
     }
+
+    // 2. Chi tiết sản phẩm
+    if (
+        (function_exists('is_product') && is_product()) ||
+        is_singular('product')
+    ) {
+        $custom_single = get_template_directory() . '/single-product.php';
+        if (file_exists($custom_single)) {
+            return $custom_single;
+        }
+    }
+
     return $template;
 }, 999);

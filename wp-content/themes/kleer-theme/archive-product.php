@@ -15,7 +15,7 @@ get_header(); ?>
             <span class="breadcrumb__current">Sản phẩm</span>
         </nav>
         
-        <h1 class="shop-title"><?php woocommerce_page_title(); ?></h1>
+        <h1 class="shop-title"><?php function_exists('woocommerce_page_title') ? woocommerce_page_title() : single_post_title(); ?></h1>
 
         <!-- Layout 2 Cột -->
         <div class="shop-layout">
@@ -123,9 +123,12 @@ get_header(); ?>
                     if ( have_posts() ) :
                         while ( have_posts() ) : the_post();
                             global $product;
+                            if ( empty($product) && function_exists('wc_get_product') ) {
+                                $product = wc_get_product(get_the_ID());
+                            }
                             $img_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
                             if ( ! $img_url ) {
-                                $img_url = get_template_directory_uri() . '/images/product-1.jpg';
+                                $img_url = get_template_directory_uri() . '/assets/images/product-1.jpg';
                             }
                             $terms = get_the_terms(get_the_ID(), 'product_cat');
                             $cat_name = ($terms && !is_wp_error($terms)) ? $terms[0]->name : 'CHĂM SÓC DA MẶT';

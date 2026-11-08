@@ -31,7 +31,7 @@
         <div class="header__right">
             <nav class="header__nav">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-link <?php echo is_front_page() ? 'active' : ''; ?>">Trang chủ</a>
-                <a href="<?php echo esc_url(home_url('/shop/')); ?>" class="nav-link">Sản phẩm</a>
+                <a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/')); ?>" class="nav-link">Sản phẩm</a>
                 <a href="<?php echo esc_url(home_url('/quiz/')); ?>" class="nav-link">Chẩn đoán da</a>
                 <a href="<?php echo esc_url(home_url('/about/')); ?>" class="nav-link">Về chúng tôi</a>
                 <a href="<?php echo esc_url(home_url('/contact/')); ?>" class="nav-link">Liên hệ</a>

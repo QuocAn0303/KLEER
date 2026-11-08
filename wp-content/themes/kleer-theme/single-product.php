@@ -6,13 +6,16 @@
 get_header();
 
 while ( have_posts() ) : the_post();
-    global $product;
+    global $product, $post;
     $post_id = get_the_ID();
+    if ( empty($product) && function_exists('wc_get_product') ) {
+        $product = wc_get_product($post_id);
+    }
     
     // Ảnh chính & Thumbs
-    $main_img_id  = $product->get_image_id();
-    $main_img_url = $main_img_id ? wp_get_attachment_image_url($main_img_id, 'full') : get_template_directory_uri() . '/images/product-1.jpg';
-    $attachment_ids = $product->get_gallery_image_ids();
+    $main_img_id  = $product ? $product->get_image_id() : 0;
+    $main_img_url = $main_img_id ? wp_get_attachment_image_url($main_img_id, 'full') : get_template_directory_uri() . '/assets/images/product-1.jpg';
+    $attachment_ids = $product ? $product->get_gallery_image_ids() : [];
 
     // Danh mục
     $terms = get_the_terms($post_id, 'product_cat');
@@ -26,7 +29,7 @@ while ( have_posts() ) : the_post();
         <nav class="breadcrumb">
             <a href="<?php echo esc_url(home_url('/')); ?>">Trang chủ</a>
             <span class="breadcrumb__sep">&rsaquo;</span>
-            <a href="<?php echo esc_url(get_permalink(wc_get_page_id('shop'))); ?>">Sản phẩm</a>
+            <a href="<?php echo esc_url(function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/')); ?>">Sản phẩm</a>
             <span class="breadcrumb__sep">&rsaquo;</span>
             <span class="breadcrumb__current"><?php the_title(); ?></span>
         </nav>
@@ -63,7 +66,7 @@ while ( have_posts() ) : the_post();
                 <h1 class="product-title"><?php the_title(); ?></h1>
                 
                 <div class="product-meta">
-                    <span class="product-price"><?php echo $product->get_price_html(); ?></span>
+                    <span class="product-price"><?php echo $product ? $product->get_price_html() : ''; ?></span>
                     <div class="product-rating">
                         <span class="stars">☆☆☆☆☆</span>
                         <span class="rating-text">(4.8/5 — 126 đánh giá)</span>
@@ -71,20 +74,18 @@ while ( have_posts() ) : the_post();
                 </div>
 
                 <div class="product-short-desc">
-                    <?php echo apply_filters('woocommerce_short_description', $post->post_excerpt); ?>
+                    <?php echo apply_filters('woocommerce_short_description', has_excerpt() ? get_the_excerpt() : get_the_content()); ?>
                 </div>
 
-            
-
                 <!-- Số lượng & Form Thêm vào giỏ -->
-                <form class="cart" action="<?php echo esc_url(apply_filters('woocommerce_add_to_cart_form_action', $product->get_permalink())); ?>" method="post" enctype='multipart/form-data'>
+                <form class="cart" action="<?php echo esc_url(apply_filters('woocommerce_add_to_cart_form_action', $product ? $product->get_permalink() : get_permalink())); ?>" method="post" enctype='multipart/form-data'>
                     <div class="product-action-row">
                         <div class="quantity-control">
                             <button type="button" class="qty-btn" onclick="updateQty(-1)">-</button>
                             <input type="text" id="qtyInput" name="quantity" value="1" readonly>
                             <button type="button" class="qty-btn" onclick="updateQty(1)">+</button>
                         </div>
-                        <button type="submit" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" class="btn btn-add-cart">Thêm vào giỏ hàng</button>
+                        <button type="submit" name="add-to-cart" value="<?php echo esc_attr($product ? $product->get_id() : $post_id); ?>" class="btn btn-add-cart">Thêm vào giỏ hàng</button>
                         <button type="button" class="btn btn-buy-now">Mua ngay</button>
                     </div>
                 </form>
@@ -99,22 +100,23 @@ while ( have_posts() ) : the_post();
             <h2 class="related-title">Sản phẩm liên quan</h2>
             <div class="related-grid">
                 <?php
-                $related_ids = wc_get_related_products($post_id, 4);
+                $related_ids = function_exists('wc_get_related_products') ? wc_get_related_products($post_id, 4) : [];
                 if ( ! empty($related_ids) ) :
                     foreach ( $related_ids as $rel_id ) :
                         $rel_product = wc_get_product($rel_id);
-                        $rel_img = get_the_post_thumbnail_url($rel_id, 'full') ?: get_template_directory_uri() . '/images/product-2.jpg';
+                        if ( ! $rel_product ) continue;
+                        $rel_img = get_the_post_thumbnail_url($rel_id, 'full') ?: get_template_directory_uri() . '/assets/images/product-2.jpg';
                 ?>
                     <article class="catalog-card">
                         <div class="catalog-card__img-wrap">
-                            <a href="<?php echo get_permalink($rel_id); ?>">
+                            <a href="<?php echo esc_url(get_permalink($rel_id)); ?>">
                                 <img src="<?php echo esc_url($rel_img); ?>" alt="<?php echo esc_attr($rel_product->get_name()); ?>">
                             </a>
                         </div>
                         <div class="catalog-card__body">
                             <span class="catalog-card__cat">SERUM & TINH CHẤT</span>
                             <h3 class="catalog-card__title">
-                                <a href="<?php echo get_permalink($rel_id); ?>" style="color:inherit; text-decoration:none;"><?php echo esc_html($rel_product->get_name()); ?></a>
+                                <a href="<?php echo esc_url(get_permalink($rel_id)); ?>" style="color:inherit; text-decoration:none;"><?php echo esc_html($rel_product->get_name()); ?></a>
                             </h3>
                             <div class="catalog-card__stars">☆☆☆☆☆</div>
                             <div class="catalog-card__footer">
@@ -160,4 +162,3 @@ while ( have_posts() ) : the_post();
 <?php
 endwhile;
 get_footer();
-?>
