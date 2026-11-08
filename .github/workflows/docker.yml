@@ -115,11 +115,11 @@ jobs:
           base: HEAD
           only-verified: true
 
-
-      - name: Scan Docker images for OS and library vulnerabilities
+      - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: image
-          image-ref: kleer-php:latest
+          scan-type: fs
+          scan-ref: .
           severity: CRITICAL,HIGH
           exit-code: '1'
+
