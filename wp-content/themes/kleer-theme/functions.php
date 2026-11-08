@@ -46,14 +46,10 @@ function enqueue_assets(): void
 
     // 2. CSS Global (Dùng chung cho toàn website: Navbar, Footer, Ombre, Reset)
     wp_enqueue_style(
-<<<<<<< HEAD
         'kleer-global',
-=======
-        'kleer-global-style',
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
         get_template_directory_uri() . '/assets/css/global.css',
         ['kleer-google-fonts'],
-        time()
+        KLEER_THEME_VERSION
     );
 
     // 3. CSS Trang chủ (Chỉ nạp khi ở Front Page hoặc Home)
@@ -61,9 +57,8 @@ function enqueue_assets(): void
         wp_enqueue_style(
             'kleer-homepage-style',
             get_template_directory_uri() . '/assets/css/home.css',
-<<<<<<< HEAD
             ['kleer-global'],
-            time()
+            KLEER_THEME_VERSION
         );
     }
 
@@ -73,7 +68,7 @@ function enqueue_assets(): void
             'kleer-catalog',
             get_template_directory_uri() . '/assets/css/catalog.css',
             ['kleer-global'],
-            time()
+            KLEER_THEME_VERSION
         );
     }
 
@@ -83,39 +78,11 @@ function enqueue_assets(): void
             'kleer-product-detail',
             get_template_directory_uri() . '/assets/css/product_detail.css',
             ['kleer-global'],
-            time()
-        );
-    }
-
-    // 6. File CSS/JS Main của dự án
-    wp_enqueue_style(
-        'kleer-main-style',
-        get_template_directory_uri() . '/assets/css/main.css',
-        ['kleer-global'],
-        KLEER_THEME_VERSION
-    );
-
-    wp_enqueue_script(
-        'kleer-main-script',
-        get_template_directory_uri() . '/assets/js/main.js',
-        [],
-        KLEER_THEME_VERSION,
-        true
-    );
-
-    wp_localize_script('kleer-main-script', 'kleerAjax', [
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce'    => wp_create_nonce('kleer_add_routine_to_cart'),
-    ]);
-
-=======
-            ['kleer-global-style'],
             KLEER_THEME_VERSION
         );
     }
 
-    // 4. Routine Cart Script
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
+    // 6. Routine Cart Script
     wp_enqueue_script(
         'kleer-routine-cart',
         get_template_directory_uri() . '/assets/js/routine-cart.js',
@@ -149,7 +116,6 @@ add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets');
 // Nạp file đăng ký script & style cho Quiz SPA
 require_once get_template_directory() . '/inc/quiz-assets.php';
 require_once get_template_directory() . '/inc/ajax-catalog-filter.php';
-<<<<<<< HEAD
 
 // Ép sử dụng giao diện KLEER cho trang danh mục sản phẩm
 add_filter('template_include', function ($template) {
@@ -161,5 +127,3 @@ add_filter('template_include', function ($template) {
     }
     return $template;
 }, 999);
-=======
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075

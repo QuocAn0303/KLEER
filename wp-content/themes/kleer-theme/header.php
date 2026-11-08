@@ -38,13 +38,6 @@
             </nav>
 
             <div class="header__icons">
-<<<<<<< HEAD
-                <a href="<?php echo function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#'; ?>" class="icon-holder" title="Giỏ hàng">
-                    <img src="<?php echo get_template_directory_uri(); ?>assets/images/shopping-cart.png" alt="Giỏ hàng" class="icon-img icon-cart">
-                </a>
-                <a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')); ?>" class="icon-holder" title="Tài khoản">
-                    <img src="<?php echo get_template_directory_uri(); ?>assets/images/avatar.png" alt="Tài khoản" class="icon-img icon-avatar">
-=======
                 <a href="<?php echo function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/'); ?>" class="icon-holder" title="Giỏ hàng">
                     <svg class="icon-img icon-cart" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -57,7 +50,6 @@
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
                 </a>
             </div>
         </div>

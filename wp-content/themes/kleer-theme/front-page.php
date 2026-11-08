@@ -7,11 +7,7 @@ $quiz_url    = home_url('/quiz/');
 $about_url   = home_url('/about/');
 ?>
 <main>
-<<<<<<< HEAD
-    <!-- 1. HERO BANNER (Height 663px) -->
-=======
     <!-- 1. HERO BANNER -->
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
     <section class="hero" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg.jpg');">
         <div class="hero__container container">
             <div class="hero__content">
@@ -19,13 +15,8 @@ $about_url   = home_url('/about/');
                 <h1 class="hero__title">Làn da thuần khiết,<br>từ thiên nhiên<br>sâu thẳm.</h1>
                 <p class="hero__desc">Công thức chăm sóc da unisex vượt thời gian, kết hợp giữa tinh túy của các loại thực vật rừng ôn đới và nghiên cứu sinh học lạnh tân tiến nhất.</p>
                 <div class="hero__btn-group">
-<<<<<<< HEAD
-                    <a href="<?php echo function_exists('wc_get_page_id') ? get_permalink(wc_get_page_id('shop')) : '#'; ?>" class="btn btn--white">KHÁM PHÁ NGAY</a>
-                    <a href="<?php echo function_exists('wc_get_page_id') ? get_permalink(wc_get_page_id('shop')) : '#'; ?>" class="btn btn--outline">XEM SẢN PHẨM</a>
-=======
                     <a href="<?php echo esc_url($shop_url); ?>" class="btn btn--white">KHÁM PHÁ NGAY</a>
                     <a href="<?php echo esc_url($quiz_url); ?>" class="btn btn--transparent">TÌM HIỂU KHOA HỌC</a>
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
                 </div>
             </div>
             <div class="hero__showcase">
@@ -139,9 +130,6 @@ $about_url   = home_url('/about/');
         </div>
     </section>
 
-<<<<<<< HEAD
-    <!-- 5. TRẢI NGHIỆM TỪ KHÁCH HÀNG (Height 663px) -->
-=======
     <!-- 5. THÀNH PHẦN TINH TÚY -->
     <section class="ingredients-sec ombre-bg-3">
         <div class="container">
@@ -193,7 +181,6 @@ $about_url   = home_url('/about/');
     </section>
 
     <!-- 6. TRẢI NGHIỆM TỪ KHÁCH HÀNG -->
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
     <section class="testimonials-sec ombre-bg-4">
         <div class="container">
             <div class="testimonials__header">
@@ -206,11 +193,7 @@ $about_url   = home_url('/about/');
                     <div class="testimonial-card__stars">★★★★★</div>
                     <p class="testimonial-card__quote">"Hương đất và kết cấu ẩm mịn đã thay đổi hoàn toàn thói quen skincare ban đêm của tôi. Làn da thức dậy thực sự dịu mát, bớt hẳn các vết ửng đỏ sau một ngày dài bụi bặm."</p>
                     <div class="testimonial-card__author">
-<<<<<<< HEAD
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/avatar-1.jpg" alt="Minh Anh" class="testimonial-card__avatar">
-=======
                         <div class="testimonial-card__avatar">MA</div>
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
                         <div class="testimonial-card__info">
                             <h4 class="testimonial-card__name">Minh Anh</h4>
                             <span class="testimonial-card__location">Hà Nội, Việt Nam</span>
@@ -221,11 +204,7 @@ $about_url   = home_url('/about/');
                     <div class="testimonial-card__stars">★★★★★</div>
                     <p class="testimonial-card__quote">"Tôi thích sự tối giản về mặt thiết kế lẫn danh sách thành phần. Không hề có cảm giác bóng nhờn, tía tô giúp da tôi thông thoáng hơn hẳn giữa khí hậu nóng ẩm miền Nam."</p>
                     <div class="testimonial-card__author">
-<<<<<<< HEAD
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/avatar-2.jpg" alt="Trần Hải" class="testimonial-card__avatar">
-=======
                         <div class="testimonial-card__avatar">TH</div>
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
                         <div class="testimonial-card__info">
                             <h4 class="testimonial-card__name">Trần Hải</h4>
                             <span class="testimonial-card__location">TP. Hồ Chí Minh</span>
@@ -236,7 +215,7 @@ $about_url   = home_url('/about/');
         </div>
     </section>
 
-    <!-- 6. CHẨN ĐOÁN DA / SMART QUIZ (Height 663px) -->
+    <!-- 7. CHẨN ĐOÁN DA / SMART QUIZ (Height 663px) -->
     <section class="quiz-sec ombre-bg-1">
         <div class="container">
             <div class="quiz__inner">
@@ -261,11 +240,7 @@ $about_url   = home_url('/about/');
         </div>
     </section>
 
-<<<<<<< HEAD
-    <!-- 7. ĐĂNG KÝ NHẬN THÔNG TIN -->
-=======
     <!-- 8. ĐĂNG KÝ NHẬN THÔNG TIN -->
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
     <section class="newsletter-sec" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/newsletter-bg.jpg');">
         <div class="container">
             <div class="newsletter__content">
@@ -279,9 +254,4 @@ $about_url   = home_url('/about/');
         </div>
     </section>
 </main>
-<<<<<<< HEAD
 <?php get_footer(); ?>
-=======
-
-<?php get_footer(); ?>
->>>>>>> 0adee1e01b4ba3b6cb632d283ae2f35a94751075
