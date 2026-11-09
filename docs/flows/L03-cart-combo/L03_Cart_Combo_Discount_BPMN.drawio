@@ -1,0 +1,204 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="L03 - Cart &amp; Combo BPMN" id="dG8Ub3QHWafkdxy9auS-">
+    <mxGraphModel dx="2716" dy="1487" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=22;strokeColor=none;fillColor=none;fontStyle=1;" value="L03-G5-01 — BPMN 2.0 | 1-Click Routine → Giỏ hàng → Combo → Cảnh báo hoạt chất → Checkout" vertex="1">
+          <mxGeometry height="40" width="2600" x="40" y="15" as="geometry" />
+        </mxCell>
+        <mxCell id="sub" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=13;strokeColor=none;fillColor=none;" value="Phiên bản v2 — chuẩn hóa BPMN, luồng chảy trái → phải, có nhánh lỗi AJAX/tồn kho, vòng lặp chỉnh sửa giỏ qua cổng XOR" vertex="1">
+          <mxGeometry height="28" width="2600" x="40" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="pool" parent="1" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=14;fillColor=#FFFFFF;strokeColor=#333333;strokeWidth=2;swimlaneFillColor=#FFFFFF;" value="KLEER — Quy trình L03: Giỏ hàng &amp; Combo Routine" vertex="1">
+          <mxGeometry height="660" width="2640" x="40" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_c" parent="pool" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=14;fillColor=#F5F9FF;strokeColor=#6C8EBF;strokeWidth=2;swimlaneFillColor=#F5F9FF;" value="KHÁCH HÀNG" vertex="1">
+          <mxGeometry height="300" width="2610" x="30" as="geometry" />
+        </mxCell>
+        <mxCell id="end_ok" parent="lane_c" style="shape=mxgraph.bpmn.event;html=1;perimeter=ellipsePerimeter;outlineConnect=0;aspect=fixed;outline=end;symbol=general;fillColor=#FFFFFF;strokeColor=#548B54;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="2500" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="start_l" parent="lane_c" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=11;strokeColor=none;fillColor=none;" value="Routine được đề xuất từ Quiz (L01)" vertex="1">
+          <mxGeometry height="40" width="140" x="30" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="end_ok_l" parent="lane_c" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=11;strokeColor=none;fillColor=none;" value="Chuyển sang Checkout (L04); vẫn cho thanh toán khi có cảnh báo" vertex="1">
+          <mxGeometry height="56" width="170" x="2435" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_s" parent="1" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=14;fillColor=#F7FBF7;strokeColor=#82B366;strokeWidth=2;swimlaneFillColor=#F7FBF7;" value="HỆ THỐNG (Theme + kleer-plugin + WooCommerce)" vertex="1">
+          <mxGeometry height="360" width="2610" x="70" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="start" parent="1" style="shape=mxgraph.bpmn.event;html=1;perimeter=ellipsePerimeter;outlineConnect=0;aspect=fixed;outline=standard;symbol=general;fillColor=#FFFFFF;strokeColor=#548B54;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="130" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="c_click" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#DAE8FC;strokeColor=#6C8EBF;strokeWidth=2;" value="Nhấn “Thêm trọn bộ Routine vào giỏ hàng” (1-click)" vertex="1">
+          <mxGeometry height="80" width="160" x="250" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="s_valid" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#D5E8D4;strokeColor=#82B366;strokeWidth=2;" value="Nhận AJAX: xác thực nonce CSRF, kiểm tra tồn kho &amp; trạng thái từng SP" vertex="1">
+          <mxGeometry height="80" width="160" x="250" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="g_ok" parent="1" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;gwType=exclusive;fillColor=#FFFFFF;strokeColor=#D6A33C;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="475" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="g_ok_l" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=11;strokeColor=none;fillColor=none;" value="Hợp lệ và đủ hàng?" vertex="1">
+          <mxGeometry height="36" width="140" x="430" y="425" as="geometry" />
+        </mxCell>
+        <mxCell id="s_err" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=send;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#F8CECC;strokeColor=#B85450;strokeWidth=2;" value="Trả lỗi + thông báo (hết hàng / nonce sai / timeout); không thêm SP nào" vertex="1">
+          <mxGeometry height="80" width="160" x="420" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="end_err" parent="1" style="shape=mxgraph.bpmn.event;html=1;perimeter=ellipsePerimeter;outlineConnect=0;aspect=fixed;outline=end;symbol=error;fillColor=#FFFFFF;strokeColor=#B85450;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="680" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="end_err_l" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=11;strokeColor=none;fillColor=none;" value="Kết thúc: chưa thêm vào giỏ, giỏ giữ nguyên" vertex="1">
+          <mxGeometry height="40" width="180" x="610" y="685" as="geometry" />
+        </mxCell>
+        <mxCell id="s_add" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#D5E8D4;strokeColor=#82B366;strokeWidth=2;" value="Thêm đồng thời các SP vào WC Cart; gắn meta routine_id, routine_step" vertex="1">
+          <mxGeometry height="80" width="160" x="590" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="s_calc" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#D5E8D4;strokeColor=#82B366;strokeWidth=2;" value="Tính lại giỏ: đếm số bước Routine hợp lệ (cùng routine_id)" vertex="1">
+          <mxGeometry height="80" width="160" x="800" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="g_combo" parent="1" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;gwType=exclusive;fillColor=#FFFFFF;strokeColor=#D6A33C;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="1025" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="g_combo_l" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=11;strokeColor=none;fillColor=none;" value="Đủ 3–4 bước hợp lệ?" vertex="1">
+          <mxGeometry height="36" width="140" x="980" y="425" as="geometry" />
+        </mxCell>
+        <mxCell id="s_disc" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#D5E8D4;strokeColor=#82B366;strokeWidth=2;" value="Áp giảm Combo 15%; hiển thị số tiền tiết kiệm" vertex="1">
+          <mxGeometry height="80" width="160" x="1140" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="s_nodisc" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#D5E8D4;strokeColor=#82B366;strokeWidth=2;" value="Gỡ giảm giá Combo (nếu có); giữ giá gốc" vertex="1">
+          <mxGeometry height="80" width="160" x="1140" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" parent="1" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;gwType=exclusive;fillColor=#FFFFFF;strokeColor=#D6A33C;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="1365" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="s_scan" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=service;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#D5E8D4;strokeColor=#82B366;strokeWidth=2;" value="Quét pa_active_ingredient của toàn bộ SP trong giỏ" vertex="1">
+          <mxGeometry height="80" width="160" x="1465" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="g_conf" parent="1" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;gwType=exclusive;fillColor=#FFFFFF;strokeColor=#D6A33C;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="1690" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="g_conf_l" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=11;strokeColor=none;fillColor=none;" value="Có cặp hoạt chất xung đột?" vertex="1">
+          <mxGeometry height="36" width="160" x="1635" y="425" as="geometry" />
+        </mxCell>
+        <mxCell id="s_warn" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=send;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=2;" value="Hiển thị Alert Card (soft warning): AHA/BHA + Retinol…" vertex="1">
+          <mxGeometry height="80" width="160" x="1805" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" parent="1" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;gwType=exclusive;fillColor=#FFFFFF;strokeColor=#D6A33C;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="2030" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="s_render" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=send;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#D5E8D4;strokeColor=#82B366;strokeWidth=2;" value="Cập nhật mini-cart fragments &amp; hiển thị trang /cart/" vertex="1">
+          <mxGeometry height="80" width="160" x="2130" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="c_view" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#DAE8FC;strokeColor=#6C8EBF;strokeWidth=2;" value="Xem tổng tiền, mức giảm và cảnh báo (nếu có)" vertex="1">
+          <mxGeometry height="80" width="160" x="2130" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="g_choice" parent="1" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;gwType=exclusive;fillColor=#FFFFFF;strokeColor=#D6A33C;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="2355" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="g_choice_l" parent="1" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=11;strokeColor=none;fillColor=none;" value="Khách chọn gì?" vertex="1">
+          <mxGeometry height="30" width="140" x="2310" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="c_edit" parent="1" style="shape=mxgraph.bpmn.task;taskMarker=user;rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontSize=11;spacingLeft=4;spacingTop=12;spacingRight=4;fillColor=#DAE8FC;strokeColor=#6C8EBF;strokeWidth=2;" value="Xóa SP hoặc giảm số lượng" vertex="1">
+          <mxGeometry height="80" width="160" x="2300" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" parent="1" style="shape=note;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fontSize=12;fillColor=#FFF8E8;strokeColor=#C7A45B;" value="&lt;b&gt;BUSINESS RULE — COMBO&lt;/b&gt;&lt;br&gt;• Mức giảm Combo: &lt;b&gt;15%&lt;/b&gt;, tính trên tổng giá trị các sản phẩm thuộc Combo.&lt;br&gt;• Đếm theo số routine_step khác nhau (Cleanser, Serum/Treatment, Moisturizer, Sunscreen), cùng routine_id.&lt;br&gt;• Đủ 3–4 bước → áp giảm Combo; thiếu → gỡ giảm giá, tính lại tổng tiền và báo “Ưu đãi Combo đã được gỡ do giỏ hàng không còn đủ điều kiện”." vertex="1">
+          <mxGeometry height="170" width="720" x="40" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" parent="1" style="shape=note;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fontSize=12;fillColor=#FFF8E8;strokeColor=#C7A45B;" value="&lt;b&gt;BUSINESS RULE — INGREDIENT CONFLICT&lt;/b&gt;&lt;br/&gt;• Nguồn: taxonomy pa_active_ingredient + bảng ma trận kỵ.&lt;br/&gt;• Ví dụ: AHA/BHA + Retinol/Tretinoin; Vitamin C nồng độ cao + Retinol/Niacinamide (pH không tương thích).&lt;br/&gt;• Chỉ &lt;b&gt;soft warning&lt;/b&gt;: không chặn Checkout, không tự xóa SP. Phạm vi quét: toàn giỏ, không chỉ SP thuộc Routine." vertex="1">
+          <mxGeometry height="170" width="720" x="780" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" parent="1" style="shape=note;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fontSize=12;fillColor=#FFF8E8;strokeColor=#C7A45B;" value="&lt;b&gt;NGUỒN THAM KHẢO (truy cập 03/11/2026)&lt;/b&gt;&lt;br&gt;&lt;b&gt;Hasaki:&lt;/b&gt;&lt;br&gt;• Combo/Deal: hasaki.vn/campaign/sieu-sale-lien-hoan — các sản phẩm combo hiển thị trên trang là gói nhiều sản phẩm cùng loại bán theo giá riêng; ngoài ra có Mua 1 tặng 1, tặng quà theo hóa đơn (hasaki.vn/campaign/duoc-my-pham-deal-hot).&lt;br&gt;• Cộng dồn: trang chiến dịch ghi mã giảm lần đầu trên App được áp dụng đồng thời với các khuyến mãi khác.&lt;br&gt;• Chưa tìm thấy bằng chứng Hasaki có giảm giá theo bộ routine hoặc cảnh báo kỵ hoạt chất trong giỏ → đây là điểm KLEER đề xuất.&lt;br&gt;&lt;b&gt;Cơ sở ma trận kỵ hoạt chất (nguồn y khoa/làm đẹp):&lt;/b&gt;&lt;br&gt;• voh.com.vn/dep/8-cap-thanh-phan-cham-soc-da-nen-va-khong-nen-dung-chung-voi-nhau-334304.html&lt;br&gt;• nhathuoclongchau.com.vn/bai-viet/retinol-co-tac-dung-the-nao-va-retinol-khong-dung-chung-voi-gi-51465.html&lt;br&gt;• vinmec.com/vi/tin-tuc/thong-tin-suc-khoe/lam-dep/dieu-can-biet-khi-ket-hop-aha-va-retinol-trong-cham-soc-da/ (nguồn này cho rằng có thể kết hợp nếu xen kẽ → lý do chọn soft warning)&lt;br&gt;&lt;b&gt;KLEER kế thừa:&lt;/b&gt; hiển thị giá và số tiền tiết kiệm rõ ràng; cho cộng dồn ưu đãi theo quy tắc minh bạch.&lt;br&gt;&lt;b&gt;KLEER khác biệt:&lt;/b&gt; giảm 15% theo bộ Routine 3–4 bước (Unisex, tối giản), thêm trọn bộ bằng 1 click, cảnh báo kỵ hoạt chất dạng soft warning." vertex="1">
+          <mxGeometry height="260" width="720" x="1530" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="start" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c_click" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="c_click" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="s_valid" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="s_valid" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="g_ok" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="g_ok" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_add" value="Có">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="g_ok" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#B85450;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="s_err" value="Không">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="s_err" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#B85450;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="end_err" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="s_add" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_calc" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="s_calc" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="g_combo" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="g_combo" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_disc" value="Có">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="g_combo" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_nodisc" value="Không">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1050" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="s_disc" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="m1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="s_nodisc" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="m1" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1390" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="m1" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_scan" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="s_scan" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="g_conf" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="g_conf" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#B85450;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_warn" value="Có">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="g_conf" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="m2" value="Không">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1715" y="660" />
+              <mxPoint x="2055" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="1" source="s_warn" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="m2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" edge="1" parent="1" source="m2" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_render" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" edge="1" parent="1" source="s_render" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="c_view" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" edge="1" parent="1" source="c_view" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="g_choice" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" edge="1" parent="1" source="g_choice" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="end_ok" value="Tiếp tục thanh toán">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" edge="1" parent="1" source="g_choice" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="c_edit" value="Chỉnh sửa giỏ">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" edge="1" parent="1" source="c_edit" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="s_calc" value="Giỏ thay đổi → tính lại Combo &amp; cảnh báo">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
