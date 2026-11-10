@@ -1,0 +1,472 @@
+{
+  "info": {
+    "name": "KLEER L10-G5-02 - WooCommerce REST API v3 (3 nghiep vu tu dong)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Task L10-G5-02 (Rubric 5.6). 3 nghiep vu: (1) cap nhat don hang -> completed, (2) xoa san pham mau, (3) sua ton kho.\n\nSite KLEER dung permalink Plain nen base URL BAT BUOC co index.php: http://localhost/index.php va route dang ?rest_route=/wc/v3/...\nXac thuc: OAuth 1.0a HMAC-SHA256 (WooCommerce tu choi Basic Auth tren HTTP).\nKhoa lay tu wp-config.php (KLEER_WC_API_CK / KLEER_WC_API_CS) - KHONG luu trong file nay.\n\nFolder '0. Setup' tu tao du lieu mau qua API nen collection chay doc lap, khong phu thuoc ID co san."
+  },
+  "auth": {
+    "type": "oauth1",
+    "oauth1": [
+      {
+        "key": "consumerKey",
+        "value": "{{ck}}",
+        "type": "string"
+      },
+      {
+        "key": "consumerSecret",
+        "value": "{{cs}}",
+        "type": "string"
+      },
+      {
+        "key": "signatureMethod",
+        "value": "HMAC-SHA256",
+        "type": "string"
+      },
+      {
+        "key": "addParamsToHeader",
+        "value": true,
+        "type": "boolean"
+      },
+      {
+        "key": "includeBodyHash",
+        "value": false,
+        "type": "boolean"
+      },
+      {
+        "key": "addEmptyParamsToSign",
+        "value": false,
+        "type": "boolean"
+      },
+      {
+        "key": "version",
+        "value": "1.0",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base",
+      "value": "http://localhost/index.php"
+    },
+    {
+      "key": "ck",
+      "value": ""
+    },
+    {
+      "key": "cs",
+      "value": ""
+    },
+    {
+      "key": "stock_qty",
+      "value": "88"
+    },
+    {
+      "key": "order_id",
+      "value": ""
+    },
+    {
+      "key": "product_delete_id",
+      "value": ""
+    },
+    {
+      "key": "product_stock_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Setup - tao du lieu mau",
+      "item": [
+        {
+          "name": "0.1 POST tao san pham se bi xoa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = [200,201];",
+                  "pm.test(\"HTTP \" + pm.response.code + \" thuoc {200,201}\", () => pm.expect(ok).to.include(pm.response.code));",
+                  "pm.test(\"Content-Type la JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")||\"\").to.include(\"application/json\"));",
+                  "pm.test(\"Tao san pham = 201\", () => pm.response.to.have.status(201));",
+                  "const d = pm.response.json();",
+                  "pm.collectionVariables.set(\"product_delete_id\", d.id);",
+                  "console.log(\"product_delete_id =\", d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/products",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ZZ-AUTO-DELETE san pham mau L10-G5-02\",\n  \"type\": \"simple\",\n  \"regular_price\": \"10000\",\n  \"status\": \"publish\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "0.2 POST tao san pham de sua ton kho",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = [200,201];",
+                  "pm.test(\"HTTP \" + pm.response.code + \" thuoc {200,201}\", () => pm.expect(ok).to.include(pm.response.code));",
+                  "pm.test(\"Content-Type la JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")||\"\").to.include(\"application/json\"));",
+                  "pm.test(\"Tao san pham = 201\", () => pm.response.to.have.status(201));",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Ton kho ban dau = 5\", () => pm.expect(d.stock_quantity).to.eql(5));",
+                  "pm.collectionVariables.set(\"product_stock_id\", d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/products",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ZZ-AUTO-STOCK san pham mau L10-G5-02\",\n  \"type\": \"simple\",\n  \"regular_price\": \"20000\",\n  \"status\": \"publish\",\n  \"manage_stock\": true,\n  \"stock_quantity\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "0.3 POST tao don hang trang thai processing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = [200,201];",
+                  "pm.test(\"HTTP \" + pm.response.code + \" thuoc {200,201}\", () => pm.expect(ok).to.include(pm.response.code));",
+                  "pm.test(\"Content-Type la JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")||\"\").to.include(\"application/json\"));",
+                  "pm.test(\"Tao don = 201\", () => pm.response.to.have.status(201));",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Trang thai ban dau = processing\", () => pm.expect(d.status).to.eql(\"processing\"));",
+                  "pm.collectionVariables.set(\"order_id\", d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/orders",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\",\n  \"payment_method\": \"cod\",\n  \"payment_method_title\": \"COD\",\n  \"billing\": {\n    \"first_name\": \"KLEER\",\n    \"last_name\": \"Automation\",\n    \"email\": \"automation@kleer.local\"\n  },\n  \"line_items\": [\n    {\n      \"product_id\": \"{{product_stock_id}}\",\n      \"quantity\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Cap nhat don hang -> Da hoan thanh (completed)",
+      "item": [
+        {
+          "name": "1.1 PUT /orders/{id} status=completed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = [200,201];",
+                  "pm.test(\"HTTP \" + pm.response.code + \" thuoc {200,201}\", () => pm.expect(ok).to.include(pm.response.code));",
+                  "pm.test(\"Content-Type la JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")||\"\").to.include(\"application/json\"));",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Du lieu tra ve da cap nhat: status=completed\", () => pm.expect(d.status).to.eql(\"completed\"));",
+                  "pm.test(\"Dung don hang vua tao\", () => pm.expect(String(d.id)).to.eql(String(pm.collectionVariables.get(\"order_id\"))));",
+                  "pm.test(\"Co moc thoi gian hoan thanh\", () => pm.expect(d.date_completed).to.be.a(\"string\").and.not.empty);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/orders/{{order_id}}",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "1.2 GET /orders/{id} xac nhan lai tu server",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = [200,201];",
+                  "pm.test(\"HTTP \" + pm.response.code + \" thuoc {200,201}\", () => pm.expect(ok).to.include(pm.response.code));",
+                  "pm.test(\"Content-Type la JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")||\"\").to.include(\"application/json\"));",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Doc lai tu DB: status=completed\", () => pm.expect(pm.response.json().status).to.eql(\"completed\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/orders/{{order_id}}",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Xoa san pham mau",
+      "item": [
+        {
+          "name": "2.1 DELETE /products/{id}?force=true",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = [200,201];",
+                  "pm.test(\"HTTP \" + pm.response.code + \" thuoc {200,201}\", () => pm.expect(ok).to.include(pm.response.code));",
+                  "pm.test(\"Content-Type la JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")||\"\").to.include(\"application/json\"));",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json();",
+                  "pm.test(\"Tra ve chinh san pham da xoa\", () => pm.expect(String(d.id)).to.eql(String(pm.collectionVariables.get(\"product_delete_id\"))));",
+                  "pm.test(\"Ten san pham dung\", () => pm.expect(d.name).to.include(\"ZZ-AUTO-DELETE\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/products/{{product_delete_id}}&force=true",
+            "description": ""
+          }
+        },
+        {
+          "name": "2.2 GET lai san pham da xoa (ky vong 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Da xoa han: HTTP 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Ma loi WooCommerce dung\", () => pm.expect(pm.response.json().code).to.eql(\"woocommerce_rest_product_invalid_id\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/products/{{product_delete_id}}",
+            "description": "Request kiem chung, khong tinh vao 3 nghiep vu: xac nhan san pham da bi xoa han."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Sua ton kho san pham",
+      "item": [
+        {
+          "name": "3.1 PUT /products/{id} stock_quantity={{stock_qty}}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = [200,201];",
+                  "pm.test(\"HTTP \" + pm.response.code + \" thuoc {200,201}\", () => pm.expect(ok).to.include(pm.response.code));",
+                  "pm.test(\"Content-Type la JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")||\"\").to.include(\"application/json\"));",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json();",
+                  "const want = Number(pm.collectionVariables.get(\"stock_qty\"));",
+                  "pm.test(\"Du lieu tra ve da cap nhat: stock_quantity=\" + want, () => pm.expect(d.stock_quantity).to.eql(want));",
+                  "pm.test(\"Bat quan ly ton kho\", () => pm.expect(d.manage_stock).to.eql(true));",
+                  "pm.test(\"Con hang\", () => pm.expect(d.stock_status).to.eql(\"instock\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/products/{{product_stock_id}}",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"manage_stock\": true,\n  \"stock_quantity\": \"{{stock_qty}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.2 GET /products/{id} xac nhan lai tu server",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = [200,201];",
+                  "pm.test(\"HTTP \" + pm.response.code + \" thuoc {200,201}\", () => pm.expect(ok).to.include(pm.response.code));",
+                  "pm.test(\"Content-Type la JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")||\"\").to.include(\"application/json\"));",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Doc lai tu DB: ton kho dung\", () => pm.expect(pm.response.json().stock_quantity).to.eql(Number(pm.collectionVariables.get(\"stock_qty\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/products/{{product_stock_id}}",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Don dep (tuy chon)",
+      "item": [
+        {
+          "name": "4.1 DELETE san pham ZZ-AUTO-STOCK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/products/{{product_stock_id}}&force=true",
+            "description": ""
+          }
+        },
+        {
+          "name": "4.2 DELETE don hang test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base}}?rest_route=/wc/v3/orders/{{order_id}}&force=true",
+            "description": ""
+          }
+        }
+      ]
+    }
+  ]
+}
