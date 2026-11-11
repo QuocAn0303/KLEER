@@ -240,9 +240,9 @@ Một số tài liệu ghi nhận thiết kế hoặc kết quả ở thời đi
 
 ## Đóng góp
 
-1. Đồng bộ nhánh `develop`, tạo nhánh riêng cho thay đổi.
+1. Làm việc trên nhánh `develop`
 2. Giữ logic nghiệp vụ trong plugin; giao diện trong `kleer-theme`.
 3. Chạy các kiểm thử liên quan và cập nhật tài liệu khi thay đổi API hoặc cấu hình.
-4. Tạo Pull Request vào `develop`, mô tả thay đổi và kết quả kiểm tra để nhóm review trước khi merge.
+4. Tạo commit và push lên `develop`, mô tả thay đổi và kết quả kiểm tra (optional) để nhóm review.
 
 Trao đổi lỗi hoặc đề xuất qua [Issues của dự án](https://github.com/QuocAn0303/KLEER/issues).
