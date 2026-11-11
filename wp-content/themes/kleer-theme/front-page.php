@@ -6,7 +6,6 @@ $shop_url    = function_exists('wc_get_page_permalink') ? wc_get_page_permalink(
 $quiz_url    = home_url('/quiz/');
 $about_url   = home_url('/about/');
 ?>
-
 <main>
     <!-- 1. HERO BANNER -->
     <section class="hero" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg.jpg');">
@@ -20,7 +19,6 @@ $about_url   = home_url('/about/');
                     <a href="<?php echo esc_url($quiz_url); ?>" class="btn btn--transparent">TÌM HIỂU KHOA HỌC</a>
                 </div>
             </div>
-
             <div class="hero__showcase">
                 <div class="hero__card hero__card--large">
                     <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-product-1.jpg" alt="Sản phẩm Kleer 1">
@@ -43,7 +41,7 @@ $about_url   = home_url('/about/');
         </div>
     </section>
 
-    <!-- 2. TRIẾT LÝ CỦA CHÚNG TÔI -->
+    <!-- 2. TRIẾT LÝ CỦA CHÚNG TÔI (Height 663px) -->
     <section class="philosophy-sec ombre-bg-1">
         <div class="container philosophy__inner">
             <div class="philosophy__image-col">
@@ -55,18 +53,18 @@ $about_url   = home_url('/about/');
                 <hr class="philosophy__divider">
                 <div class="philosophy__block">
                     <h3>Nguồn gốc tự nhiên & Minh bạch</h3>
-                    <p>Từng thành phần trong chai thủy tinh mờ đều được thu mua một cách nhân văn và kiểm định nghiêm ngặt tại các phòng thí nghiệm chuyên sâu.</p>
+                    <p>Từng thành phần trong chai thủy tinh mờ đều được thu mua một cách nhân văn và kiểm định nghiêm ngặt tại các phòng thí nghiệm chuyên sâu. Chúng tôi loại bỏ hoàn toàn các chất phụ gia tổng hợp và hương liệu nhân tạo gây căng thẳng cho làn da nhạy cảm.</p>
                 </div>
                 <div class="philosophy__block">
                     <h3>Bền vững & Tối giản</h3>
-                    <p>Chai thủy tinh của KLEER có thể tái chế vô hạn cùng hệ thống nhãn giấy hữu cơ tự phân hủy.</p>
+                    <p>Chai thủy tinh của KLEER có thể tái chế vô hạn cùng hệ thống nhãn giấy hữu cơ tự phân hủy. Chúng tôi cam kết bù đắp lượng carbon trong mọi khâu đóng gói và vận chuyển.</p>
                 </div>
                 <a href="<?php echo esc_url($about_url); ?>" class="btn btn--outline philosophy__btn">KHÁM PHÁ HÀNH TRÌNH</a>
             </div>
         </div>
     </section>
 
-    <!-- 3. SẢN PHẨM NỔI BẬT (Đã tích hợp sẵn WooCommerce Query động) -->
+    <!-- 3. SẢN PHẨM NỔI BẬT (Height 663px) -->
     <section class="products-sec ombre-bg-2">
         <div class="container">
             <div class="products__header">
@@ -77,7 +75,6 @@ $about_url   = home_url('/about/');
                 </div>
                 <a href="<?php echo esc_url($shop_url); ?>" class="btn btn--outline products__btn-more">XEM TẤT CẢ SẢN PHẨM</a>
             </div>
-
             <div class="products__grid">
                 <?php
                 if (class_exists('WooCommerce')) {
@@ -94,10 +91,16 @@ $about_url   = home_url('/about/');
                             ?>
                             <div class="product-card">
                                 <div class="product-card__img-wrap">
-                                    <?php echo $product->get_image('woocommerce_thumbnail'); ?>
+                                    <a href="<?php the_permalink(); ?>">
+                                        <?php echo $product->get_image('woocommerce_thumbnail'); ?>
+                                    </a>
                                 </div>
                                 <div class="product-card__body">
-                                    <h3 class="product-card__title"><?php the_title(); ?></h3>
+                                    <h3 class="product-card__title">
+                                        <a href="<?php the_permalink(); ?>" style="color: inherit; text-decoration: none;">
+                                            <?php the_title(); ?>
+                                        </a>
+                                    </h3>
                                     <div class="product-card__price"><?php echo $product->get_price_html(); ?></div>
                                     <p class="product-card__desc"><?php echo wp_trim_words(get_the_excerpt(), 15); ?></p>
                                     <a href="?add-to-cart=<?php echo $product->get_id(); ?>" class="btn btn--white product-card__btn">THÊM VÀO GIỎ</a>
@@ -191,7 +194,6 @@ $about_url   = home_url('/about/');
                 <p class="testimonials__subtitle">Chia sẻ thực tế từ cộng đồng KLEER sau khi chuyển đổi sang liệu trình sinh học tối giản.</p>
                 <hr class="testimonials__divider">
             </div>
-
             <div class="testimonials__grid">
                 <div class="testimonial-card">
                     <div class="testimonial-card__stars">★★★★★</div>
@@ -219,7 +221,7 @@ $about_url   = home_url('/about/');
         </div>
     </section>
 
-    <!-- 7. CHẨN ĐOÁN DA / SMART QUIZ -->
+    <!-- 7. CHẨN ĐOÁN DA / SMART QUIZ (Height 663px) -->
     <section class="quiz-sec ombre-bg-1">
         <div class="container">
             <div class="quiz__inner">
@@ -258,5 +260,4 @@ $about_url   = home_url('/about/');
         </div>
     </section>
 </main>
-
 <?php get_footer(); ?>

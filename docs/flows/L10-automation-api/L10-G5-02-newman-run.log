@@ -1,0 +1,106 @@
+(node:17136) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+KLEER L10-G5-02 - WooCommerce REST API v3 (3 nghiep vu tu dong)
+
+□ 0. Setup - tao du lieu mau
+└ 0.1 POST tao san pham se bi xoa
+  POST http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Fproducts [201 Created, 2.98kB, 25.8s]
+  √  HTTP 201 thuoc {200,201}
+  √  Content-Type la JSON
+  √  Tao san pham = 201
+  ┌
+  │ 'product_delete_id =', 4378
+  └
+
+└ 0.2 POST tao san pham de sua ton kho
+  POST http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Fproducts [201 Created, 2.98kB, 21.7s]
+  √  HTTP 201 thuoc {200,201}
+  √  Content-Type la JSON
+  √  Tao san pham = 201
+  √  Ton kho ban dau = 5
+
+└ 0.3 POST tao don hang trang thai processing
+  POST http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Forders [201 Created, 2.92kB, 46s]
+  √  HTTP 201 thuoc {200,201}
+  √  Content-Type la JSON
+  √  Tao don = 201
+  √  Trang thai ban dau = processing
+
+□ 1. Cap nhat don hang -> Da hoan thanh (completed)
+└ 1.1 PUT /orders/{id} status=completed
+  PUT http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Forders%2F4380 [200 OK, 2.93kB, 36.9s]
+  √  HTTP 200 thuoc {200,201}
+  √  Content-Type la JSON
+  √  HTTP 200
+  √  Du lieu tra ve da cap nhat: status=completed
+  √  Dung don hang vua tao
+  √  Co moc thoi gian hoan thanh
+
+└ 1.2 GET /orders/{id} xac nhan lai tu server
+  GET http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Forders%2F4380 [200 OK, 2.93kB, 21.3s]
+  √  HTTP 200 thuoc {200,201}
+  √  Content-Type la JSON
+  √  HTTP 200
+  √  Doc lai tu DB: status=completed
+
+□ 2. Xoa san pham mau
+└ 2.1 DELETE /products/{id}?force=true
+  DELETE http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Fproducts%2F4378&force=true [200 OK, 2.93kB, 22.9s]
+  √  HTTP 200 thuoc {200,201}
+  √  Content-Type la JSON
+  √  HTTP 200
+  √  Tra ve chinh san pham da xoa
+  √  Ten san pham dung
+
+└ 2.2 GET lai san pham da xoa (ky vong 404)
+  GET http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Fproducts%2F4378 [404 Not Found, 875B, 30s]
+  √  Da xoa han: HTTP 404
+  √  Ma loi WooCommerce dung
+
+□ 3. Sua ton kho san pham
+└ 3.1 PUT /products/{id} stock_quantity={{stock_qty}}
+  PUT http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Fproducts%2F4379 [200 OK, 2.92kB, 22.3s]
+  √  HTTP 200 thuoc {200,201}
+  √  Content-Type la JSON
+  √  HTTP 200
+  √  Du lieu tra ve da cap nhat: stock_quantity=88
+  √  Bat quan ly ton kho
+  √  Con hang
+
+└ 3.2 GET /products/{id} xac nhan lai tu server
+  GET http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Fproducts%2F4379 [200 OK, 2.78kB, 29.9s]
+  √  HTTP 200 thuoc {200,201}
+  √  Content-Type la JSON
+  √  HTTP 200
+  √  Doc lai tu DB: ton kho dung
+
+□ 4. Don dep (tuy chon)
+└ 4.1 DELETE san pham ZZ-AUTO-STOCK
+  DELETE http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Fproducts%2F4379&force=true [200 OK, 2.92kB, 21.8s]
+  √  HTTP 200
+
+└ 4.2 DELETE don hang test
+  DELETE http://localhost/index.php?rest_route=%2Fwc%2Fv3%2Forders%2F4380&force=true [200 OK, 2.93kB, 23.3s]
+  √  HTTP 200
+
+┌─────────────────────────┬───────────────────┬───────────────────┐
+│                         │          executed │            failed │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│              iterations │                 1 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│                requests │                11 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│            test-scripts │                11 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│      prerequest-scripts │                 0 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│              assertions │                40 │                 0 │
+├─────────────────────────┴───────────────────┴───────────────────┤
+│ total run duration: 5m 3.4s                                     │
+├─────────────────────────────────────────────────────────────────┤
+│ total data received: 21.4kB (approx)                            │
+├─────────────────────────────────────────────────────────────────┤
+│ average response time: 27.4s [min: 21.3s, max: 46s, s.d.: 7.4s] │
+└─────────────────────────────────────────────────────────────────┘

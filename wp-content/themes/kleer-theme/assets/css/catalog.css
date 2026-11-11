@@ -1,0 +1,495 @@
+/* ==========================================================================
+   KLEER SHOP CATALOG STYLES
+   ========================================================================== */
+
+.shop-catalog-page {
+    background: linear-gradient(180deg, #1A3424 0%, #294432 40%, #1D3727 100%);
+    padding: 30px 0 80px;
+    color: #FFFFFF;
+    min-height: 100vh;
+}
+
+/* Breadcrumb Navigation */
+.breadcrumb {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 12px;
+}
+.breadcrumb a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none !important;
+}
+.breadcrumb a:hover {
+    color: #FFFFFF;
+}
+.breadcrumb__sep {
+    margin: 0 6px;
+}
+.breadcrumb__current {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Page Title */
+.shop-title {
+    font-family: 'Fraunces', serif;
+    font-size: 38px;
+    font-weight: 400;
+    color: #FFFFFF;
+    margin-bottom: 36px;
+}
+
+/* Grid Layout 2 Cột */
+.shop-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+/* --------------------------------------------------------------------------
+   SIDEBAR BỘ LỌC
+   -------------------------------------------------------------------------- */
+.shop-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.filter-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+}
+
+/* Danh mục link */
+.filter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.filter-link {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none !important;
+    display: flex;
+    justify-content: space-between;
+    transition: color 0.2s ease;
+}
+.filter-link:hover, .filter-link.active {
+    color: #FFFFFF;
+}
+.filter-link span {
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+/* Select Dropdown */
+.filter-select {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+.filter-select option {
+    background-color: #1A3424;
+    color: #FFFFFF;
+}
+
+/* Range Slider */
+.price-range {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.price-slider {
+    accent-color: #C8A47E;
+    width: 100%;
+    cursor: pointer;
+}
+.price-values {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Checkbox */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+}
+.custom-checkbox input {
+    accent-color: #C8A47E;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   LƯỚI SẢN PHẨM & CARDS
+   -------------------------------------------------------------------------- */
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.catalog-card {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.catalog-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.catalog-card__img-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: #0F1E14;
+}
+.catalog-card__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.catalog-card__body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.catalog-card__cat {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.catalog-card__title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #FFFFFF;
+    margin: 0 0 4px 0;
+}
+
+.catalog-card__stars {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+}
+
+.catalog-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.catalog-card__price {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.catalog-card__btn {
+    background-color: #E0C9A6;
+    color: #1A3424;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.catalog-card__btn:hover {
+    background-color: #EBD6B5;
+}
+
+/* --------------------------------------------------------------------------
+   PHÂN TRANG
+   -------------------------------------------------------------------------- */
+.catalog-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 40px;
+}
+
+.page-link {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+    border-radius: 4px;
+    text-decoration: none !important;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    transition: background-color 0.2s ease;
+}
+.page-link:hover, .page-link.active {
+    background-color: #E0C9A6;
+    color: #1A3424;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .shop-layout {
+        grid-template-columns: 1fr;
+    }
+    .catalog-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 576px) {
+    .catalog-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =============================================================
+   FIX 2: XÓA HOÀN TOÀN GẠCH CHÂN NÚT THÊM VÀO GIỎ HÀNG
+   ============================================================= */
+.add_to_cart_button, 
+.button, 
+a.button,
+.product-card a {
+    text-decoration: none !important;
+}
+
+
+/* =============================================================
+   FIX 3: NÂNG CẤP GIAO DIỆN BỘ LỌC (SPACING & SIZES)
+   ============================================================= */
+
+/* A. Khoảng cách dọc giữa các khối bộ lọc (Danh mục, Giá, Loại da) */
+.filter-group, 
+.sidebar-widget,
+.filter-section,
+.widget {
+    margin-bottom: 36px !important; /* <--- Chỉnh số này để tăng/giảm khoảng cách dọc */
+}
+
+/* B. Tiêu đề khối bộ lọc (SẮP XẾP, KHOẢNG GIÁ, LOẠI DA) */
+.filter-title, 
+.widget-title,
+.filter-group h3 {
+    margin-bottom: 18px !important;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+
+/* C. Khoảng cách & Cỡ chữ của từng dòng Checkbox (Da dầu, Da khô...) */
+.filter-group label,
+.widget label,
+.skin-type-filter label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important; /* Khoảng cách giữa ô checkbox và chữ */
+    margin-bottom: 16px !important; /* Khoảng cách giữa các dòng */
+    font-size: 16px !important; /* <--- Chỉnh cỡ chữ bộ lọc */
+    font-weight: 500 !important;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* D. Phóng to ô tích Checkbox cho dễ bấm */
+.filter-group input[type="checkbox"],
+.widget input[type="checkbox"],
+.skin-type-filter input[type="checkbox"] {
+    width: 20px !important; /* <--- Chiều rộng ô vuông checkbox */
+    height: 20px !important; /* <--- Chiều cao ô vuông checkbox */
+    cursor: pointer;
+    accent-color: #B8D0BB; /* Màu xanh rêu tiệp màu theme khi tích chọn */
+}
+
+/* E. Phóng to thanh kéo khoảng giá (Range Slider) */
+input[type="range"] {
+    height: 11px !important; /* Độ dày thanh kéo */
+    cursor: pointer;
+    margin: 15px 0 !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    width: 28px !important; /* Kích thước nút tròn kéo giá */
+    height: 22px !important;
+    cursor: pointer;
+}
+
+/* =============================================================
+   1. PHÓNG TO CHỮ DANH MỤC SẢN PHẨM IN SIDEBAR
+   ============================================================= */
+.widget_product_categories ul li a,
+.product-categories li a,
+.sidebar-widget ul li a,
+.filter-group ul li a,
+.widget_categories a {
+    font-size: 16px !important; /* Cỡ chữ danh mục to rõ hơn */
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    text-decoration: none !important;
+    line-height: 2.2 !important; /* Tăng khoảng cách dòng giữa các danh mục */
+    transition: color 0.2s ease;
+}
+
+.widget_product_categories ul li a:hover,
+.product-categories li a:hover {
+    color: #B8D0BB !important;
+}
+
+/* Số lượng sản phẩm trong ngoặc (513), (85)... */
+.product-categories .count,
+.widget_product_categories .count {
+    font-size: 14px !important;
+    opacity: 0.6;
+    margin-left: 6px;
+}
+
+
+/* =============================================================
+   2. PHÓNG TO SỐ TIỀN KHOẢNG GIÁ (100.000đ - 3.000.000đ)
+   ============================================================= */
+.price_slider_amount,
+.price_label,
+.price-range-values,
+.price-display,
+.filter-group .price-values,
+.price-slider-wrapper span {
+    font-size: 17px !important; /* Tăng kích thước số tiền */
+    font-weight: 700 !important;
+    color: #B8D0BB !important; /* Màu xanh vàng rêu nổi bật */
+    letter-spacing: 0.5px;
+}
+
+/* Container chứa phân trang */
+.woocommerce-pagination,
+nav.woocommerce-pagination,
+.pagination,
+.nav-links {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 40px 0 !important;
+    clear: both;
+}
+
+/* Đổi kiểu cho TẤT CẢ thẻ <a> và <span> trong phân trang */
+.woocommerce-pagination a,
+.woocommerce-pagination span,
+.pagination a,
+.pagination span,
+.nav-links a,
+.nav-links span,
+.page-numbers {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    padding: 0 12px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important; 
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important; 
+    transition: all 0.2s ease !important;
+}
+
+/* Số trang đang được chọn (Active) */
+.woocommerce-pagination .current,
+.pagination .current,
+.nav-links .current,
+span.page-numbers.current {
+    background: #B8D0BB !important;
+    color: #112215 !important;
+    border-color: #B8D0BB !important;
+    font-weight: 700 !important;
+}
+
+/* Hiệu ứng khi rê chuột vào số trang */
+.woocommerce-pagination a:hover,
+.pagination a:hover,
+.nav-links a:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+/* =============================================================
+   ĐỔI MÀU VÀNG NỔI BẬT CHO DANH MỤC / BỘ LỌC ĐANG ĐƯỢC CHỌN
+   ============================================================= */
+
+/* 1. Đổi màu chữ danh mục đang chọn thành màu vàng sáng (#F3C649) */
+.widget_product_categories .current-cat > a,
+.product-categories .current-cat > a,
+.sidebar-widget .active,
+.filter-group a.active,
+.filter-group li.active > a,
+.filter-group input[type="checkbox"]:checked + label {
+    color: #F3C649 !important; /* Màu vàng nổi bật cho người dùng dễ thấy */
+    font-weight: 700 !important;
+}
+
+/* 2. Thêm icon dấu tích (✓) phía trước danh mục đang chọn */
+.widget_product_categories .current-cat > a::before,
+.product-categories .current-cat > a::before {
+    content: "✓ " !important;
+    color: #F3C649 !important;
+    margin-right: 4px;
+}
+
+/* 3. Hiệu ứng khi chọn ô Checkbox loại da (đổi nền checkbox thành vàng) */
+.filter-group input[type="checkbox"]:checked {
+    accent-color: #F3C649 !important; /* Ô tích chuyển sang màu vàng */
+}

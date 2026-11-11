@@ -42,15 +42,15 @@
 
 ---
 
-## 3. "XƯƠNG SỐNG" DỮ LIỆU: 3 CUSTOM TAXONOMIES & CHUẨN HÓA CƠ SỞ DỮ LIỆU
+## 3. "XƯƠNG SỐNG" DỮ LIỆU: 3 THUỘC TÍNH SẢN PHẨM WOOCOMMERCE & CHUẨN HÓA CƠ SỞ DỮ LIỆU
 
-Mọi thuật toán của KLEER đều hoạt động dựa trên 3 Custom Taxonomies độc quyền (được đăng ký tại `TaxonomyRegistry.php` gán cho post type `product` và đọc thêm thuộc tính `pa_*`):
+Mọi thuật toán của KLEER đều dựa trên ba thuộc tính sản phẩm toàn cục của WooCommerce: `pa_skin_type`, `pa_skin_concern`, `pa_routine_step`. `TaxonomyRegistry.php` khởi tạo/đồng bộ các thuộc tính này qua WooCommerce API. Không đăng ký bộ custom taxonomy riêng trùng tên hoặc tạo song song các taxonomy không có tiền tố `pa_`:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        3 CUSTOM TAXONOMIES                             │
+│                 3 WOOCOMMERCE PRODUCT TAXONOMIES                       │
 ├────────────────────┬────────────────────┬──────────────────────────────┤
-│ 1. skin_type       │ 2. skin_concern    │ 3. routine_step              │
+│ 1. pa_skin_type    │ 2. pa_skin_concern │ 3. pa_routine_step           │
 │    (Loại da)       │    (Vấn đề da)     │    (Bước trong chu trình)    │
 ├────────────────────┼────────────────────┼──────────────────────────────┤
 │ • sensitive (NC)   │ • acne (Mụn)       │ • makeup_remover (Tẩy trang) │
@@ -63,10 +63,11 @@ Mọi thuật toán của KLEER đều hoạt động dựa trên 3 Custom Taxon
 ```
 
 * **Quy tắc toàn vẹn:**
-  * `skin_type` có đúng 5 term (kể cả `normal`). Sản phẩm "Mọi loại da" được gắn đủ 5 term. Thứ tự trên cũng là thứ tự ưu tiên khi hòa điểm Quiz.
-  * `skin_concern` có đúng 4 term. Giá trị `none` ("Không có vấn đề nổi bật") chỉ là lựa chọn trong Quiz, **không phải term** và không gắn lên sản phẩm; sản phẩm không có vấn đề đặc trị thì để trống `skin_concern`.
-  * `routine_step` có đúng 6 term như bảng trên. Slug `treatment` không còn dùng (đổi thành `serum`).
-  * Mỗi sản phẩm trong kho dữ liệu $\ge 500\text{ SKU}$ **bắt buộc chỉ thuộc DUY NHẤT một `routine_step`**.
+  * Tên taxonomy chuẩn trong WooCommerce/DB là `pa_skin_type`, `pa_skin_concern`, và `pa_routine_step`. Các tên `skin_type`, `skin_concern`, `routine_step` là khóa logic/API; nếu một luồng dùng các khóa này thì phải ánh xạ sang taxonomy `pa_*` tương ứng. Không đăng ký hoặc tạo thêm bộ taxonomy không có tiền tố `pa_` song song.
+  * `pa_skin_type` có đúng 5 term (kể cả `normal`). Sản phẩm "Mọi loại da" được gắn đủ 5 term. Thứ tự trên cũng là thứ tự ưu tiên khi hòa điểm Quiz.
+  * `pa_skin_concern` có đúng 4 term. Giá trị `none` ("Không có vấn đề nổi bật") chỉ là lựa chọn trong Quiz, **không phải term** và không gắn lên sản phẩm; sản phẩm không có vấn đề đặc trị thì để trống `pa_skin_concern`.
+  * `pa_routine_step` có đúng 6 term như bảng trên. Slug `treatment` không còn dùng (đổi thành `serum`).
+  * Mỗi sản phẩm trong kho dữ liệu $\ge 500\text{ SKU}$ **bắt buộc chỉ thuộc DUY NHẤT một `pa_routine_step`**.
   * Hoạt chất chủ đạo lưu ở **một nơi duy nhất**: thuộc tính/taxonomy `pa_active_ingredient` (ví dụ: `retinol`, `aha`, `bha`, `pha`, `vitamin_c`, `niacinamide`...). Đây là nguồn cho bộ lọc L02 và cho quét xung đột ở giỏ hàng L03. Crawler L08 ghi vào cột `Attribute: pa_active_ingredient`.
   * Cờ dẫn xuất `_kleer_strong_active = 1/0`: bằng 1 nếu sản phẩm chứa một trong danh sách hoạt chất mạnh (BHA/Salicylic Acid, AHA, PHA, Retinol, Vitamin C ≥ 5%; xem 4B). Dùng cho cờ nhạy cảm của Quiz. Nếu trang nguồn không ghi nồng độ thì phân loại theo sự có mặt của hoạt chất và để người duyệt dữ liệu rà lại.
   * Sản phẩm lành tính dành cho mọi loại da và không có hoạt chất mạnh được đánh dấu trường postmeta: `_kleer_gentle_fallback = 1` (còn lại là 0).
@@ -97,10 +98,10 @@ Mọi thuật toán của KLEER đều hoạt động dựa trên 3 Custom Taxon
      * `cleanser` (1) $\rightarrow$ `sunscreen` (2) $\rightarrow$ `makeup_remover` (2.1) $\rightarrow$ Bước vấn đề đẩy (2.5) $\rightarrow$ `serum` (3) $\rightarrow$ `toner` (4) $\rightarrow$ `moisturizer` (5). Routine lấy $N$ bước có hạng nhỏ nhất; bước nào không có SKU thì bỏ, không thay bằng bước khác.
      * *Logic đẩy bước theo vấn đề:* `acne` ưu tiên đẩy `toner` (nhưng nếu da nhạy cảm thì ưu tiên đẩy `serum`); `pores` ưu tiên `toner`; `dark_spots`/`aging` ưu tiên `serum`.
   6. **Thuật toán chọn SKU cho từng bước (2 giai đoạn):**
-     * *Giai đoạn 1 — Lọc cứng:* chỉ giữ SKU thỏa **tất cả**: (a) đúng `routine_step` của bước; (b) có thẻ `skin_type` trùng loại da chính (SKU "Mọi loại da" có đủ 5 thẻ nên luôn qua); (c) còn hàng; (d) nếu `is_sensitive = true` thì `_kleer_strong_active = 0`.
+     * *Giai đoạn 1 — Lọc cứng:* chỉ giữ SKU thỏa **tất cả**: (a) đúng `pa_routine_step` của bước; (b) có term `pa_skin_type` trùng loại da chính (SKU "Mọi loại da" có đủ 5 term nên luôn qua); (c) còn hàng; (d) nếu `is_sensitive = true` thì `_kleer_strong_active = 0`.
      * *Giai đoạn 2 — Xếp hạng:*
      $$\text{Product Score} = 2 \times (\text{Khớp } skin\_concern) + 1 \times (\text{Dành riêng cho } skin\_type)$$
-     "Khớp `skin_concern`" = SKU có thẻ vấn đề chính của khách (bằng 0 nếu khách chọn `none`). "Dành riêng cho `skin_type`" = SKU **không** phải "Mọi loại da" (không gắn đủ 5 term); chỉ cộng +1 một lần, dù SKU gắn riêng cho 2 loại da trở lên.
+     "Khớp `skin_concern`" = SKU có term `pa_skin_concern` trùng vấn đề chính của khách (bằng 0 nếu khách chọn `none`). "Dành riêng cho `skin_type`" = SKU **không** phải "Mọi loại da" (không gắn đủ 5 term `pa_skin_type`); chỉ cộng +1 một lần, dù SKU gắn riêng cho 2 loại da trở lên.
      * *Quy tắc hòa điểm sản phẩm:* Chọn sản phẩm có giá bán thấp hơn (`_price` thấp hơn). Nếu tiếp tục bằng nhau, chọn `product_id` thấp hơn.
      * *Danh sách hoạt chất mạnh bị loại khi `is_sensitive = true`:* BHA/Salicylic Acid, AHA, PHA, Retinol, Vitamin C ≥ 5%. Khác với cặp xung đột ở giỏ hàng (xem Tính năng 3), danh sách này dùng riêng cho Quiz.
 
@@ -174,7 +175,7 @@ Mọi thuật toán của KLEER đều hoạt động dựa trên 3 Custom Taxon
   * Nén tối ưu dung lượng **$\le 120\text{ KB}$/ảnh** trước khi import vào hệ thống.
 * **Chuẩn hóa CSV & Gán nhãn Taxonomy:**
     * Sinh mã SKU chuẩn không trùng lặp, ổn định khi cào lại: `KLR-{hash8}`, trong đó `hash8` là 8 ký tự hex đầu của SHA-1 chuỗi chuẩn hóa `thương_hiệu|tên_sản_phẩm|dung_tích` (chữ thường, bỏ dấu tiếng Việt, bỏ ký tự đặc biệt, dung tích viết dạng `50ml`, `30g`). Cùng sản phẩm khác dung tích thì khác SKU. Nếu hai sản phẩm khác nhau trùng mã thì thêm hậu tố `-2`, `-3`. Chỉ cào từ Hasaki.vn.
-  * Gán `skin_type` và `routine_step` (đúng 1 giá trị) cho 100% bản ghi. `skin_concern` có thể để trống nếu sản phẩm không có vấn đề đặc trị. Giá trị phải thuộc đúng danh sách term ở mục 3.
+  * Gán taxonomy `pa_skin_type` và `pa_routine_step` (đúng 1 giá trị cho mỗi taxonomy) cho 100% bản ghi. `pa_skin_concern` có thể để trống nếu sản phẩm không có vấn đề đặc trị. Giá trị phải thuộc đúng danh sách term ở mục 3. Tên cột CSV/import có thể dùng khóa logic không có `pa_` nếu importer ánh xạ rõ ràng sang taxonomy chuẩn WooCommerce.
   * Gán `_kleer_gentle_fallback = 1` cho sản phẩm lành tính dành cho mọi loại da và không có hoạt chất mạnh; mỗi `routine_step` nên có ít nhất 1 sản phẩm như vậy để Safe Fallback luôn có đường dự phòng. Gán `pa_active_ingredient` và `_kleer_strong_active` theo mục 3.
 
 ---

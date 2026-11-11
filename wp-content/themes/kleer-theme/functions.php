@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace KleerTheme;
@@ -19,7 +18,6 @@ function theme_setup(): void
 {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
-
     // Kế thừa đầy đủ tính năng WooCommerce
     add_theme_support('woocommerce');
     add_theme_support('wc-product-gallery-zoom');
@@ -46,25 +44,54 @@ function enqueue_assets(): void
         null
     );
 
-    // 2. CSS Global (Navbar, Footer, Hệ thống màu Ombre)
+    // 2. CSS Global (Dùng chung cho toàn website: Navbar, Footer, Ombre, Reset)
     wp_enqueue_style(
-        'kleer-global-style',
+        'kleer-global',
         get_template_directory_uri() . '/assets/css/global.css',
         ['kleer-google-fonts'],
         KLEER_THEME_VERSION
     );
 
-    // 3. CSS Trang chủ (Chỉ nạp khi ở Front Page)
-    if (is_front_page()) {
+    // 3. CSS Trang chủ (Chỉ nạp khi ở Front Page hoặc Home)
+    if (is_front_page() || is_home()) {
         wp_enqueue_style(
             'kleer-homepage-style',
             get_template_directory_uri() . '/assets/css/home.css',
-            ['kleer-global-style'],
+            ['kleer-global'],
             KLEER_THEME_VERSION
         );
     }
 
-    // 4. Routine Cart Script
+    // 4. CSS Trang Shop Catalog
+    if (
+        (function_exists('is_shop') && is_shop()) ||
+        (function_exists('is_product_category') && is_product_category()) ||
+        (function_exists('is_product_taxonomy') && is_product_taxonomy()) ||
+        is_post_type_archive('product') ||
+        is_page('shop')
+    ) {
+        wp_enqueue_style(
+            'kleer-catalog',
+            get_template_directory_uri() . '/assets/css/catalog.css',
+            ['kleer-global'],
+            KLEER_THEME_VERSION
+        );
+    }
+
+    // 5. CSS Trang Chi tiết sản phẩm
+    if (
+        (function_exists('is_product') && is_product()) ||
+        is_singular('product')
+    ) {
+        wp_enqueue_style(
+            'kleer-product-detail',
+            get_template_directory_uri() . '/assets/css/product_detail.css',
+            ['kleer-global'],
+            KLEER_THEME_VERSION
+        );
+    }
+
+    // 6. Routine Cart Script
     wp_enqueue_script(
         'kleer-routine-cart',
         get_template_directory_uri() . '/assets/js/routine-cart.js',
@@ -78,7 +105,13 @@ function enqueue_assets(): void
         'nonce'    => wp_create_nonce('kleer_add_routine_to_cart'),
     ]);
 
-    if (function_exists('is_shop') && is_shop()) {
+    if (
+        (function_exists('is_shop') && is_shop()) ||
+        (function_exists('is_product_category') && is_product_category()) ||
+        (function_exists('is_product_taxonomy') && is_product_taxonomy()) ||
+        is_post_type_archive('product') ||
+        is_page('shop')
+    ) {
         wp_enqueue_script(
             'kleer-catalog-filter',
             get_template_directory_uri() . '/assets/js/catalog-filter.js',
@@ -86,6 +119,7 @@ function enqueue_assets(): void
             KLEER_THEME_VERSION,
             true
         );
+
         wp_localize_script('kleer-catalog-filter', 'kleerAjax', [
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('kleer_filter_products'),
@@ -97,3 +131,34 @@ add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets');
 // Nạp file đăng ký script & style cho Quiz SPA
 require_once get_template_directory() . '/inc/quiz-assets.php';
 require_once get_template_directory() . '/inc/ajax-catalog-filter.php';
+
+// Ép sử dụng giao diện KLEER cho trang danh mục sản phẩm và chi tiết sản phẩm
+add_filter('template_include', function ($template) {
+    // 1. Danh mục / Shop / Category / Taxonomy
+    if (
+        (function_exists('is_shop') && is_shop()) ||
+        (function_exists('is_product_taxonomy') && is_product_taxonomy()) ||
+        (function_exists('is_product_category') && is_product_category()) ||
+        (function_exists('is_product_tag') && is_product_tag()) ||
+        is_post_type_archive('product') ||
+        is_page('shop')
+    ) {
+        $custom_archive = get_template_directory() . '/archive-product.php';
+        if (file_exists($custom_archive)) {
+            return $custom_archive;
+        }
+    }
+
+    // 2. Chi tiết sản phẩm
+    if (
+        (function_exists('is_product') && is_product()) ||
+        is_singular('product')
+    ) {
+        $custom_single = get_template_directory() . '/single-product.php';
+        if (file_exists($custom_single)) {
+            return $custom_single;
+        }
+    }
+
+    return $template;
+}, 999);
