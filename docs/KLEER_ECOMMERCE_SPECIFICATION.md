@@ -23,7 +23,12 @@
   * Phân tách module: `Endpoints/`, `Controllers/`, `Services/`, `Repositories/`, `Config/`, `Taxonomies/`.
   * REST API Namespace: `kleer/v1`.
   * **Quy tắc kỷ luật:** Không sửa mã nguồn lõi WordPress Core hoặc WooCommerce Core. Không commit file nhạy cảm (`.env`, secrets, API keys).
-
+### 1.3. Cơ sở Tham chiếu Hệ thống (System & Industry References)
+Nhằm đảm bảo tính thực tiễn và tính học thuật (tránh việc giả định chủ quan), toàn bộ giải pháp của KLEER được tham chiếu và đối sánh từ các hệ thống uy tín:
+* **Mô hình Bán lẻ & Chuẩn hóa Catalog:** Tham chiếu hệ thống bán lẻ mỹ phẩm **Hasaki.vn** (chuẩn hóa danh mục, thông tin sản phẩm, chính sách phân phối tại Việt Nam).
+* **Quy trình Chẩn đoán & Tư vấn Routine:** Tham chiếu mô hình Personalized Skincare của **Curology (USA)** (cấu trúc bộ câu hỏi chẩn đoán da, ma trận phân loại và gợi ý phác đồ điều trị được Việt hóa).
+* **Cơ sở dữ liệu Hoạt chất & Cảnh báo An toàn:** Tham chiếu tiêu chuẩn quốc tế từ **INCIDecoder** và **Paula's Choice Ingredient Dictionary** (danh mục hoạt chất đối kháng, nồng độ an toàn cho da nhạy cảm).
+* **Xu hướng Thị trường Unisex:** Tham chiếu báo cáo nghiên cứu hành vi người tiêu dùng Gen Z & Nam giới trong chăm sóc cá nhân (Kantar Worldpanel & Mintel SEA).
 ---
 
 ## 2. NỖI ĐAU THỊ TRƯỜNG & CHIẾN LƯỢC MÔ HÌNH KINH DOANH
@@ -86,6 +91,9 @@ Mọi thuật toán của KLEER đều dựa trên ba thuộc tính sản phẩm
 * **Màn hình kết quả:** Phân tích hồ sơ da, hiển thị Routine gồm 2 đến 6 sản phẩm tương thích (theo thứ tự Sáng / Tối), kèm giá gốc, giá combo giảm 10% (xem mục 2.2) và nút bấm **"Thêm trọn bộ vào giỏ hàng"**.
 
 #### B. Thuật toán Tính điểm Trọng số (Weighted Tag Matching - Logic v4)
+* **Cơ sở tham chiếu nghiệp vụ:** Bộ câu hỏi và ma trận tính điểm được nghiên cứu, kế thừa và Việt hóa từ quy trình tư vấn da cá nhân hóa của **Curology (curology.com)** — nền tảng D2C skincare hàng đầu thế giới:
+  * Lược bỏ các bước kê đơn thuốc cần bác sĩ da liễu Hoa Kỳ, chuyển hóa thành bài trắc nghiệm mỹ phẩm không kê đơn (OTC) phù hợp với cơ địa người Việt Nam.
+  * Tái cấu trúc thành 6 câu hỏi đa chiều (v4) đánh giá: Lượng bã nhờn, phản ứng kích ứng, vấn đề bệnh lý da, độ dài routine mong muốn và thói quen chống nắng/trang điểm.
 * **API Endpoint:** `POST /wp-json/kleer/v1/skin-quiz` (Namespace: `kleer/v1`, xử lý qua `SkinQuizController`). Thời gian phản hồi: $< 300\text{ ms}$.
 * **Quy tắc chấm điểm (Quiz Decision Matrix):**
   1. **Q1–Q3 (Xác định Loại da):** Các câu hỏi về lượng dầu vùng chữ T, độ căng rát sau rửa mặt. Mỗi lựa chọn cộng điểm vào các vector: `sensitive`, `dry`, `combination`, `oily`, `normal`.
@@ -136,6 +144,9 @@ Mọi thuật toán của KLEER đều dựa trên ba thuộc tính sản phẩm
 ### TÍNH NĂNG 3: GIỎ HÀNG THÔNG MINH, 1-CLICK ADD & CẢNH BÁO XUNG ĐỘT HOẠT CHẤT (LUỒNG L03)
 
 #### A. Cảnh báo Xung đột Hoạt chất (Ingredient Conflict Warning – Điểm sáng tạo)
+* **Cơ sở khoa học & Dữ liệu tham chiếu:**
+  * Bảng danh mục hoạt chất và cơ chế tương tác hoá mỹ phẩm được xây dựng dựa trên nguồn dữ liệu mở của **INCIDecoder (incidecoder.com)** kết hợp từ điển thành phần của **Paula's Choice**.
+  * Quy tắc xung đột được chuẩn hóa để loại trừ rủi ro bỏng rát khi kết hợp sai hoạt chất mạnh (như BHA/AHA kết hợp Retinol/Tretinoin nồng độ cao trong cùng một buổi).
 * **Ý nghĩa:** Giải quyết rủi ro bỏng rát/kích ứng cho khách hàng, đóng vai trò như một "chuyên gia da liễu ảo" giám sát đơn hàng.
 * **Cơ chế hoạt động:**
   1. **Trigger:** Kích hoạt tự động thông qua hook `woocommerce_cart_calculate_fees` và `woocommerce_check_cart_items` mỗi khi giỏ hàng có sự thay đổi.
