@@ -98,9 +98,18 @@
         window.addEventListener('kleer:addRoutineToCart', function (event) {
             var detail = event.detail || {};
             var productIds = detail.product_ids || [];
-            addRoutineToCart(productIds).then(function () {
-                // Optionally redirect to cart page
-                // window.location.href = '/gio-hang/' or use cart URL
+            var request = addRoutineToCart(productIds);
+            if (!request || typeof request.then !== 'function') {
+                return;
+            }
+
+            request.then(function (data) {
+                if (data && data.success) {
+                    var cartUrl = (window.kleerAjax && window.kleerAjax.cart_url)
+                        ? window.kleerAjax.cart_url
+                        : '/cart/';
+                    window.location.href = cartUrl;
+                }
             });
         });
     }

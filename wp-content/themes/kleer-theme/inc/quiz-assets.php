@@ -22,7 +22,7 @@ function kleer_enqueue_quiz_scripts() {
             'kleer-quiz',
             get_template_directory_uri() . '/assets/js/quiz.js',
             [],
-            '1.0.0',
+            '1.0.1',
             true
         );
 

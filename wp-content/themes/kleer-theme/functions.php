@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (!defined('KLEER_THEME_VERSION')) {
-    define('KLEER_THEME_VERSION', '1.0.1');
+    define('KLEER_THEME_VERSION', '1.0.2');
 }
 
 /**
@@ -103,6 +103,7 @@ function enqueue_assets(): void
     wp_localize_script('kleer-routine-cart', 'kleerAjax', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('kleer_add_routine_to_cart'),
+        'cart_url' => function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/'),
     ]);
 
     if (

@@ -17,8 +17,13 @@ class KleerQuizEngine {
         this.isSubmitting = false;
         this.lastResult = null;
         this.version = window.kleerQuizConfig?.version || 'v4';
+        const rawCartEnabled = window.kleerQuizConfig?.cartEnabled;
+        // wp_localize_script() serializes boolean true as "1"
         this.cartEnabled =
-            window.kleerQuizConfig?.cartEnabled === true;
+            rawCartEnabled === true ||
+            rawCartEnabled === 1 ||
+            rawCartEnabled === '1' ||
+            rawCartEnabled === 'true';
 
         this.questionIds = [
             'q1',

@@ -41,6 +41,8 @@ class CartComboService
 
     public function register(): void
     {
+        add_filter('kleer_quiz_cart_enabled', '__return_true');
+
         add_action('wp_ajax_' . self::AJAX_ACTION, [$this, 'handleBulkAddRoutineAjax']);
         add_action('wp_ajax_nopriv_' . self::AJAX_ACTION, [$this, 'handleBulkAddRoutineAjax']);
 
