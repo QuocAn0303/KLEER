@@ -1,0 +1,592 @@
+/* ==========================================================================
+   KLEER THEME — CART & CHECKOUT UX STYLES (Task L03-G5-02)
+   Minimalist Earthy Tone & BEM Architecture
+   ========================================================================== */
+
+/* 1. Khung chứa chung cho trang Cart & Checkout */
+.woocommerce-cart .site-main,
+.woocommerce-checkout .site-main {
+    padding-top: 32px;
+    padding-bottom: 72px;
+}
+
+.woocommerce-cart .entry-title,
+.woocommerce-checkout .entry-title {
+    font-family: var(--font-serif, 'Fraunces', serif);
+    font-size: clamp(1.75rem, 3vw, 2.35rem);
+    font-weight: 500;
+    color: var(--kleer-cream, #f5f2eb);
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+}
+
+/* 2. Thanh tiến trình 3 bước (BEM: .kleer-checkout-steps) */
+.kleer-checkout-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(20, 40, 24, 0.48);
+    border: 1px solid rgba(245, 242, 235, 0.16);
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(10px);
+}
+
+.kleer-checkout-steps__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(245, 242, 235, 0.6);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.kleer-checkout-steps__num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1.5px solid rgba(245, 242, 235, 0.35);
+    color: rgba(245, 242, 235, 0.75);
+}
+
+.kleer-checkout-steps__item.is-active {
+    color: var(--kleer-cream, #f5f2eb);
+    font-weight: 600;
+}
+
+.kleer-checkout-steps__item.is-active .kleer-checkout-steps__num {
+    background: var(--kleer-cream, #f5f2eb);
+    color: var(--kleer-deep-forest, #142818);
+    border-color: var(--kleer-cream, #f5f2eb);
+}
+
+.kleer-checkout-steps__item.is-completed {
+    color: #b7e4c7;
+}
+
+.kleer-checkout-steps__item.is-completed .kleer-checkout-steps__num {
+    background: rgba(183, 228, 199, 0.2);
+    border-color: #b7e4c7;
+    color: #b7e4c7;
+}
+
+.kleer-checkout-steps__divider {
+    width: 44px;
+    height: 1px;
+    background: rgba(245, 242, 235, 0.22);
+}
+
+/* 3. Banner tiến độ Combo Routine -15% (BEM: .kleer-combo-banner) */
+.kleer-combo-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #f5f2eb 0%, #ebe7dc 100%);
+    color: var(--kleer-deep-forest, #142818);
+    border-left: 5px solid #2d6a4f;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+}
+
+.kleer-combo-banner--unlocked {
+    border-left-color: #1b4332;
+    background: linear-gradient(135deg, #ecf8f0 0%, #d8f3dc 100%);
+}
+
+.kleer-combo-banner__badge {
+    display: inline-block;
+    background: var(--kleer-deep-forest, #142818);
+    color: var(--kleer-cream, #f5f2eb);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+}
+
+.kleer-combo-banner__text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #1d3723;
+    margin: 0;
+}
+
+.kleer-combo-banner__cta {
+    flex-shrink: 0;
+    background: var(--kleer-deep-forest, #142818);
+    color: var(--kleer-cream, #f5f2eb) !important;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.kleer-combo-banner__cta:hover {
+    transform: translateY(-1px);
+    opacity: 0.92;
+}
+
+/* 4. Cảnh báo xung đột hoạt chất (L03) & Thông báo WooCommerce */
+.woocommerce-notices-wrapper .woocommerce-message,
+.woocommerce-notices-wrapper .woocommerce-info,
+.woocommerce-notices-wrapper .woocommerce-error,
+.woocommerce .woocommerce-message,
+.woocommerce .woocommerce-info,
+.woocommerce .woocommerce-error {
+    background: var(--kleer-cream, #f5f2eb);
+    color: var(--kleer-deep-forest, #142818);
+    border-radius: 14px;
+    padding: 16px 22px;
+    margin-bottom: 22px;
+    border-top: none;
+    border-left: 5px solid #2d6a4f;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.woocommerce .woocommerce-error {
+    border-left-color: #c92a2a;
+    background: #fff5f5;
+    color: #7d1a1a;
+}
+
+.kleer-ingredient-conflict-notice {
+    display: block;
+    background: #fff4e6;
+    color: #7c2d12;
+    border-left: 4px solid #e8590c;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/* 5. Bảng Giỏ hàng & Tổng Giỏ hàng (Classic [woocommerce_cart]) */
+.woocommerce-cart-form,
+.woocommerce-cart .cart-collaterals .cart_totals {
+    background: var(--kleer-cream, #f5f2eb);
+    color: var(--kleer-deep-forest, #142818);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+    margin-bottom: 28px;
+}
+
+.woocommerce table.shop_table {
+    border: none !important;
+    border-collapse: collapse;
+    width: 100%;
+    color: var(--kleer-deep-forest, #142818);
+}
+
+.woocommerce table.shop_table thead th {
+    font-family: var(--font-sans, 'Outfit', sans-serif);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #4a5d4e;
+    border-bottom: 1px solid rgba(20, 40, 24, 0.12);
+    padding: 12px 14px;
+}
+
+.woocommerce table.shop_table tbody td,
+.woocommerce table.shop_table tfoot th,
+.woocommerce table.shop_table tfoot td {
+    border-top: 1px solid rgba(20, 40, 24, 0.09) !important;
+    padding: 16px 14px;
+    vertical-align: middle;
+    color: var(--kleer-deep-forest, #142818);
+}
+
+.woocommerce table.shop_table td.product-name a {
+    color: var(--kleer-deep-forest, #142818);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.woocommerce table.shop_table td.product-name a:hover {
+    color: #2d6a4f;
+    text-decoration: underline;
+}
+
+.woocommerce table.shop_table td.product-thumbnail img {
+    width: 68px !important;
+    height: 68px !important;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid rgba(20, 40, 24, 0.1);
+}
+
+.woocommerce .quantity .qty {
+    width: 68px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(20, 40, 24, 0.22);
+    background: #ffffff;
+    color: var(--kleer-deep-forest, #142818);
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Nút bấm trong Cart & Checkout */
+.woocommerce #respond input#submit,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit.alt,
+.woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt {
+    background-color: var(--kleer-deep-forest, #142818) !important;
+    color: var(--kleer-cream, #f5f2eb) !important;
+    border-radius: 999px !important;
+    padding: 13px 26px !important;
+    font-family: var(--font-sans, 'Outfit', sans-serif) !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    border: none !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+.woocommerce a.button.alt:hover,
+.woocommerce button.button.alt:hover,
+.woocommerce button.button:hover {
+    background-color: #24442a !important;
+    transform: translateY(-1px);
+}
+
+.woocommerce-cart .cart-collaterals {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.woocommerce-cart .cart-collaterals .cart_totals {
+    width: 100% !important;
+    max-width: 480px;
+    float: none !important;
+}
+
+.woocommerce-cart .cart-collaterals .cart_totals h2 {
+    font-family: var(--font-serif, 'Fraunces', serif);
+    font-size: 1.4rem;
+    color: var(--kleer-deep-forest, #142818);
+    margin-bottom: 16px;
+}
+
+/* Nổi bật dòng Giảm 15% Combo Routine Unisex */
+.woocommerce table.shop_table tr.fee th,
+.woocommerce table.shop_table tr.fee td {
+    background: #e9f7ef;
+    color: #1b4332 !important;
+    font-weight: 600;
+}
+
+/* 6. Giao diện Checkout 2 cột tinh gọn (Classic [woocommerce_checkout]) */
+.woocommerce-checkout form.checkout.woocommerce-checkout {
+    display: grid;
+    grid-template-columns: 1.25fr 0.95fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.woocommerce-checkout form.checkout > .woocommerce-NoticeGroup {
+    grid-column: 1 / -1;
+}
+
+.woocommerce-checkout #customer_details {
+    background: var(--kleer-cream, #f5f2eb);
+    color: var(--kleer-deep-forest, #142818);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+    width: 100% !important;
+}
+
+.woocommerce-checkout #customer_details .col-1,
+.woocommerce-checkout #customer_details .col-2 {
+    float: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+.woocommerce-checkout #customer_details .col-2 {
+    margin-top: 18px;
+    padding-top: 16px !important;
+    border-top: 1px dashed rgba(20, 40, 24, 0.15);
+}
+
+.woocommerce-checkout #customer_details h3,
+.woocommerce-checkout #order_review_heading {
+    font-family: var(--font-serif, 'Fraunces', serif);
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--kleer-deep-forest, #142818);
+    margin-bottom: 16px;
+}
+
+/* Cột phải: Tóm tắt đơn hàng + Phương thức thanh toán */
+.woocommerce-checkout #order_review_heading {
+    display: none;
+}
+
+.woocommerce-checkout #order_review {
+    background: var(--kleer-cream, #f5f2eb);
+    color: var(--kleer-deep-forest, #142818);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+    width: 100% !important;
+    float: none !important;
+    position: sticky;
+    top: 24px;
+}
+
+.woocommerce-checkout #order_review::before {
+    content: "Tóm tắt đơn hàng & Thanh toán";
+    display: block;
+    font-family: var(--font-serif, 'Fraunces', serif);
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--kleer-deep-forest, #142818);
+    margin-bottom: 16px;
+}
+
+/* 7. Bộ chọn nhanh địa chỉ hành chính 2 cấp sau sáp nhập (BEM: .kleer-address-picker) */
+.kleer-address-picker {
+    background: #ffffff;
+    border: 1.5px solid rgba(20, 40, 24, 0.14);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.kleer-address-picker__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.kleer-address-picker__title {
+    font-weight: 600;
+    font-size: 0.94rem;
+    color: var(--kleer-deep-forest, #142818);
+}
+
+.kleer-address-picker__subtitle {
+    font-size: 0.8rem;
+    color: #526656;
+}
+
+.kleer-address-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.kleer-address-picker__label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #354f39;
+    margin-bottom: 4px;
+}
+
+.kleer-address-picker__select {
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 9px;
+    border: 1.5px solid rgba(20, 40, 24, 0.2);
+    background-color: #f9f8f4;
+    color: var(--kleer-deep-forest, #142818);
+    font-family: var(--font-sans, 'Outfit', sans-serif);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.kleer-address-picker__select:focus {
+    border-color: #2d6a4f;
+    background-color: #ffffff;
+}
+
+.kleer-address-picker__select:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* 9. Các trường input tinh gọn trên Checkout (BEM: .kleer-checkout__field) */
+.woocommerce form .form-row {
+    padding: 0;
+    margin: 0 0 16px;
+}
+
+.woocommerce form .form-row label {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--kleer-deep-forest, #142818);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.woocommerce form .form-row .required {
+    color: #c92a2a;
+    text-decoration: none;
+}
+
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(20, 40, 24, 0.2);
+    background: #ffffff;
+    color: var(--kleer-deep-forest, #142818);
+    font-family: var(--font-sans, 'Outfit', sans-serif);
+    font-size: 0.94rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.woocommerce form .form-row input.input-text:focus,
+.woocommerce form .form-row textarea:focus,
+.woocommerce form .form-row select:focus {
+    border-color: #2d6a4f;
+    box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+    outline: none;
+}
+
+.woocommerce form .form-row input.kleer-input--valid {
+    border-color: #2b8a3e !important;
+}
+
+.woocommerce form .form-row input.kleer-input--invalid {
+    border-color: #c92a2a !important;
+}
+
+.kleer-field-feedback {
+    display: block;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.kleer-field-feedback--valid {
+    color: #2b8a3e;
+}
+
+.kleer-field-feedback--invalid {
+    color: #c92a2a;
+}
+
+/* Gợi ý nhanh đuôi Email (BEM: .kleer-email-chips) */
+.kleer-email-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.kleer-email-chips__btn {
+    border: 1px solid rgba(20, 40, 24, 0.18);
+    background: #ffffff;
+    color: #24442a;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.kleer-email-chips__btn:hover {
+    background: #d8f3dc;
+    border-color: #2d6a4f;
+}
+
+/* 10. Khung Phương thức thanh toán (#payment) */
+#add_payment_method #payment,
+.woocommerce-cart #payment,
+.woocommerce-checkout #payment {
+    background: #ffffff !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(20, 40, 24, 0.12);
+    margin-top: 18px;
+}
+
+#add_payment_method #payment ul.payment_methods,
+.woocommerce-cart #payment ul.payment_methods,
+.woocommerce-checkout #payment ul.payment_methods {
+    border-bottom: 1px solid rgba(20, 40, 24, 0.1) !important;
+    padding: 18px !important;
+}
+
+.woocommerce-checkout #payment ul.payment_methods li {
+    line-height: 1.6;
+    margin-bottom: 10px;
+    color: var(--kleer-deep-forest, #142818);
+    font-weight: 500;
+}
+
+.woocommerce-checkout #payment div.payment_box {
+    background-color: #f4f1ea !important;
+    color: #1d3723 !important;
+    border-radius: 10px !important;
+    font-size: 0.88rem !important;
+}
+
+.woocommerce-checkout #payment div.payment_box::before {
+    border-bottom-color: #f4f1ea !important;
+}
+
+.woocommerce-checkout #payment #place_order {
+    width: 100%;
+    padding: 15px 24px !important;
+    font-size: 1.05rem !important;
+    margin-top: 8px;
+}
+
+/* Responsive trên Tablet & Mobile */
+@media (max-width: 960px) {
+    .woocommerce-checkout form.checkout.woocommerce-checkout {
+        grid-template-columns: 1fr;
+    }
+
+    .woocommerce-checkout #order_review {
+        position: static;
+    }
+
+    .kleer-address-picker__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .kleer-combo-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .kleer-checkout-steps__divider {
+        width: 18px;
+    }
+}
+

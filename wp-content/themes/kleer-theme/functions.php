@@ -126,12 +126,36 @@ function enqueue_assets(): void
             'nonce'    => wp_create_nonce('kleer_filter_products'),
         ]);
     }
+
+    // 7. CSS & JS Tối ưu trải nghiệm Giỏ hàng (Cart) và Thanh toán (Checkout) — Task L03-G5-02
+    if (
+        (function_exists('is_cart') && is_cart()) ||
+        (function_exists('is_checkout') && is_checkout()) ||
+        is_page('cart') ||
+        is_page('checkout')
+    ) {
+        wp_enqueue_style(
+            'kleer-cart-checkout',
+            get_template_directory_uri() . '/assets/css/cart-checkout.css',
+            ['kleer-global'],
+            KLEER_THEME_VERSION
+        );
+
+        wp_enqueue_script(
+            'kleer-checkout-ux',
+            get_template_directory_uri() . '/assets/js/checkout-ux.js',
+            ['jquery'],
+            KLEER_THEME_VERSION,
+            true
+        );
+    }
 }
 add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets');
 
-// Nạp file đăng ký script & style cho Quiz SPA
+// Nạp file đăng ký script & style cho Quiz SPA, Catalog Filter và Cart/Checkout UX
 require_once get_template_directory() . '/inc/quiz-assets.php';
 require_once get_template_directory() . '/inc/ajax-catalog-filter.php';
+require_once get_template_directory() . '/inc/cart-checkout-ux.php';
 
 // Ép sử dụng giao diện KLEER cho trang danh mục sản phẩm và chi tiết sản phẩm
 add_filter('template_include', function ($template) {
