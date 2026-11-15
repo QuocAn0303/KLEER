@@ -13,7 +13,7 @@
 
 /* Breadcrumb Navigation */
 .breadcrumb {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 16px; /* Giảm từ 28px xuống 16px */
@@ -106,7 +106,7 @@
 }
 
 .product-cat {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 1.2px;
@@ -116,7 +116,7 @@
 }
 
 .product-title {
-    font-family: 'Fraunces', serif;
+    font-family: var(--font-kleer);
     font-size: 38px;
     font-weight: 400;
     color: #FFFFFF;
@@ -132,7 +132,7 @@
 }
 
 .product-price {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 24px;
     font-weight: 600;
     color: #FFFFFF;
@@ -142,7 +142,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
 }
@@ -152,7 +152,7 @@
 }
 
 .product-short-desc {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 14px;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.7);
@@ -192,7 +192,7 @@
     background: none;
     color: #FFFFFF;
     text-align: center;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 14px;
     font-weight: 500;
 }
@@ -200,7 +200,7 @@
 .btn-add-cart {
     background-color: #F2EDE4;
     color: #122418;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 14px;
     font-weight: 600;
     padding: 0 28px;
@@ -217,7 +217,7 @@
 .btn-buy-now {
     background-color: transparent;
     color: #FFFFFF;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 14px;
     font-weight: 500;
     padding: 0 28px;
@@ -240,7 +240,7 @@
 }
 
 .related-title {
-    font-family: 'Fraunces', serif;
+    font-family: var(--font-kleer);
     font-size: 28px;
     font-weight: 400;
     color: #FFFFFF;
@@ -292,7 +292,7 @@
 }
 
 .related-grid .catalog-card__cat {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.8px;
@@ -302,7 +302,7 @@
 }
 
 .related-grid .catalog-card__title {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 14px;
     font-weight: 500;
     color: #FFFFFF;
@@ -327,7 +327,7 @@
 }
 
 .related-grid .catalog-card__price {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 13px;
     font-weight: 600;
     color: #FFFFFF;
@@ -336,7 +336,7 @@
 .related-grid .catalog-card__btn {
     background-color: rgba(255, 255, 255, 0.12);
     color: #FFFFFF;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-kleer);
     font-size: 11px;
     font-weight: 500;
     padding: 6px 10px;

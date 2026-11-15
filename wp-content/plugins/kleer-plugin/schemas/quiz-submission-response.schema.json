@@ -134,6 +134,46 @@
                 ],
                 "description": "Buoc phac doRoutine, dung cho combobox L03."
               },
+              "cardTopBg": {
+                "type": "string",
+                "maxLength": 32,
+                "description": "Mau nen nua tren the san pham (hex). Tuy chon."
+              },
+              "cardBottomBg": {
+                "type": "string",
+                "maxLength": 32,
+                "description": "Mau nen nua duoi the san pham (hex). Tuy chon."
+              },
+              "cardAccent": {
+                "type": "string",
+                "maxLength": 32,
+                "description": "Mau nhan/eyebrow tren the san pham (hex). Tuy chon."
+              },
+              "image": {
+                "type": "string",
+                "maxLength": 2048,
+                "description": "URL anh san pham. Tuy chon."
+              },
+              "skinLabel": {
+                "type": "string",
+                "maxLength": 120,
+                "description": "Nhan loai da phu hop. Tuy chon."
+              },
+              "inciBadge": {
+                "type": "string",
+                "maxLength": 160,
+                "description": "Nhan hoat chat INCI. Tuy chon."
+              },
+              "inciGroup": {
+                "type": "string",
+                "enum": ["neutral", "aha_bha", "retinol"],
+                "description": "Nhom xung dot hoat chat. Tuy chon."
+              },
+              "priceFormatted": {
+                "type": "string",
+                "maxLength": 40,
+                "description": "Gia da dinh dang hien thi. Tuy chon."
+              },
               "reason": {
                 "type": "string",
                 "maxLength": 255,

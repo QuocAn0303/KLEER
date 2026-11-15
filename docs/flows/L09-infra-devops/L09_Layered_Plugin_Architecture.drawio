@@ -1,0 +1,380 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="L09 - Layered Plugin Architecture (Optimized)" id="L09-LayeredPlugin-Clean">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2360" pageHeight="2180" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE & SUBTITLE -->
+        <mxCell id="title" value="KLEER — Kiến trúc Phân lớp OOP trong kleer-plugin (Layered Architecture)" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=22;strokeColor=none;fillColor=none;fontStyle=1;fontColor=#1A252F;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="2280" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Nguyên tắc Dependency Inversion: HTTP/AJAX → Endpoints → Controllers → Services → Contracts (Interfaces) ← Repositories → Models / Database" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=14;strokeColor=none;fillColor=none;fontColor=#34495E;" vertex="1" parent="1">
+          <mxGeometry x="40" y="58" width="2280" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- EXTERNAL ACTOR -->
+        <mxCell id="http_request" value="&lt;b&gt;Client Browser / Mobile App&lt;/b&gt; (HTTP / AJAX Requests)" style="shape=actor;html=1;whiteSpace=wrap;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=12;fontSize=13;fillColor=#BBDEFB;strokeColor=#1565C0;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="960" y="96" width="42" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 1: PRESENTATION LAYER ==================== -->
+        <mxCell id="layer1" value="LAYER 1 — PRESENTATION LAYER (kleer-theme | PHP Templates + CSS BEM + Vanilla JS ES6)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;swimlaneFillColor=#E8F5E9;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="185" width="2280" height="235" as="geometry" />
+        </mxCell>
+
+        <mxCell id="quiz_js" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;quiz.js (SPA Skin Quiz 6 bước)&lt;/b&gt;&lt;br/&gt;• Thu thập: Loại da, Vấn đề, Nhạy cảm, Thói quen&lt;br/&gt;• Gọi API: &lt;i&gt;POST /kleer/v1/skin-quiz&lt;/i&gt; (AJAX Fetch)&lt;br/&gt;• Hiển thị Routine &amp;amp; nút &quot;Thêm trọn bộ (Giảm 15%)&quot;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#C8E6C9;strokeColor=#2E7D32;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer1">
+          <mxGeometry x="30" y="52" width="510" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="catalog_filter_js" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;catalog-filter.js (AJAX Catalog Filter)&lt;/b&gt;&lt;br/&gt;• Lọc đa tiêu chí: Loại da, Vấn đề, Bước Routine, INCI, Giá&lt;br/&gt;• Gọi API: &lt;i&gt;GET /kleer/v1/products/search&lt;/i&gt;&lt;br/&gt;• Infinite scroll &amp;amp; cập nhật URL (&lt;i&gt;pushState&lt;/i&gt;) chuẩn SEO" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#C8E6C9;strokeColor=#2E7D32;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer1">
+          <mxGeometry x="580" y="52" width="520" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="routine_cart_js" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;routine-cart.js (Giỏ hàng &amp;amp; Cảnh báo xung đột)&lt;/b&gt;&lt;br/&gt;• 1-Click Add Routine Bundle &amp;amp; tự động giảm 15% (≥ 3 bước)&lt;br/&gt;• Quét xung đột hoạt chất (AHA/BHA + Retinol) real-time&lt;br/&gt;• Gọi API: &lt;i&gt;POST /kleer/v1/cart/validate&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#C8E6C9;strokeColor=#2E7D32;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer1">
+          <mxGeometry x="1140" y="52" width="530" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="other_theme" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;PHP Templates Thuần (Zero Page Builder)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;front-page.php&lt;/i&gt; &amp;amp; &lt;i&gt;archive-product.php&lt;/i&gt; (Catalog + Filter)&lt;br/&gt;• &lt;i&gt;single-product.php&lt;/i&gt; (PDP + Bảng INCI + Badge bước Routine)&lt;br/&gt;• &lt;i&gt;woocommerce/cart &amp;amp; checkout.php&lt;/i&gt; (VietQR / VNPay / Refund)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#DCEDC8;strokeColor=#33691E;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer1">
+          <mxGeometry x="1710" y="52" width="540" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 2: ROUTING / ENDPOINT LAYER ==================== -->
+        <mxCell id="layer2" value="LAYER 2 — ROUTING / ENDPOINT LAYER (kleer-plugin/src/Endpoints/ | Namespace: kleer/v1)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#E3F2FD;strokeColor=#1565C0;strokeWidth=2;swimlaneFillColor=#E3F2FD;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="485" width="2280" height="225" as="geometry" />
+        </mxCell>
+
+        <mxCell id="skin_quiz_endpoints" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;SkinQuizEndpoints&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;POST /skin-quiz&lt;/i&gt; — Nhận payload 6 câu trả lời&lt;br/&gt;• &lt;i&gt;GET /skin-quiz/health&lt;/i&gt; — Kiểm tra dịch vụ Quiz&lt;br/&gt;• Chuyển tiếp request sang &lt;b&gt;SkinQuizController&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#BBDEFB;strokeColor=#1565C0;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer2">
+          <mxGeometry x="30" y="50" width="510" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="health_endpoints" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;HealthEndpoints&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;GET /health&lt;/i&gt; — Kiểm tra trạng thái hoạt động plugin&lt;br/&gt;• Trả về version, timestamp, trạng thái WP/WC&lt;br/&gt;• Public endpoint (dùng cho CI/CD &amp;amp; Monitoring)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#BBDEFB;strokeColor=#1565C0;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer2">
+          <mxGeometry x="580" y="50" width="520" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="other_endpoints" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;Planned Endpoints (Cart, Refund &amp;amp; Search)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;POST /cart/validate&lt;/i&gt; &amp;amp; &lt;i&gt;POST /cart/combo&lt;/i&gt; (Giảm 15%)&lt;br/&gt;• &lt;i&gt;POST /orders/instant-refund&lt;/i&gt; (Kích hoạt Store Credit)&lt;br/&gt;• &lt;i&gt;GET /products/search&lt;/i&gt; (Tìm kiếm lọc đa trục Taxonomy)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#90CAF9;strokeColor=#1976D2;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer2">
+          <mxGeometry x="1140" y="50" width="530" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cors_service" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;Middleware: CORS &amp;amp; Security Policy&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;CorsService / CorsPolicy:&lt;/b&gt; Allowed origins, methods, headers&lt;br/&gt;• Xử lý Preflight &lt;i&gt;OPTIONS&lt;/i&gt; &amp;amp; Credentials&lt;br/&gt;• &lt;b&gt;permission_callback:&lt;/b&gt; Xác thực Nonce, Auth &amp;amp; Rate-limit" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E1F5FE;strokeColor=#0277BD;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer2">
+          <mxGeometry x="1710" y="50" width="540" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 3: CONTROLLER LAYER ==================== -->
+        <mxCell id="layer3" value="LAYER 3 — CONTROLLER LAYER (kleer-plugin/src/Controllers/ | Adapter Request → Use Case)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#FFF3E0;strokeColor=#E65100;strokeWidth=2;swimlaneFillColor=#FFF3E0;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="775" width="2280" height="225" as="geometry" />
+        </mxCell>
+
+        <mxCell id="skin_quiz_controller" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;SkinQuizController&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;executeQuiz(WP_REST_Request $request)&lt;/i&gt;&lt;br/&gt;• Validate &lt;i&gt;quiz-submission.schema.json&lt;/i&gt; (6 câu, enum)&lt;br/&gt;• Gọi &lt;b&gt;QuizEngineService&lt;/b&gt; → Trả &lt;i&gt;WP_REST_Response&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFE0B2;strokeColor=#E65100;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer3">
+          <mxGeometry x="30" y="50" width="510" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="health_controller" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;HealthController&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;getHealth()&lt;/i&gt; — Trả thông tin hệ thống &amp;amp; HPOS status&lt;br/&gt;• Không yêu cầu payload validation&lt;br/&gt;• Phục vụ giám sát vận hành &amp;amp; Docker Healthcheck" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFE0B2;strokeColor=#E65100;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer3">
+          <mxGeometry x="580" y="50" width="520" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="future_controllers" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;Planned Controllers (Cart, Refund &amp;amp; Search)&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;CartComboController:&lt;/b&gt; Validate giỏ hàng, tính giảm giá 15%&lt;br/&gt;• &lt;b&gt;OrderRefundController:&lt;/b&gt; Xử lý hoàn tiền Store Credit&lt;br/&gt;• &lt;b&gt;ProductSearchController:&lt;/b&gt; Lọc, phân trang &amp;amp; sắp xếp" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFCC80;strokeColor=#F57F17;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer3">
+          <mxGeometry x="1140" y="50" width="530" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="validates_payload" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;ValidatesJsonPayload (Trait / Concern)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;validateJsonSchema(WP_REST_Request, string $schemaPath)&lt;/i&gt;&lt;br/&gt;• Thư viện: &lt;i&gt;justinrainbow/json-schema&lt;/i&gt; (Composer)&lt;br/&gt;• Trả &lt;i&gt;ValidationResult(valid, errors[])&lt;/i&gt; cho mọi Controller" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FFF8E1;strokeColor=#FF8F00;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer3">
+          <mxGeometry x="1710" y="50" width="540" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 4: SERVICE / DOMAIN LAYER ==================== -->
+        <mxCell id="layer4" value="LAYER 4 — SERVICE / DOMAIN LAYER (kleer-plugin/src/Services/ | Core Business Logic &amp; Constructor DI)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#FCE4EC;strokeColor=#C2185B;strokeWidth=2;swimlaneFillColor=#FCE4EC;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1065" width="2280" height="335" as="geometry" />
+        </mxCell>
+
+        <mxCell id="quiz_engine" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;QuizEngineService&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;calculateRoutine(array $answers): RoutineResult&lt;/i&gt;&lt;br/&gt;• Thuật toán chấm điểm da v4 (Weighted Scoring Matrix)&lt;br/&gt;• Xác định Skin Type, Concerns, Routine Steps (2–6 bước)&lt;br/&gt;• Fallback sản phẩm dịu nhẹ (&lt;i&gt;is_gentle_fallback&lt;/i&gt;) cho da nhạy cảm" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#F8BBD0;strokeColor=#C2185B;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer4">
+          <mxGeometry x="30" y="50" width="510" height="175" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cart_combo" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;CartComboService&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;applyComboDiscount(Cart $cart): DiscountResult&lt;/i&gt;&lt;br/&gt;• Kiểm tra ≥ 3 bước Routine khác nhau → giảm 15%&lt;br/&gt;• &lt;i&gt;scanIngredientConflicts():&lt;/i&gt; Cảnh báo AHA/BHA + Retinol&lt;br/&gt;• Truy vấn &lt;i&gt;pa_active_ingredient&lt;/i&gt; qua ProductRepositoryInterface" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#F8BBD0;strokeColor=#C2185B;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer4">
+          <mxGeometry x="580" y="50" width="520" height="175" as="geometry" />
+        </mxCell>
+
+        <mxCell id="hpos_service" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;HposService&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;syncOrderToHpos(Order)&lt;/i&gt; &amp;amp; &lt;i&gt;getOrderFromHpos(int $id)&lt;/i&gt;&lt;br/&gt;• Khai báo tương thích WooCommerce HPOS (&lt;i&gt;FeaturesUtil&lt;/i&gt;)&lt;br/&gt;• Ánh xạ dữ liệu vào &lt;i&gt;wp_wc_orders, order_addresses, orders_meta&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#F8BBD0;strokeColor=#C2185B;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer4">
+          <mxGeometry x="1140" y="50" width="530" height="175" as="geometry" />
+        </mxCell>
+
+        <mxCell id="instant_refund" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;InstantRefundService&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;processInstantRefund(int $orderId, string $trackingCode)&lt;/i&gt;&lt;br/&gt;• Nhánh 1: Hoàn 100% → Store Credit (&lt;i&gt;fixed_cart, limit=1&lt;/i&gt;)&lt;br/&gt;• Sinh mã &lt;b&gt;KLR-CREDIT-{ORDER_ID}-{HASH}&lt;/b&gt; &amp;amp; kích hoạt Mailer" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#F8BBD0;strokeColor=#C2185B;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="layer4">
+          <mxGeometry x="1710" y="50" width="540" height="175" as="geometry" />
+        </mxCell>
+
+        <mxCell id="support_cache" value="&lt;b style=&quot;font-size:13px;&quot;&gt;Cross-Cutting Support (Cache &amp;amp; Compatibility):&lt;/b&gt;   • &lt;b&gt;KleerCache:&lt;/b&gt; Object cache abstraction (Redis + WP Transients)   |   • &lt;b&gt;CacheInvalidation:&lt;/b&gt; Auto-clear trên hooks &lt;i&gt;save_post_product, woocommerce_update_product&lt;/i&gt;   |   • &lt;b&gt;WooCommerceCompatibility:&lt;/b&gt; Khai báo HPOS &amp;amp; Cart/Checkout Blocks" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#F48FB1;strokeColor=#AD1457;strokeWidth=2;align=left;spacingLeft=16;" vertex="1" parent="layer4">
+          <mxGeometry x="30" y="248" width="2220" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== CONTRACTS LAYER (INTERFACES) ==================== -->
+        <mxCell id="contracts_layer" value="CONTRACTS (INTERFACES &amp; DTOs) — kleer-plugin/src/Contracts/ (Services depends on Contracts ← Repositories implements Contracts)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#EDE7F6;strokeColor=#5E35B1;strokeWidth=3;swimlaneFillColor=#EDE7F6;dashed=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1465" width="2280" height="215" as="geometry" />
+        </mxCell>
+
+        <mxCell id="product_repo_iface" value="&lt;b style=&quot;font-size:13px;&quot;&gt;ProductRepositoryInterface&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;findById(int $id): ?Product&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;findByTaxonomy(array $terms, ...): ProductCollection&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;findForRoutine(array $steps, array $exclusions)&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;getActiveIngredients(int $productId): array&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fillColor=#D1C4E9;strokeColor=#5E35B1;strokeWidth=2;align=left;spacingLeft=12;lineHeight=1.3;" vertex="1" parent="contracts_layer">
+          <mxGeometry x="30" y="48" width="420" height="145" as="geometry" />
+        </mxCell>
+
+        <mxCell id="quiz_repo_iface" value="&lt;b style=&quot;font-size:13px;&quot;&gt;QuizProductRepositoryInterface&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;getScoredProducts(array $profile): ProductScoreCollection&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;getGentleFallback(int $stepId): ?Product&lt;/i&gt;&lt;br/&gt;• Interface chuyên biệt cho &lt;b&gt;QuizEngineService&lt;/b&gt;&lt;br/&gt;• Tối ưu truy vấn điểm số ma trận (ISP)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fillColor=#D1C4E9;strokeColor=#5E35B1;strokeWidth=2;align=left;spacingLeft=12;lineHeight=1.3;" vertex="1" parent="contracts_layer">
+          <mxGeometry x="480" y="48" width="420" height="145" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cart_repo_iface" value="&lt;b style=&quot;font-size:13px;&quot;&gt;CartRepositoryInterface&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;getCartContents(): CartItemCollection&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;getAppliedDiscounts(): DiscountCollection&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;validateComboEligibility(CartItemCollection): bool&lt;/i&gt;&lt;br/&gt;• Interface chuyên biệt cho &lt;b&gt;CartComboService&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fillColor=#D1C4E9;strokeColor=#5E35B1;strokeWidth=2;align=left;spacingLeft=12;lineHeight=1.3;" vertex="1" parent="contracts_layer">
+          <mxGeometry x="930" y="48" width="420" height="145" as="geometry" />
+        </mxCell>
+
+        <mxCell id="order_repo_iface" value="&lt;b style=&quot;font-size:13px;&quot;&gt;OrderRepositoryInterface&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;findById(int $id): ?Order&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;updateStatus(int $id, string $status)&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;createStoreCredit(Order, $code, $amount): StoreCredit&lt;/i&gt;&lt;br/&gt;• Dùng cho &lt;b&gt;HposService&lt;/b&gt; &amp;amp; &lt;b&gt;InstantRefundService&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fillColor=#D1C4E9;strokeColor=#5E35B1;strokeWidth=2;align=left;spacingLeft=12;lineHeight=1.3;" vertex="1" parent="contracts_layer">
+          <mxGeometry x="1380" y="48" width="420" height="145" as="geometry" />
+        </mxCell>
+
+        <mxCell id="model_iface" value="&lt;b style=&quot;font-size:13px;&quot;&gt;Domain Models &amp;amp; DTOs&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;Catalog:&lt;/b&gt; Product, ProductCollection, ProductScoreCollection&lt;br/&gt;• &lt;b&gt;Quiz:&lt;/b&gt; SkinProfile, RoutineResult, RoutineStep&lt;br/&gt;• &lt;b&gt;Cart:&lt;/b&gt; Cart, CartItem, DiscountResult, ConflictWarning&lt;br/&gt;• &lt;b&gt;Order:&lt;/b&gt; Order, StoreCredit, PaymentTransaction" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fillColor=#B39DDB;strokeColor=#4527A0;strokeWidth=2;align=left;spacingLeft=12;lineHeight=1.3;" vertex="1" parent="contracts_layer">
+          <mxGeometry x="1830" y="48" width="420" height="145" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 5: REPOSITORY / DATA ACCESS LAYER ==================== -->
+        <mxCell id="layer5" value="LAYER 5 — REPOSITORY / DATA ACCESS LAYER (kleer-plugin/src/Repositories/ | wpdb, WC_HPOS &amp; KleerCache)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#F3E5F5;strokeColor=#7B1FA2;strokeWidth=2;swimlaneFillColor=#F3E5F5;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1745" width="2280" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wc_product_repo" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;WooCommerceProductRepository&lt;/b&gt;&lt;br/&gt;&lt;i&gt;implements ProductRepositoryInterface&lt;/i&gt;&lt;br/&gt;• Truy vấn &lt;i&gt;wc_get_product()&lt;/i&gt; &amp;amp; &lt;i&gt;tax_query&lt;/i&gt; 4 trục da liễu&lt;br/&gt;• JOIN &lt;i&gt;wp_wc_product_meta_lookup&lt;/i&gt; + &lt;i&gt;term_relationships&lt;/i&gt;&lt;br/&gt;• Cache Redis group &lt;b&gt;kleer_products&lt;/b&gt; (TTL 1h)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E1BEE7;strokeColor=#7B1FA2;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.32;" vertex="1" parent="layer5">
+          <mxGeometry x="30" y="50" width="520" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="routine_product_repo" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;RoutineProductRepository&lt;/b&gt;&lt;br/&gt;&lt;i&gt;implements ProductRepoInterface, QuizProductRepoInterface&lt;/i&gt;&lt;br/&gt;• Tối ưu SELECT cột cần thiết (&lt;i&gt;id, sku, price, inci, flags&lt;/i&gt;)&lt;br/&gt;• Truy vấn &lt;i&gt;is_gentle_fallback = 1 &amp;amp; is_strong_active = 0&lt;/i&gt;&lt;br/&gt;• Cache Redis group &lt;b&gt;kleer_quiz&lt;/b&gt; (TTL 30m, session-based)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E1BEE7;strokeColor=#7B1FA2;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.32;" vertex="1" parent="layer5">
+          <mxGeometry x="590" y="50" width="530" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cart_repo_impl" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;CartRepository&lt;/b&gt;&lt;br/&gt;&lt;i&gt;implements CartRepositoryInterface&lt;/i&gt;&lt;br/&gt;• Đọc &lt;i&gt;WC()-&amp;gt;cart-&amp;gt;get_cart()&lt;/i&gt; kèm meta &lt;i&gt;routine_id, routine_step&lt;/i&gt;&lt;br/&gt;• Đếm distinct &lt;i&gt;routine_step&lt;/i&gt; kiểm tra điều kiện Combo 15%&lt;br/&gt;• Không cache (đọc trực tiếp WooCommerce Session real-time)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E1BEE7;strokeColor=#7B1FA2;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.32;" vertex="1" parent="layer5">
+          <mxGeometry x="1160" y="50" width="530" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="order_repo_impl" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;OrderRepository&lt;/b&gt;&lt;br/&gt;&lt;i&gt;implements OrderRepositoryInterface&lt;/i&gt;&lt;br/&gt;• Đọc/ghi bảng phẳng HPOS (&lt;i&gt;wp_wc_orders&lt;/i&gt;) qua &lt;i&gt;wc_get_order()&lt;/i&gt;&lt;br/&gt;• Tạo Store Credit: &lt;i&gt;wp_insert_post(shop_coupon, fixed_cart)&lt;/i&gt;&lt;br/&gt;• Cache Redis group &lt;b&gt;kleer_api&lt;/b&gt; (TTL 5m)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#E1BEE7;strokeColor=#7B1FA2;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.32;" vertex="1" parent="layer5">
+          <mxGeometry x="1730" y="50" width="520" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LAYER 6: MODELS / DATABASE LAYER ==================== -->
+        <mxCell id="layer6" value="LAYER 6 — PERSISTENCE &amp; INFRASTRUCTURE (MariaDB 10.11 HPOS + Redis 7 Cache + WC Session)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#ECEFF1;strokeColor=#37474F;strokeWidth=2;swimlaneFillColor=#ECEFF1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2035" width="2280" height="125" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_hpos" value="&lt;b style=&quot;font-size:12.5px;&quot;&gt;MariaDB — WooCommerce HPOS &amp;amp; Coupons&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;wp_wc_orders, order_addresses, operational_data, orders_meta&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;wp_woocommerce_order_items&lt;/i&gt; &amp;amp; &lt;i&gt;wp_posts (shop_coupon)&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fillColor=#CFD8DC;strokeColor=#37474F;strokeWidth=1.5;align=left;spacingLeft=12;lineHeight=1.3;" vertex="1" parent="layer6">
+          <mxGeometry x="30" y="42" width="760" height="68" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_taxonomy" value="&lt;b style=&quot;font-size:12.5px;&quot;&gt;MariaDB — 4 Trục Thuộc tính Da liễu (3NF Taxonomy)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;wp_terms, wp_term_taxonomy, wp_term_relationships, product_meta_lookup&lt;/i&gt;&lt;br/&gt;• &lt;i&gt;pa_skin_type, pa_skin_concern, pa_routine_step, pa_active_ingredient&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fillColor=#CFD8DC;strokeColor=#37474F;strokeWidth=1.5;align=left;spacingLeft=12;lineHeight=1.3;" vertex="1" parent="layer6">
+          <mxGeometry x="820" y="42" width="780" height="68" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_redis" value="&lt;b style=&quot;font-size:12.5px;&quot;&gt;Redis 7 &amp;amp; WooCommerce Session&lt;/b&gt;&lt;br/&gt;• Object Cache Groups: &lt;b&gt;kleer_products, kleer_quiz, kleer_api&lt;/b&gt;&lt;br/&gt;• Real-time Cart Session Storage (&lt;i&gt;wp_woocommerce_sessions&lt;/i&gt;)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fillColor=#CFD8DC;strokeColor=#37474F;strokeWidth=1.5;align=left;spacingLeft=12;lineHeight=1.3;" vertex="1" parent="layer6">
+          <mxGeometry x="1630" y="42" width="620" height="68" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== CLEAN ORTHOGONAL EDGES ==================== -->
+
+        <!-- Actor -> Layer 1 -->
+        <mxCell id="e_actor_quiz" value="User Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#1565C0;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="http_request" target="quiz_js">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="981" y="165" />
+              <mxPoint x="325" y="165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_actor_filter" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#1565C0;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="http_request" target="catalog_filter_js">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="981" y="165" />
+              <mxPoint x="880" y="165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_actor_cart" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#1565C0;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="http_request" target="routine_cart_js">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="981" y="165" />
+              <mxPoint x="1445" y="165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Layer 1 -> Layer 2 (AJAX Fetch) -->
+        <mxCell id="e_l1_l2_quiz" value="AJAX POST /skin-quiz" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="quiz_js" target="skin_quiz_endpoints">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l1_l2_filter" value="AJAX GET /products/search" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.28;entryY=0;entryDx=0;entryDy=0;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="catalog_filter_js" target="other_endpoints">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="452" />
+              <mxPoint x="1328" y="452" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l1_l2_cart" value="AJAX POST /cart/validate" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.55;entryY=0;entryDx=0;entryDy=0;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="routine_cart_js" target="other_endpoints">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 2 -> Layer 3 (Dispatch) -->
+        <mxCell id="e_l2_l3_quiz" value="Dispatch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#E65100;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="skin_quiz_endpoints" target="skin_quiz_controller">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_l3_health" value="Dispatch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#E65100;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="health_endpoints" target="health_controller">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l2_l3_other" value="Dispatch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#E65100;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="other_endpoints" target="future_controllers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 3 -> Layer 4 (Call Services) -->
+        <mxCell id="e_l3_l4_quiz" value="calculateRoutine()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#C2185B;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="skin_quiz_controller" target="quiz_engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_l3_l4_cart" value="applyComboDiscount()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#C2185B;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="future_controllers" target="cart_combo">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1339" y="1032" />
+              <mxPoint x="880" y="1032" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l3_l4_hpos" value="getOrderFromHpos()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#C2185B;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="health_controller" target="hpos_service">
+          <mxGeometry x="0.25" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="1018" />
+              <mxPoint x="1445" y="1018" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_l3_l4_refund" value="processInstantRefund()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#C2185B;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="future_controllers" target="instant_refund">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1578" y="1032" />
+              <mxPoint x="2020" y="1032" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Layer 4 -> Contracts (depends on) -->
+        <mxCell id="e_s_c_1" value="depends on" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;strokeColor=#5E35B1;strokeWidth=2;endArrow=open;endFill=0;dashed=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="quiz_engine" target="product_repo_iface">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_s_c_2" value="depends on" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.45;entryY=0;entryDx=0;entryDy=0;strokeColor=#5E35B1;strokeWidth=2;endArrow=open;endFill=0;dashed=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="quiz_engine" target="quiz_repo_iface">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="452" y="1430" />
+              <mxPoint x="709" y="1430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_s_c_3" value="depends on" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeColor=#5E35B1;strokeWidth=2;endArrow=open;endFill=0;dashed=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cart_combo" target="product_repo_iface">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="1415" />
+              <mxPoint x="385" y="1415" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_s_c_4" value="depends on" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.45;entryY=0;entryDx=0;entryDy=0;strokeColor=#5E35B1;strokeWidth=2;endArrow=open;endFill=0;dashed=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cart_combo" target="cart_repo_iface">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="984" y="1430" />
+              <mxPoint x="1159" y="1430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_s_c_5" value="depends on" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;strokeColor=#5E35B1;strokeWidth=2;endArrow=open;endFill=0;dashed=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="hpos_service" target="order_repo_iface">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1445" y="1430" />
+              <mxPoint x="1567" y="1430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_s_c_6" value="depends on" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeColor=#5E35B1;strokeWidth=2;endArrow=open;endFill=0;dashed=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="instant_refund" target="order_repo_iface">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1939" y="1430" />
+              <mxPoint x="1735" y="1430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Layer 5 Repositories -> Contracts (implements) -->
+        <mxCell id="e_r_c_1" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.45;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#7B1FA2;strokeWidth=2;endArrow=block;endFill=0;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="wc_product_repo" target="product_repo_iface">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r_c_2" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.2;exitY=0;exitDx=0;exitDy=0;entryX=0.82;entryY=1;entryDx=0;entryDy=0;strokeColor=#7B1FA2;strokeWidth=2;endArrow=block;endFill=0;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="routine_product_repo" target="product_repo_iface">
+          <mxGeometry x="-0.25" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="736" y="1712" />
+              <mxPoint x="414" y="1712" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_r_c_3" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.55;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#7B1FA2;strokeWidth=2;endArrow=block;endFill=0;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="routine_product_repo" target="quiz_repo_iface">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="922" y="1725" />
+              <mxPoint x="730" y="1725" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_r_c_4" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.45;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#7B1FA2;strokeWidth=2;endArrow=block;endFill=0;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cart_repo_impl" target="cart_repo_iface">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1438" y="1715" />
+              <mxPoint x="1180" y="1715" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_r_c_5" value="implements" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.45;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#7B1FA2;strokeWidth=2;endArrow=block;endFill=0;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="order_repo_impl" target="order_repo_iface">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2004" y="1715" />
+              <mxPoint x="1630" y="1715" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Layer 5 -> Layer 6 (Persistence & Cache) -->
+        <mxCell id="e_r_db_1" value="SQL / Taxonomy / Cache" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;strokeColor=#37474F;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="wc_product_repo" target="db_taxonomy">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="330" y="2005" />
+              <mxPoint x="1055" y="2005" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_r_db_2" value="SQL / Quiz Cache" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.55;entryY=0;entryDx=0;entryDy=0;strokeColor=#37474F;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="routine_product_repo" target="db_taxonomy">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="895" y="1992" />
+              <mxPoint x="1289" y="1992" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_r_db_3" value="WC Cart Session" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;strokeColor=#37474F;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cart_repo_impl" target="db_redis">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1465" y="2005" />
+              <mxPoint x="1887" y="2005" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_r_db_4" value="HPOS SQL &amp; Coupons" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeColor=#37474F;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="order_repo_impl" target="db_hpos">
+          <mxGeometry x="-0.45" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2030" y="2018" />
+              <mxPoint x="640" y="2018" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -7,6 +7,7 @@ namespace Kleer;
 use Kleer\Endpoints\HealthEndpoints;
 use Kleer\Endpoints\SkinQuizEndpoints;
 use Kleer\Services\CartComboService;
+use Kleer\Services\CatalogFilterService;
 use Kleer\Support\Cache\CacheInvalidation;
 use Kleer\Support\Cache\KleerCache;
 use Kleer\Support\Cache\WooCommerceCompatibility;
@@ -151,6 +152,10 @@ final class Plugin
 
         $this->cartComboService = new CartComboService();
         $this->cartComboService->register();
+
+        (new CatalogFilterService())->register();
+        (new \Kleer\Services\ContactService())->register();
+        (new \Kleer\Services\InstantRefundService())->register();
 
         (new HealthEndpoints())->register();
         (new SkinQuizEndpoints())->register();

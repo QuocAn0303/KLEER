@@ -1,38 +1,147 @@
 <?php
 /* Template Name: Trang Chủ KLEER */
-get_header(); 
+get_header();
 
-$shop_url    = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/');
-$quiz_url    = home_url('/quiz/');
-$about_url   = home_url('/about/');
+$shop_url  = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/');
+$quiz_url  = home_url('/quiz/');
+$theme_uri = get_template_directory_uri();
+
+$cards = [];
+if (function_exists('wc_get_products') && class_exists('\\Kleer\\Support\\ProductCardPresenter')) {
+    $products = wc_get_products([
+        'status'  => 'publish',
+        'limit'   => 12,
+        'visibility' => 'visible',
+        'orderby' => 'meta_value_num',
+        'meta_key' => 'total_sales',
+        'order'   => 'DESC',
+    ]);
+
+    if (is_array($products)) {
+        foreach ($products as $product) {
+            if ($product instanceof WC_Product) {
+                $cards[] = \Kleer\Support\ProductCardPresenter::present($product);
+            }
+        }
+    }
+}
+
+/**
+ * Render một thẻ sản phẩm Hai Tông Màu chuẩn Apple Store.
+ */
+$render_card = static function (array $card, string $class = 'rf-recommcard-33') use ($shop_url): void {
+    $id = (int) ($card['id'] ?? 0);
+    $name = (string) ($card['name'] ?? 'Sản phẩm KLEER');
+    $permalink = (string) ($card['permalink'] ?? $shop_url);
+    $skin_types = array_map('strval', (array) ($card['skinTypes'] ?? []));
+    $concern_slugs = array_map('strval', (array) ($card['concernSlugs'] ?? []));
+    $step_slug = (string) ($card['stepSlug'] ?? '');
+    $price = (float) ($card['price'] ?? 0);
+    $price_label = (string) ($card['priceFormatted'] ?? ('Từ ' . number_format($price, 0, ',', '.') . 'đ'));
+    $image = (string) ($card['image'] ?? '');
+    ?>
+    <article
+        class="<?php echo esc_attr($class); ?>"
+        style="--card-top-bg:<?php echo esc_attr((string) ($card['cardTopBg'] ?? '#d4e6d8')); ?>;--card-bottom-bg:<?php echo esc_attr((string) ($card['cardBottomBg'] ?? '#73957c')); ?>;--card-accent:<?php echo esc_attr((string) ($card['cardAccent'] ?? '#1c4627')); ?>"
+        data-product-id="<?php echo esc_attr((string) $id); ?>"
+        data-name="<?php echo esc_attr($name); ?>"
+        data-price="<?php echo esc_attr((string) $price); ?>"
+        data-skin-types="<?php echo esc_attr(implode(' ', $skin_types)); ?>"
+        data-step="<?php echo esc_attr($step_slug); ?>"
+        data-concern="<?php echo esc_attr(implode(' ', $concern_slugs)); ?>"
+    >
+        <div class="apple-card__info">
+            <span class="apple-card__eyebrow"><?php echo esc_html((string) ($card['bestsellerTag'] ?? 'CÔNG THỨC NỔI BẬT')); ?></span>
+            <h3 class="apple-card__title">
+                <a href="<?php echo esc_url($permalink); ?>"><?php echo esc_html($name); ?></a>
+            </h3>
+            <div class="apple-card__meta-row">
+                <span class="apple-card__skin-chip"><?php echo esc_html((string) ($card['skinLabel'] ?? 'Mọi loại da')); ?></span>
+                <span class="apple-card__price-top"><?php echo esc_html($price_label); ?></span>
+            </div>
+            <p class="apple-card__sensory"><?php echo esc_html((string) ($card['sensory'] ?? '')); ?></p>
+        </div>
+        <div class="apple-card__stage">
+            <?php if ($image !== '') : ?>
+                <a href="<?php echo esc_url($permalink); ?>"><img class="apple-card__img" src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr((string) ($card['imageAlt'] ?? $name)); ?>" loading="lazy"></a>
+            <?php endif; ?>
+            <span class="apple-card__inci-pill"><?php echo esc_html((string) ($card['inciBadge'] ?? 'Chiết xuất thực vật')); ?></span>
+            <?php if ($id > 0) : ?>
+                <button
+                    type="button"
+                    class="apple-card__circle-btn"
+                    data-add-cart="<?php echo esc_attr((string) $id); ?>"
+                    aria-label="<?php echo esc_attr(sprintf('Thêm %s vào Routine', $name)); ?>"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            <?php else : ?>
+                <a class="apple-card__circle-btn" href="<?php echo esc_url($shop_url); ?>" aria-label="<?php echo esc_attr(sprintf('Xem %s', $name)); ?>">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            <?php endif; ?>
+        </div>
+    </article>
+    <?php
+};
+
+if ($cards && !array_filter($products, static fn ($p) => (int) $p->get_total_sales() > 0)) {
+    $products = wc_get_products(['status' => 'publish', 'limit' => 12, 'visibility' => 'visible', 'orderby' => 'date', 'order' => 'DESC']);
+    usort($products, static fn ($a, $b) => ($b->get_date_created() ? $b->get_date_created()->getTimestamp() : 0) <=> ($a->get_date_created() ? $a->get_date_created()->getTimestamp() : 0));
+    $cards = array_map(static fn ($p) => \Kleer\Support\ProductCardPresenter::present($p), $products);
+}
+$shelf_cards = array_slice($cards, 0, 8);
+$catalog_cards = [];
+$selected_ids = [];
+$steps = get_terms(['taxonomy' => 'pa_routine_step', 'hide_empty' => true]);
+if (function_exists('wc_get_products') && class_exists('\\Kleer\\Support\\ProductCardPresenter') && !is_wp_error($steps)) {
+    foreach ($steps as $step) {
+        $ids = get_posts(['post_type' => 'product', 'post_status' => 'publish', 'posts_per_page' => 1, 'fields' => 'ids', 'tax_query' => [['taxonomy' => 'pa_routine_step', 'field' => 'term_id', 'terms' => $step->term_id]]]);
+        $candidate = $ids ? wc_get_product($ids[0]) : false;
+        if ($candidate && $candidate->is_visible() && !in_array($candidate->get_id(), $selected_ids, true)) {
+            $catalog_cards[] = \Kleer\Support\ProductCardPresenter::present($candidate);
+            $selected_ids[] = $candidate->get_id();
+        }
+        if (count($catalog_cards) >= 6) { break; }
+    }
+}
+foreach ($cards as $card) {
+    if (count($catalog_cards) >= 6) { break; }
+    if (!in_array($card['id'], $selected_ids, true)) { $catalog_cards[] = $card; $selected_ids[] = $card['id']; }
+}
 ?>
-<main>
-    <!-- 1. HERO BANNER -->
-    <section class="hero" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/hero-bg.jpg');">
+<main class="home">
+    <!-- 1. HERO -->
+    <section class="hero" style="background-image: url('<?php echo esc_url($theme_uri . '/assets/images/hero-bg.jpg'); ?>');">
         <div class="hero__container container">
             <div class="hero__content">
-                <p class="hero__subtitle">NƯỚC CẤT THỰC VẬT & LÂM SÀNG</p>
+                <p class="hero__subtitle">NƯỚC CẤT THỰC VẬT &amp; LÂM SÀNG</p>
                 <h1 class="hero__title">Làn da thuần khiết,<br>từ thiên nhiên<br>sâu thẳm.</h1>
                 <p class="hero__desc">Công thức chăm sóc da unisex vượt thời gian, kết hợp giữa tinh túy của các loại thực vật rừng ôn đới và nghiên cứu sinh học lạnh tân tiến nhất.</p>
                 <div class="hero__btn-group">
                     <a href="<?php echo esc_url($shop_url); ?>" class="btn btn--white">KHÁM PHÁ NGAY</a>
-                    <a href="<?php echo esc_url($quiz_url); ?>" class="btn btn--transparent">TÌM HIỂU KHOA HỌC</a>
+                    <a href="#quiz-sanctuary-sec" class="btn btn--transparent">CHẨN ĐOÁN DA</a>
                 </div>
             </div>
             <div class="hero__showcase">
                 <div class="hero__card hero__card--large">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-product-1.jpg" alt="Sản phẩm Kleer 1">
+                    <img src="<?php echo esc_url($cards[0]['image'] ?? wc_placeholder_img_src('large')); ?>" alt="Sản phẩm KLEER">
                 </div>
                 <div class="hero__col-small">
                     <div class="hero__card hero__card--small">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/hero-product-2.jpg" alt="Sản phẩm Kleer 2">
+                        <img src="<?php echo esc_url($cards[1]['image'] ?? wc_placeholder_img_src('large')); ?>" alt="Sản phẩm KLEER">
                     </div>
                     <div class="hero__info-box">
                         <div class="hero__info-header">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="M20.5 3.5C20.5 3.5 13.5 3.5 8.5 8.5C3.5 13.5 2.5 21.5 2.5 21.5C2.5 21.5 10.5 20.5 15.5 15.5C20.5 10.5 20.5 3.5 20.5 3.5Z" stroke="#B8D0BB" stroke-width="2"/>
+                                <path d="M2.5 21.5L11.5 12.5" stroke="#B8D0BB" stroke-width="2" stroke-linecap="round"/>
                             </svg>
-                            <h4>Khoa học chiết sinh học</h4>
+                            <h3>Khoa học chiết sinh học</h3>
                         </div>
                         <p>Giữ nguyên cấu trúc phân tử của thực vật hoạt tính.</p>
                     </div>
@@ -41,221 +150,156 @@ $about_url   = home_url('/about/');
         </div>
     </section>
 
-    <!-- 2. TRIẾT LÝ CỦA CHÚNG TÔI (Height 663px) -->
-    <section class="philosophy-sec ombre-bg-1">
-        <div class="container philosophy__inner">
-            <div class="philosophy__image-col">
-                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/philosophy-img.jpg" alt="Triết lý Kleer" class="philosophy__img">
-            </div>
-            <div class="philosophy__content-col">
-                <h2 class="philosophy__title">Triết lý của chúng tôi</h2>
-                <p class="philosophy__lead">KLEER tin vào sức mạnh chữa lành thầm lặng của rừng xanh, kết tinh trong các giải pháp chăm sóc da tinh khiết nhất.</p>
-                <hr class="philosophy__divider">
-                <div class="philosophy__block">
-                    <h3>Nguồn gốc tự nhiên & Minh bạch</h3>
-                    <p>Từng thành phần trong chai thủy tinh mờ đều được thu mua một cách nhân văn và kiểm định nghiêm ngặt tại các phòng thí nghiệm chuyên sâu. Chúng tôi loại bỏ hoàn toàn các chất phụ gia tổng hợp và hương liệu nhân tạo gây căng thẳng cho làn da nhạy cảm.</p>
-                </div>
-                <div class="philosophy__block">
-                    <h3>Bền vững & Tối giản</h3>
-                    <p>Chai thủy tinh của KLEER có thể tái chế vô hạn cùng hệ thống nhãn giấy hữu cơ tự phân hủy. Chúng tôi cam kết bù đắp lượng carbon trong mọi khâu đóng gói và vận chuyển.</p>
-                </div>
-                <a href="<?php echo esc_url($about_url); ?>" class="btn btn--outline philosophy__btn">KHÁM PHÁ HÀNH TRÌNH</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. SẢN PHẨM NỔI BẬT (Height 663px) -->
-    <section class="products-sec ombre-bg-2">
+    <!-- 2. TIÊU ĐỀ HAI TÔNG + THANH LỌC LOẠI DA -->
+    <section class="store-intro">
         <div class="container">
-            <div class="products__header">
-                <div class="products__title-group">
-                    <h2 class="products__title">Sản phẩm nổi bật</h2>
-                    <p class="products__subtitle">Hệ thống công thức điều trị tối giản, định hình sự phục hồi sinh học tự nhiên.</p>
-                    <hr class="products__divider">
+            <div class="store-intro__row">
+                <h2 class="apple-two-tone-heading">
+                    Chăm sóc da đúng cách.<br>
+                    <span>Bắt đầu từ làn da của chính bạn.</span>
+                </h2>
+                <div class="store-intro__specialist glass-light">
+                    <span class="specialist-badge" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M20.5 3.5C20.5 3.5 13.5 3.5 8.5 8.5C3.5 13.5 2.5 21.5 2.5 21.5C2.5 21.5 10.5 20.5 15.5 15.5C20.5 10.5 20.5 3.5 20.5 3.5Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M2.5 21.5L11.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <p>Tư vấn bởi chuyên gia da liễu KLEER.<br>Không cần đăng nhập.</p>
                 </div>
-                <a href="<?php echo esc_url($shop_url); ?>" class="btn btn--outline products__btn-more">XEM TẤT CẢ SẢN PHẨM</a>
             </div>
-            <div class="products__grid">
-                <?php
-                if (class_exists('WooCommerce')) {
-                    $args = array(
-                        'post_type'      => 'product',
-                        'posts_per_page' => 4,
-                        'orderby'        => 'date',
-                        'order'          => 'DESC',
-                    );
-                    $loop = new WP_Query($args);
-                    if ($loop->have_posts()) :
-                        while ($loop->have_posts()) : $loop->the_post();
-                            global $product;
-                            ?>
-                            <div class="product-card">
-                                <div class="product-card__img-wrap">
-                                    <a href="<?php the_permalink(); ?>">
-                                        <?php echo $product->get_image('woocommerce_thumbnail'); ?>
-                                    </a>
-                                </div>
-                                <div class="product-card__body">
-                                    <h3 class="product-card__title">
-                                        <a href="<?php the_permalink(); ?>" style="color: inherit; text-decoration: none;">
-                                            <?php the_title(); ?>
-                                        </a>
-                                    </h3>
-                                    <div class="product-card__price"><?php echo $product->get_price_html(); ?></div>
-                                    <p class="product-card__desc"><?php echo wp_trim_words(get_the_excerpt(), 15); ?></p>
-                                    <a href="?add-to-cart=<?php echo $product->get_id(); ?>" class="btn btn--white product-card__btn">THÊM VÀO GIỎ</a>
-                                </div>
-                            </div>
-                            <?php
-                        endwhile;
-                        wp_reset_postdata();
-                    endif;
-                }
-                ?>
-            </div>
+
+            <div class="chapternav-bar" role="group" aria-label="Lọc nhanh theo loại da">
+                <button type="button" class="chapternav-pill active" data-skin-filter="all">Tất cả</button>
+                <?php $skin_terms = get_terms(['taxonomy' => 'pa_skin_type', 'hide_empty' => true]); if (!is_wp_error($skin_terms)): foreach ($skin_terms as $skin_term): ?>
+                <button type="button" class="chapternav-pill" data-skin-filter="<?php echo esc_attr($skin_term->slug); ?>"><?php echo esc_html($skin_term->name); ?></button>
+                <?php endforeach; endif; ?>
+</div>
         </div>
     </section>
 
-    <!-- 4. BANNER CAM KẾT THƯƠNG HIỆU -->
-    <section class="brand-banner" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/brand-banner-bg.jpg');">
+    <!-- 3. KỆ SẢN PHẨM NỔI BẬT / BÁN CHẠY -->
+    <section id="shelf-sec" class="shelf-section">
         <div class="container">
-            <div class="brand-banner__grid">
-                <div class="brand-banner__item">
-                    <h3 class="brand-banner__title">Thuần chay 100%</h3>
-                    <p class="brand-banner__desc">Không chứa bất kỳ dẫn xuất từ động vật nào. Toàn bộ chuỗi cung ứng được kiểm nghiệm đạt chuẩn thuần chay quốc tế.</p>
+            <div class="shelf-header">
+                <div>
+                    <h2 class="shelf-header__title">
+                        Sản phẩm nổi bật.<br>
+                        <span class="shelf-header__subtitle">Được yêu thích và lựa chọn nhiều nhất tại KLEER.</span>
+                    </h2>
                 </div>
-                <div class="brand-banner__item">
-                    <h3 class="brand-banner__title">Không thử nghiệm động vật</h3>
-                    <p class="brand-banner__desc">Tất cả các nghiên cứu kích ứng và đánh giá lâm sàng đều được thực hiện trên các mô tế bào nhân tạo tiên tiến.</p>
+                <div class="paddlenav" aria-label="Điều hướng kệ sản phẩm">
+                    <button type="button" class="paddlenav-btn" id="shelf-prev" aria-label="Sản phẩm trước">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M15 5L8 12l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="paddlenav-btn" id="shelf-next" aria-label="Sản phẩm tiếp theo">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </div>
-                <div class="brand-banner__item">
-                    <h3 class="brand-banner__title">Thành phần 100% tự nhiên</h3>
-                    <p class="brand-banner__desc">Không hương liệu tổng hợp, paraben hay silicone. Chỉ sử dụng gốc bảo quản thực vật và tinh dầu tự nhiên.</p>
-                </div>
+            </div>
+
+            <div class="rf-cards-scroller" id="shelf-scroller">
+                <a class="rf-ccard-40 subpage-panel forest-panel" href="<?php echo esc_url($quiz_url); ?>"><h3>Làn da của bạn cần gì?</h3><p>Chẩn đoán da với 6 câu hỏi để khám phá Routine phù hợp.</p><span>Bắt đầu →</span></a>
+                <?php foreach ($shelf_cards as $card) : ?>
+                    <?php $render_card($card, 'rf-recommcard-33'); ?>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
 
-    <!-- 5. THÀNH PHẦN TINH TÚY -->
-    <section class="ingredients-sec ombre-bg-3">
+    <!-- 4. KHÔNG GIAN CHẨN ĐOÁN DA 6 CÂU -->
+    <?php get_template_part('template-parts/quiz-sanctuary'); ?>
+
+    <!-- 5. TRỌN BỘ LIỆU TRÌNH -->
+    <section id="catalog-sec" class="catalog-section">
         <div class="container">
-            <div class="ingredients__header">
-                <h2 class="ingredients__title">Thành phần tinh túy</h2>
-                <p class="ingredients__subtitle">Chúng tôi tuyển chọn thủ công các nguồn dược liệu bền vững có kiểm chứng lâm sàng tối ưu.</p>
-                <hr class="ingredients__divider">
+            <div class="catalog-header">
+                <div>
+                    <h2 class="catalog-header__title">Trọn bộ liệu trình.</h2>
+                    <p class="catalog-header__subtitle">Làm sạch dịu nhẹ, cân bằng sâu và phục hồi màng ẩm tự nhiên.</p>
+                </div>
             </div>
 
-            <div class="ingredients__grid">
-                <div class="ingredient-card">
-                    <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ingredient-1.jpg" alt="Trà xanh cổ thụ">
-                    </div>
-                    <div class="ingredient-card__body">
-                        <h3 class="ingredient-card__title">Trà xanh cổ thụ</h3>
-                        <p class="ingredient-card__desc">Thu hoạch tại các vùng núi cao phía Bắc Việt Nam, mang hàm lượng chất chống oxy hóa Polyphenol cực đại để bảo vệ các liên kết collagen.</p>
-                    </div>
-                </div>
-                <div class="ingredient-card">
-                    <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ingredient-2.jpg" alt="Vitamin C sinh học">
-                    </div>
-                    <div class="ingredient-card__body">
-                        <h3 class="ingredient-card__title">Vitamin C sinh học</h3>
-                        <p class="ingredient-card__desc">Phái sinh ổn định cao từ chiết xuất mận hoang dã Kakadu, làm sáng da, mờ thâm nám và tăng sinh elastin một cách bền vững.</p>
-                    </div>
-                </div>
-                <div class="ingredient-card">
-                    <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ingredient-3.jpg" alt="Nha đam lên men">
-                    </div>
-                    <div class="ingredient-card__body">
-                        <h3 class="ingredient-card__title">Nha đam lên men</h3>
-                        <p class="ingredient-card__desc">Ứng dụng công nghệ lên men lạnh giúp tăng cường lượng khoáng chất và axit amin, thẩm sâu hơn gấp 3 lần so với chiết xuất thông thường.</p>
-                    </div>
-                </div>
-                <div class="ingredient-card">
-                    <div class="ingredient-card__img-wrap">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ingredient-4.jpg" alt="Tinh dầu Jojoba vàng">
-                    </div>
-                    <div class="ingredient-card__body">
-                        <h3 class="ingredient-card__title">Tinh dầu Jojoba vàng</h3>
-                        <p class="ingredient-card__desc">Ép lạnh nguyên chất từ hạt jojoba bán hoang mạc, có cấu trúc tương thích gần như tuyệt đối với bã nhờn tự nhiên của người.</p>
-                    </div>
-                </div>
+            <div class="catalog-toolbar">
+                <label class="visuallyhidden" for="step-filter-select">Lọc theo bước Routine</label>
+                <select id="step-filter-select" class="catalog-select">
+                    <option value="">Mọi bước Routine</option>
+                    <option value="makeup_remover">Tẩy trang</option>
+                    <option value="cleanser">Làm sạch</option>
+                    <option value="toner">Toner</option>
+                    <option value="serum">Serum</option>
+                    <option value="treatment">Đặc trị</option>
+                    <option value="moisturizer">Dưỡng ẩm</option>
+                    <option value="sunscreen">Chống nắng</option>
+                </select>
+
+                <label class="visuallyhidden" for="concern-filter-select">Lọc theo vấn đề da</label>
+                <select id="concern-filter-select" class="catalog-select">
+                    <option value="">Mọi vấn đề da</option>
+                    <option value="acne">Mụn &amp; bít tắc</option>
+                    <option value="pores">Lỗ chân lông</option>
+                    <option value="dark_spots">Thâm &amp; không đều màu</option>
+                    <option value="hydration">Thiếu ẩm</option>
+                    <option value="aging">Lão hóa</option>
+                    <option value="soothing">Kích ứng</option>
+                </select>
+            </div>
+
+            <p><a href="<?php echo esc_url($shop_url); ?>">Xem tất cả sản phẩm tại Cửa hàng →</a></p>
+            <div class="bento-grid" id="bento-catalog-grid">
+                <?php foreach ($catalog_cards as $card) : ?>
+                    <?php $render_card($card, 'product-card'); ?>
+                <?php endforeach; ?>
+                <div class="catalog-empty" id="catalog-empty" hidden>Không tìm thấy sản phẩm phù hợp với bộ lọc.</div>
             </div>
         </div>
     </section>
 
-    <!-- 6. TRẢI NGHIỆM TỪ KHÁCH HÀNG -->
-    <section class="testimonials-sec ombre-bg-4">
+    <!-- 6. ĐÁNH GIÁ KHÁCH HÀNG -->
+    <section class="testimonials-sec">
         <div class="container">
             <div class="testimonials__header">
                 <h2 class="testimonials__title">Trải nghiệm từ khách hàng</h2>
-                <p class="testimonials__subtitle">Chia sẻ thực tế từ cộng đồng KLEER sau khi chuyển đổi sang liệu trình sinh học tối giản.</p>
-                <hr class="testimonials__divider">
+                <p class="testimonials__subtitle">Chia sẻ thực tế từ cộng đồng KLEER sau khi chuyển sang liệu trình sinh học tối giản.</p>
             </div>
             <div class="testimonials__grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-card__stars">★★★★★</div>
+                <article class="testimonial-card">
+                    <div class="testimonial-card__stars" aria-label="5 trên 5 sao">★★★★★</div>
                     <p class="testimonial-card__quote">"Hương đất và kết cấu ẩm mịn đã thay đổi hoàn toàn thói quen skincare ban đêm của tôi. Làn da thức dậy thực sự dịu mát, bớt hẳn các vết ửng đỏ sau một ngày dài bụi bặm."</p>
                     <div class="testimonial-card__author">
                         <div class="testimonial-card__avatar">MA</div>
-                        <div class="testimonial-card__info">
-                            <h4 class="testimonial-card__name">Minh Anh</h4>
+                        <div>
+                            <h3 class="testimonial-card__name">Minh Anh</h3>
                             <span class="testimonial-card__location">Hà Nội, Việt Nam</span>
                         </div>
                     </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-card__stars">★★★★★</div>
+                </article>
+                <article class="testimonial-card">
+                    <div class="testimonial-card__stars" aria-label="5 trên 5 sao">★★★★★</div>
                     <p class="testimonial-card__quote">"Tôi thích sự tối giản về mặt thiết kế lẫn danh sách thành phần. Không hề có cảm giác bóng nhờn, tía tô giúp da tôi thông thoáng hơn hẳn giữa khí hậu nóng ẩm miền Nam."</p>
                     <div class="testimonial-card__author">
                         <div class="testimonial-card__avatar">TH</div>
-                        <div class="testimonial-card__info">
-                            <h4 class="testimonial-card__name">Trần Hải</h4>
+                        <div>
+                            <h3 class="testimonial-card__name">Trần Hải</h3>
                             <span class="testimonial-card__location">TP. Hồ Chí Minh</span>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 7. CHẨN ĐOÁN DA / SMART QUIZ (Height 663px) -->
-    <section class="quiz-sec ombre-bg-1">
-        <div class="container">
-            <div class="quiz__inner">
-                <div class="quiz__content">
-                    <span class="quiz__tag">CHẨN ĐOÁN DA · 5 CÂU HỎI</span>
-                    <h2 class="quiz__title">Làn da của bạn đang cần gì?</h2>
-                    <p class="quiz__desc">Trả lời 5 câu hỏi ngắn để nhận phác đồ chăm sóc da unisex tối giản, khoa học, kèm danh sách sản phẩm gợi ý.</p>
-                    <div class="quiz__btn-group">
-                        <a href="<?php echo esc_url($quiz_url); ?>" class="btn btn--white">CHẨN ĐOÁN DA NGAY</a>
-                        <a href="<?php echo esc_url($about_url); ?>" class="btn btn--outline">TÌM HIỂU KHOA HỌC</a>
+                </article>
+                <article class="testimonial-card">
+                    <div class="testimonial-card__stars" aria-label="5 trên 5 sao">★★★★★</div>
+                    <p class="testimonial-card__quote">"Bài chẩn đoán da giúp tôi chọn đúng routine 3 bước cho làn da nhạy cảm. Sau sáu tuần, các nốt mẩn đỏ giảm rõ rệt và da không còn căng rát khi rửa mặt."</p>
+                    <div class="testimonial-card__author">
+                        <div class="testimonial-card__avatar">NL</div>
+                        <div>
+                            <h3 class="testimonial-card__name">Ngọc Linh</h3>
+                            <span class="testimonial-card__location">Đà Nẵng, Việt Nam</span>
+                        </div>
                     </div>
-                </div>
-                <div class="quiz__card">
-                    <h3 class="quiz__card-title">Bạn sẽ nhận được</h3>
-                    <ul class="quiz__list">
-                        <li>Loại da và nguyên nhân được phân tích ngắn gọn</li>
-                        <li>Routine 2, 3 hoặc 4 bước theo mong muốn</li>
-                        <li>Thêm trọn bộ vào giỏ chỉ với một chạm</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 8. ĐĂNG KÝ NHẬN THÔNG TIN -->
-    <section class="newsletter-sec" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/newsletter-bg.jpg');">
-        <div class="container">
-            <div class="newsletter__content">
-                <h2 class="newsletter__title">Đăng ký nhận thông tin từ KLEER</h2>
-                <p class="newsletter__desc">Nhận ngay cẩm nang chăm sóc da tối giản từ chuyên gia và 15% ưu đãi cho đơn hàng đầu tiên của bạn tại KLEER.</p>
-                <form class="newsletter__form" action="#" method="POST" onsubmit="event.preventDefault();">
-                    <input type="email" class="newsletter__input" placeholder="tên@domain.com" required>
-                    <button type="submit" class="btn newsletter__btn">ĐĂNG KÝ</button>
-                </form>
+                </article>
             </div>
         </div>
     </section>

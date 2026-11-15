@@ -1,924 +1,505 @@
 /**
- * KLEER Quiz SPA Engine
+ * KLEER Quiz SPA Engine — 6 câu v4
  * Path: wp-content/themes/kleer-theme/assets/js/quiz.js
  *
  * Layer: Frontend Presentation / REST API Integration
- * Responsibility: Điều hướng SPA Quiz 6 câu, lưu state tạm thời,
- *                 gửi payload qua REST API và render Routine cá nhân hóa.
+ * Contract: POST /wp-json/kleer/v1/skin-quiz?version=v4
+ *           questions q1..q6, option codes 1A..6C (khớp QuizQuestions::getV4Questions()).
  */
-class KleerQuizEngine {
-    constructor() {
-        this.storageKey = 'kleer_quiz_answers_v4';
-        this.sessionKey = 'kleer_quiz_session_id';
-        this.totalSteps = 6;
-        this.currentStep = 1;
-        this.answers = {};
-        this.isTransitioning = false;
-        this.isSubmitting = false;
-        this.lastResult = null;
-        this.version = window.kleerQuizConfig?.version || 'v4';
-        const rawCartEnabled = window.kleerQuizConfig?.cartEnabled;
-        // wp_localize_script() serializes boolean true as "1"
-        this.cartEnabled =
-            rawCartEnabled === true ||
-            rawCartEnabled === 1 ||
-            rawCartEnabled === '1' ||
-            rawCartEnabled === 'true';
+(function () {
+    'use strict';
 
-        this.questionIds = [
-            'q1',
-            'q2',
-            'q3',
-            'q4',
-            'q5',
-            'q6',
+    const QUESTIONS = [
+        {
+            id: 'q1',
+            title: 'Sau khi rửa mặt, khoảng 30 phút không bôi gì, da bạn cảm thấy thế nào?',
+            options: [
+                ['1A', 'Căng, khô, có thể bong tróc'],
+                ['1B', 'Thoải mái, không căng cũng không bóng'],
+                ['1C', 'Bóng dầu khắp mặt'],
+                ['1D', 'Bóng ở trán–mũi–cằm, hai má bình thường hoặc hơi khô'],
+                ['1E', 'Châm chích, đỏ hoặc ngứa'],
+            ],
+        },
+        {
+            id: 'q2',
+            title: 'Cuối ngày, vùng chữ T (trán, mũi, cằm) và hai má của bạn trông thế nào?',
+            options: [
+                ['2A', 'Cả mặt bóng dầu, lỗ chân lông to rõ'],
+                ['2B', 'Chữ T bóng, hai má bình thường hoặc khô'],
+                ['2C', 'Cả mặt mịn, không bóng, không khô'],
+                ['2D', 'Xỉn, khô ráp, có vảy nhỏ'],
+                ['2E', 'Hay ửng đỏ, nóng rát dù không làm gì'],
+            ],
+        },
+        {
+            id: 'q3',
+            title: 'Khi đổi sản phẩm, đổi thời tiết hoặc thử hoạt chất mới (BHA, vitamin C…), da bạn phản ứng thế nào?',
+            options: [
+                ['3A', 'Rất hay đỏ, ngứa, rát'],
+                ['3B', 'Thỉnh thoảng hơi đỏ hoặc châm chích nhẹ'],
+                ['3C', 'Hiếm khi có phản ứng'],
+                ['3D', 'Gần như không bao giờ có phản ứng'],
+            ],
+        },
+        {
+            id: 'q4',
+            title: 'Điều bạn muốn cải thiện nhất ở làn da hiện tại là gì?',
+            options: [
+                ['4A', 'Mụn, mụn ẩn, mụn viêm'],
+                ['4B', 'Thâm mụn, nám, da không đều màu'],
+                ['4C', 'Nếp nhăn, da kém đàn hồi'],
+                ['4D', 'Lỗ chân lông to, da xỉn, sần sùi'],
+                ['4E', 'Không có vấn đề nổi bật, chỉ muốn duy trì da khỏe'],
+            ],
+        },
+        {
+            id: 'q5',
+            title: 'Bạn muốn routine gồm bao nhiêu sản phẩm?',
+            options: [
+                ['5A', 'Nhanh gọn (2 sản phẩm)'],
+                ['5B', 'Cơ bản (3 sản phẩm)'],
+                ['5C', 'Tiêu chuẩn (4 sản phẩm)'],
+                ['5D', 'Chi tiết (5 sản phẩm)'],
+                ['5E', 'Đầy đủ (6 sản phẩm)'],
+            ],
+        },
+        {
+            id: 'q6',
+            title: 'Hằng ngày bạn có trang điểm hoặc dùng kem chống nắng không?',
+            options: [
+                ['6A', 'Có, tôi trang điểm hằng ngày hoặc thường xuyên'],
+                ['6B', 'Không trang điểm, nhưng có dùng kem chống nắng'],
+                ['6C', 'Không trang điểm và không dùng kem chống nắng'],
+            ],
+        },
+    ];
+
+    const STEP_NAMES = {
+        makeup_remover: 'Tẩy trang',
+        cleanser: 'Làm sạch',
+        toner: 'Toner',
+        serum: 'Serum',
+        treatment: 'Đặc trị',
+        moisturizer: 'Dưỡng ẩm',
+        sunscreen: 'Chống nắng',
+    };
+
+    const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+    const SKIN_SLUG_BY_TYPE = {
+        oily: 'da-dau',
+        dry: 'da-kho',
+        combination: 'da-hon-hop',
+        normal: '',
+        sensitive: 'da-nhay-cam',
+    };
+
+    const escapeHtml = (value) => {
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return String(value === null || value === undefined ? '' : value)
+            .replace(/[&<>"']/g, (character) => map[character]);
+    };
+
+    const formatMoney = (value) => `${Math.round(Number(value) || 0).toLocaleString('vi-VN')}đ`;
+
+    const LEAF_PATH = 'M20.5 3.5C20.5 3.5 13.5 3.5 8.5 8.5C3.5 13.5 2.5 21.5 2.5 21.5C2.5 21.5 10.5 20.5 15.5 15.5C20.5 10.5 20.5 3.5 20.5 3.5Z';
+    const LEAF_STEM = 'M2.5 21.5L11.5 12.5';
+
+    /**
+     * Cụm lá trắng bất đối xứng: trái nhỏ (24–58px), phải lớn (92–205px).
+     */
+    function buildAsymmetricWhiteLeavesHTML() {
+        const left = [
+            [3, 24, 12, -14, 5.4, 0.2], [6, 34, 26, 8, 6.1, 0.8], [9, 30, 44, -6, 5.8, 1.4],
+            [12, 48, 62, 12, 6.6, 0.4], [14, 40, 78, -10, 5.2, 1.1], [16, 58, 34, 6, 6.9, 0.6],
+            [5, 26, 88, 18, 5.6, 1.6],
+        ];
+        const right = [
+            [-1, 118, 6, 16, 7.4, 0.3], [3, 176, 30, -8, 8.2, 1.2], [7, 132, 52, 10, 6.8, 0.7],
+            [11, 205, 20, -12, 9.1, 0.2], [14, 150, 66, 14, 7.7, 1.5], [15, 92, 82, -6, 6.2, 0.9],
         ];
 
-        this.dom = {
-            panels: document.querySelectorAll('.quiz-step-panel'),
-            steps: document.querySelectorAll('#quiz-step-indicator .step-item'),
-            progressFill: document.getElementById('quiz-progress-fill'),
-            progressTrack: document.querySelector('.quiz-progress-track'),
-            stepCount: document.getElementById('quiz-step-count'),
-            stepPct: document.getElementById('quiz-step-pct'),
-            btnPrev: document.getElementById('btn-quiz-prev'),
-            btnNext: document.getElementById('btn-quiz-next'),
-            form: document.getElementById('kleer-quiz-form'),
-            cardHeader: document.getElementById('quiz-card-header'),
-            policyConsent: document.getElementById('quiz-policy-consent'),
-            marketingConsent: document.getElementById('quiz-marketing-consent'),
-        };
+        const leaf = (size, side, offset, top, rotation, duration, delay) => `
+            <svg class="kleer-white-leaf kleer-white-leaf--animated"
+                style="width:${size}px;height:${size}px;${side}:${offset}%;top:${top}%;--leaf-rot:${rotation}deg;--leaf-dur:${duration}s;--leaf-delay:${delay}s"
+                viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="${LEAF_PATH}" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+                <path d="${LEAF_STEM}" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            </svg>`;
 
-        this.init();
+        return [
+            ...left.map((item) => leaf(item[1], 'left', item[0], item[2], item[3], item[4], item[5])),
+            ...right.map((item) => leaf(item[1], 'right', item[0], item[2], item[3], item[4], item[5])),
+        ].join('');
     }
 
-    init() {
-        if (!this.dom.form) {
-            return;
-        }
+    class KleerQuiz {
+        constructor(root) {
+            this.root = root;
+            this.stage = document.getElementById('quiz-stage');
+            this.result = document.getElementById('quiz-result');
+            this.progressFill = document.getElementById('quiz-progress-fill');
+            this.progressTrack = document.getElementById('quiz-progress-track');
+            this.stepCount = document.getElementById('quiz-step-count');
+            this.noteEl = document.getElementById('quiz-note');
+            this.consent = document.getElementById('quiz-policy-consent');
+            this.leaves = document.getElementById('quiz-leaves');
 
-        this.loadStorage();
-        this.bindEvents();
-        this.renderStep(this.currentStep);
-    }
-
-    getOrCreateSessionId() {
-        let sessionId = null;
-
-        try {
-            sessionId = localStorage.getItem(this.sessionKey);
-        } catch (error) {
-            console.warn('LocalStorage unavailable:', error);
-        }
-
-        const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-        if (sessionId && uuidV4Regex.test(sessionId)) {
-            return sessionId;
-        }
-
-        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-            sessionId = window.crypto.randomUUID();
-        } else {
-            sessionId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
-                /[xy]/g,
-                (character) => {
-                    const random = Math.floor(Math.random() * 16);
-                    const value = character === 'x'
-                        ? random
-                        : (random & 0x3) | 0x8;
-
-                    return value.toString(16);
-                }
-            );
-        }
-
-        try {
-            localStorage.setItem(this.sessionKey, sessionId);
-        } catch (error) {
-            console.warn('Cannot persist quiz session ID:', error);
-        }
-
-        return sessionId;
-    }
-
-    loadStorage() {
-        try {
-            const raw = localStorage.getItem(this.storageKey);
-
-            if (!raw) {
-                return;
-            }
-
-            const storedAnswers = JSON.parse(raw);
-
-            if (!storedAnswers || typeof storedAnswers !== 'object') {
-                return;
-            }
-
-            this.answers = storedAnswers;
-
-            Object.entries(this.answers).forEach(([questionId, value]) => {
-                const input = this.dom.form.querySelector(
-                    `input[name="${questionId}"][value="${value}"]`
-                );
-
-                if (!input) {
-                    return;
-                }
-
-                input.checked = true;
-                input.closest('.quiz-option-button')?.classList.add('is-selected');
-            });
-        } catch (error) {
-            console.warn('Cannot restore quiz answers:', error);
+            this.index = 0;
             this.answers = {};
+            this.isTransitioning = false;
+            this.isSubmitting = false;
+
+            this.cfg = window.kleerAjax || {};
+            this.endpoint = this.buildEndpoint();
         }
-    }
 
-    saveStorage() {
-        try {
-            localStorage.setItem(
-                this.storageKey,
-                JSON.stringify(this.answers)
-            );
-        } catch (error) {
-            console.warn('Cannot write quiz answers to LocalStorage:', error);
-        }
-    }
-
-    bindEvents() {
-        const optionButtons = this.dom.form.querySelectorAll(
-            '.quiz-option-button'
-        );
-
-        optionButtons.forEach((button) => {
-            button.addEventListener('click', (event) => {
-                if (this.isTransitioning || this.isSubmitting) {
-                    event.preventDefault();
-                    return;
-                }
-
-                const input = button.querySelector('input[type="radio"]');
-                const parentPanel = button.closest('.quiz-step-panel');
-
-                if (!input || !parentPanel) {
-                    return;
-                }
-
-                const panelStep = Number.parseInt(
-                    parentPanel.dataset.step,
-                    10
-                );
-
-                input.checked = true;
-                this.answers[input.name] = input.value;
-                this.saveStorage();
-
-                parentPanel
-                    .querySelectorAll('.quiz-option-button')
-                    .forEach((item) => {
-                        item.classList.remove('is-selected');
-                    });
-
-                button.classList.add('is-selected');
-
-                if (panelStep < this.totalSteps) {
-                    this.isTransitioning = true;
-
-                    window.setTimeout(() => {
-                        this.currentStep = panelStep + 1;
-                        this.renderStep(this.currentStep);
-                        this.isTransitioning = false;
-                    }, 250);
-
-                    return;
-                }
-
-                this.updateSubmitButton();
-            });
-        });
-
-        this.dom.btnPrev?.addEventListener('click', () => {
-            if (
-                this.isTransitioning
-                || this.isSubmitting
-                || this.currentStep <= 1
-            ) {
+        init() {
+            if (!this.stage) {
                 return;
             }
 
-            this.currentStep -= 1;
-            this.renderStep(this.currentStep);
-        });
-
-        this.dom.btnNext?.addEventListener('click', () => {
-            this.handleSubmission();
-        });
-    }
-
-    renderStep(step) {
-        this.currentStep = step;
-
-        this.dom.panels.forEach((panel) => {
-            const panelStep = Number.parseInt(panel.dataset.step, 10);
-
-            panel.classList.toggle(
-                'active',
-                panelStep === step
-            );
-        });
-
-        this.dom.steps.forEach((stepElement) => {
-            const stepIndex = Number.parseInt(
-                stepElement.dataset.step,
-                10
-            );
-
-            stepElement.classList.toggle(
-                'active',
-                stepIndex === step
-            );
-
-            stepElement.classList.toggle(
-                'completed',
-                stepIndex < step
-            );
-        });
-
-        const progress = Math.round(
-            ((step - 1) / (this.totalSteps - 1)) * 100
-        );
-
-        if (this.dom.progressFill) {
-            this.dom.progressFill.style.width = `${progress}%`;
-        }
-
-        if (this.dom.progressTrack) {
-            this.dom.progressTrack.setAttribute(
-                'aria-valuenow',
-                String(progress)
-            );
-        }
-
-        if (this.dom.stepPct) {
-            this.dom.stepPct.textContent = `${progress}%`;
-        }
-
-        if (this.dom.stepCount) {
-            this.dom.stepCount.textContent =
-                `Câu ${step}/${this.totalSteps}`;
-        }
-
-        if (this.dom.btnPrev) {
-            this.dom.btnPrev.disabled = step === 1;
-        }
-
-        this.updateSubmitButton();
-    }
-
-    updateSubmitButton() {
-        if (!this.dom.btnNext) {
-            return;
-        }
-
-        const currentQuestionId = `q${this.currentStep}`;
-        const canSubmit =
-            this.currentStep === this.totalSteps
-            && Boolean(this.answers[currentQuestionId]);
-
-        this.dom.btnNext.style.display =
-            canSubmit ? 'inline-block' : 'none';
-    }
-
-    hasAllRequiredAnswers() {
-        return this.questionIds.every((questionId) => {
-            return typeof this.answers[questionId] === 'string'
-                && this.answers[questionId] !== '';
-        });
-    }
-
-    findFirstMissingStep() {
-        const missingIndex = this.questionIds.findIndex(
-            (questionId) => !this.answers[questionId]
-        );
-
-        return missingIndex === -1
-            ? null
-            : missingIndex + 1;
-    }
-
-    buildApiPayload() {
-        const sessionId = this.getOrCreateSessionId();
-
-        return {
-            session_id: sessionId,
-
-            consent: {
-                policy_accepted: Boolean(
-                    this.dom.policyConsent?.checked
-                ),
-                marketing_opt_in: Boolean(
-                    this.dom.marketingConsent?.checked
-                ),
-            },
-
-            context: {
-                locale: 'vi-VN',
-                device: this.getDeviceType(),
-            },
-
-            answers: this.questionIds.map((questionId) => ({
-                question_id: questionId,
-                answer: this.answers[questionId],
-            })),
-        };
-    }
-
-    getDeviceType() {
-        if (window.innerWidth < 768) {
-            return 'mobile';
-        }
-
-        if (window.innerWidth < 1024) {
-            return 'tablet';
-        }
-
-        return 'desktop';
-    }
-
-    async handleSubmission() {
-        if (this.isSubmitting) {
-            return;
-        }
-
-        if (!this.hasAllRequiredAnswers()) {
-            const missingStep = this.findFirstMissingStep();
-
-            if (missingStep !== null) {
-                this.renderStep(missingStep);
+            if (this.leaves) {
+                this.leaves.innerHTML = buildAsymmetricWhiteLeavesHTML();
             }
 
-            window.alert(
-                'Vui lòng trả lời đầy đủ 6 câu hỏi trước khi xem kết quả.'
-            );
+            this.renderQuestion(0);
 
-            return;
+            if (this.consent) {
+                this.consent.addEventListener('change', () => {
+                    if (this.consent.checked) {
+                        this.setNote('');
+                    }
+                });
+            }
         }
 
-        if (
-            this.dom.policyConsent
-            && !this.dom.policyConsent.checked
-        ) {
-            window.alert(
-                'Vui lòng đồng ý với Chính sách bảo mật của KLEER để nhận phác đồ da cá nhân hóa.'
-            );
+        buildEndpoint() {
+            const base = this.cfg.rest_url || '/wp-json/kleer/v1/';
 
-            this.dom.policyConsent.focus();
-            return;
+            try {
+                const url = new URL(`${String(base).replace(/\/+$/, '')}/skin-quiz`, window.location.origin);
+                url.searchParams.set('version', 'v4');
+                return url.toString();
+            } catch (error) {
+                return '/wp-json/kleer/v1/skin-quiz?version=v4';
+            }
         }
 
-        this.isSubmitting = true;
-        this.renderLoadingState();
+        sessionId() {
+            const key = 'kleer_quiz_session_id';
 
-        const payload = this.buildApiPayload();
-
-        const submitUrl =
-            window.kleerQuizConfig?.submitUrl
-            || '/wp-json/kleer/v1/skin-quiz';
-
-        // Dùng URL API để xử lý đúng cả pretty permalinks và plain permalinks
-        // (plain permalinks có sẵn ?rest_route=... trong submitUrl).
-        let endpoint;
-
-        try {
-            const url = new URL(submitUrl, window.location.origin);
-            url.searchParams.set('version', this.version);
-            endpoint = url.toString();
-        } catch (error) {
-            const separator = submitUrl.includes('?') ? '&' : '?';
-            endpoint = `${submitUrl}${separator}version=${encodeURIComponent(this.version)}`;
-        }
-
-        try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce':
-                        window.kleerQuizConfig?.nonce || '',
-                    'X-KLEER-Session':
-                        payload.session_id,
-                },
-
-                body: JSON.stringify(payload),
-            });
-
-            const responseData = await response
-                .json()
-                .catch(() => null);
-
-            if (!response.ok) {
-                const message =
-                    responseData?.message
-                    || `Máy chủ trả về lỗi HTTP ${response.status}.`;
-
-                const httpError = new Error(message);
-                httpError.httpStatus = response.status;
-                throw httpError;
+            try {
+                const existing = window.localStorage.getItem(key);
+                if (existing) {
+                    return existing;
+                }
+            } catch (error) {
+                // localStorage unavailable
             }
 
-            if (
-                !responseData
-                || responseData.status !== 'ok'
-                || !responseData.data
-            ) {
-                throw new Error(
-                    'Dữ liệu phác đồ trả về không đúng định dạng.'
-                );
-            }
-
-            this.lastResult = responseData.data;
-            this.renderSuccessResult(responseData.data);
-        } catch (error) {
-            console.error('Quiz submission error:', error);
-
-            const message = navigator.onLine
-                ? error.message
-                : 'Kết nối mạng đã bị gián đoạn. Vui lòng kiểm tra Internet và thử lại.';
-
-            const status = Number(error?.httpStatus) || 0;
-            const canRetry =
-                status === 0
-                || status === 408
-                || status === 429
-                || status >= 500;
-
-            this.renderErrorState(message, canRetry);
-        } finally {
-            this.isSubmitting = false;
-        }
-    }
-
-    renderLoadingState() {
-        const quizLayout = document.querySelector('.quiz-layout');
-        const mainCard = document.querySelector(
-            '.quiz-content-card'
-        );
-
-        quizLayout?.classList.remove('is-result-view');
-        quizLayout?.classList.add('is-loading-view');
-
-        if (!mainCard) {
-            return;
-        }
-
-        mainCard.innerHTML = `
-            <div class="quiz-state-card" aria-live="polite">
-                <span class="state-subtitle">
-                    ĐANG PHÂN TÍCH
-                </span>
-
-                <h2 class="state-title">
-                    Đang xây phác đồ dành riêng cho làn da của bạn...
-                </h2>
-
-                <div class="loading-line-indicator"></div>
-
-                <small class="state-mock-note">
-                    Hệ thống đang phân tích câu trả lời và xây dựng Routine phù hợp.
-                </small>
-            </div>
-        `;
-    }
-
-    renderSuccessResult(data) {
-        const quizLayout = document.querySelector('.quiz-layout');
-        const mainCard = document.querySelector(
-            '.quiz-content-card'
-        );
-
-        if (!mainCard) {
-            return;
-        }
-
-        quizLayout?.classList.remove('is-loading-view');
-        quizLayout?.classList.add('is-result-view');
-
-        const breadcrumbCurrent = document.querySelector(
-            '.quiz-breadcrumb span'
-        );
-
-        if (breadcrumbCurrent) {
-            breadcrumbCurrent.textContent =
-                'Kết quả phác đồ Routine';
-        }
-
-        const skinProfile = data.skin_profile || {};
-        const profileLabel =
-            skinProfile.label || 'Hồ sơ làn da';
-
-        const concerns = Array.isArray(skinProfile.concerns)
-            ? skinProfile.concerns
-            : [];
-
-        const products = Array.isArray(
-            data.recommended_products
-        )
-            ? data.recommended_products
-            : [];
-
-        const warnings = Array.isArray(data.warnings)
-            ? data.warnings
-            : [];
-
-        const missingSteps = Array.isArray(data.missing_steps)
-            ? data.missing_steps
-            : [];
-
-        const requestedSteps =
-            Number(data.routine_steps_requested) || 0;
-
-        const selectedSteps = Array.isArray(
-            data.routine_steps_selected
-        )
-            ? data.routine_steps_selected
-            : [];
-
-        const disclaimer =
-            data.disclaimer
-            || 'Vui lòng thử trước sản phẩm 24h trên vùng da quai hàm.';
-
-        const canAddToCart =
-            this.cartEnabled && products.length > 0;
-
-        const productsHtml = products.length > 0
-            ? products
-                .map((product, index) => {
-                    return this.renderProductCard(
-                        product,
-                        index
-                    );
-                })
-                .join('')
-            : `
-                <div class="routine-empty-state">
-                    Hiện chưa có sản phẩm phù hợp trong kho dữ liệu
-                    cho Routine này.
-                </div>
-            `;
-
-        const concernsHtml = concerns.length > 0
-            ? `
-                <ul class="routine-concerns-list">
-                    ${concerns
-                        .map(
-                            (concern) =>
-                                `<li>${this.escapeHtml(concern)}</li>`
-                        )
-                        .join('')}
-                </ul>
-            `
-            : '';
-
-        const warningsHtml = warnings.length > 0
-            ? `
-                <div
-                    class="routine-warning-box"
-                    role="status"
-                >
-                    <strong>Lưu ý về Routine</strong>
-
-                    <ul>
-                        ${warnings
-                            .map(
-                                (warning) =>
-                                    `<li>${this.escapeHtml(warning)}</li>`
-                            )
-                            .join('')}
-                    </ul>
-                </div>
-            `
-            : '';
-
-        const missingStepsHtml =
-            missingSteps.length > 0
-                ? `
-                    <p class="routine-missing-note">
-                        Một số bước chưa có sản phẩm phù hợp:
-                        ${missingSteps
-                            .map((step) => {
-                                return this.escapeHtml(
-                                    this.getStepName(step)
-                                );
-                            })
-                            .join(', ')}.
-                    </p>
-                `
-                : '';
-
-        const routineMetaHtml =
-            requestedSteps > 0
-                ? `
-                    <p class="routine-meta">
-                        Bạn chọn Routine
-                        <strong>${requestedSteps} sản phẩm</strong>.
-                        Hệ thống hiện đề xuất
-                        <strong>${products.length} sản phẩm</strong>
-                        ${selectedSteps.length > 0
-                            ? `trên ${selectedSteps.length} bước được chọn.`
-                            : '.'}
-                    </p>
-                `
-                : '';
-
-        mainCard.innerHTML = `
-            <h1 class="routine-page-title">
-                Phác đồ cá nhân hóa dành cho bạn
-            </h1>
-
-            <div class="routine-grid-container">
-                <div class="routine-summary-box">
-                    <span class="routine-tag-label">
-                        HỒ SƠ LÀN DA
-                    </span>
-
-                    <h2 class="routine-skin-heading">
-                        ${this.escapeHtml(profileLabel)}
-                    </h2>
-
-                    ${concernsHtml}
-
-                    ${routineMetaHtml}
-
-                    ${warningsHtml}
-
-                    ${missingStepsHtml}
-
-                    <div class="routine-disclaimer-box">
-                        ${this.escapeHtml(disclaimer)}
-                    </div>
-                </div>
-
-                <div class="routine-steps-column">
-                    <div class="routine-products-list">
-                        ${productsHtml}
-                    </div>
-                </div>
-
-                <div class="routine-footer-actions">
-                    <button
-                        type="button"
-                        class="btn-quiz-primary btn-routine-cart"
-                        ${canAddToCart ? '' : 'disabled aria-disabled="true"'}
-                    >
-                        ${canAddToCart
-                            ? 'THÊM TRỌN BỘ ROUTINE VÀO GIỎ HÀNG'
-                            : 'THÊM ROUTINE VÀO GIỎ HÀNG (SẮP RA MẮT)'}
-                    </button>
-
-                    ${canAddToCart
-                        ? ''
-                        : `
-                            <p class="routine-missing-note">
-                                Tính năng thêm vào giỏ hàng sẽ có trong bản cập nhật tiếp theo.
-                            </p>
-                        `}
-                </div>
-            </div>
-        `;
-
-        this.bindResultEvents(
-            mainCard,
-            data,
-            products
-        );
-
-        window.dispatchEvent(
-            new CustomEvent('kleer:quizCompleted', {
-                detail: {
-                    submission_id: data.submission_id,
-                    skin_profile: skinProfile,
-                    recommended_products: products,
-                    routine_steps_requested:
-                        data.routine_steps_requested,
-                    routine_steps_selected:
-                        data.routine_steps_selected,
-                    missing_steps: missingSteps,
-                    warnings,
-                },
-            })
-        );
-    }
-
-    renderProductCard(product, index) {
-        const productName =
-            product?.name || 'Sản phẩm KLEER';
-
-        const stepName = this.getStepName(
-            product?.routine_step
-        );
-
-        const price = Number(product?.price || 0);
-
-        const priceHtml = price > 0
-            ? `
-                <span class="routine-product-price">
-                    ${price.toLocaleString('vi-VN')} đ
-                </span>
-            `
-            : '';
-
-        const reasonHtml = product?.reason
-            ? `
-                <p class="routine-step-desc">
-                    ${this.escapeHtml(product.reason)}
-                </p>
-            `
-            : '';
-
-        return `
-            <article
-                class="routine-item-card"
-                data-product-id="${this.escapeHtml(product?.id)}"
-            >
-                <div class="routine-color-indicator"></div>
-
-                <div class="routine-item-details">
-                    <span class="routine-step-label">
-                        Bước ${index + 1}: ${this.escapeHtml(stepName)}
-                    </span>
-
-                    <h3 class="routine-step-title">
-                        ${this.escapeHtml(productName)}
-                    </h3>
-
-                    ${reasonHtml}
-                    ${priceHtml}
-                </div>
-            </article>
-        `;
-    }
-
-    bindResultEvents(mainCard, data, products) {
-        if (!this.cartEnabled) {
-            return;
-        }
-
-        const btnCart = mainCard.querySelector(
-            '.btn-routine-cart'
-        );
-
-        btnCart?.addEventListener('click', () => {
-            const productIds = products
-                .map((product) => Number(product.id))
-                .filter((id) => Number.isInteger(id) && id > 0);
-
-            window.dispatchEvent(
-                new CustomEvent('kleer:addRoutineToCart', {
-                    detail: {
-                        submission_id: data.submission_id,
-                        product_ids: productIds,
-                        products,
-                    },
-                })
-            );
-        });
-    }
-
-    renderErrorState(errorMessage, canRetry = true) {
-        const mainCard = document.querySelector(
-            '.quiz-content-card'
-        );
-
-        const quizLayout = document.querySelector(
-            '.quiz-layout'
-        );
-
-        quizLayout?.classList.remove('is-loading-view');
-
-        if (!mainCard) {
-            return;
-        }
-
-        const actionHtml = canRetry
-            ? `
-                <button
-                    type="button"
-                    id="btn-quiz-retry"
-                    class="btn-quiz-primary"
-                >
-                    THỬ LẠI
-                </button>
-            `
-            : `
-                <button
-                    type="button"
-                    id="btn-quiz-restart"
-                    class="btn-quiz-primary"
-                >
-                    LÀM LẠI QUIZ
-                </button>
-            `;
-
-        const savedNote = canRetry
-            ? 'Câu trả lời của bạn vẫn được lưu trên thiết bị. Vui lòng thử lại.'
-            : 'Câu trả lời không hợp lệ hoặc đã cũ. Vui lòng làm lại Quiz để nhận phác đồ mới.';
-
-        mainCard.innerHTML = `
-            <div
-                class="quiz-state-card"
-                role="alert"
-            >
-                <span class="state-subtitle text-orange">
-                    ${canRetry ? 'LỖI KẾT NỐI' : 'DỮ LIỆU KHÔNG HỢP LỆ'}
-                </span>
-
-                <h2 class="state-title">
-                    Chưa thể tải phác đồ da
-                </h2>
-
-                <p class="state-desc">
-                    ${this.escapeHtml(
-                        errorMessage
-                        || 'Dịch vụ phân tích đang tạm thời gián đoạn.'
-                    )}
-                </p>
-
-                <p class="state-desc">
-                    ${savedNote}
-                </p>
-
-                ${actionHtml}
-            </div>
-        `;
-
-        if (canRetry) {
-            mainCard
-                .querySelector('#btn-quiz-retry')
-                ?.addEventListener('click', () => {
-                    this.handleSubmission();
+            const id = (window.crypto && typeof window.crypto.randomUUID === 'function')
+                ? window.crypto.randomUUID()
+                : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (character) => {
+                    const random = Math.floor(Math.random() * 16);
+                    const value = character === 'x' ? random : (random & 0x3) | 0x8;
+                    return value.toString(16);
                 });
 
+            try {
+                window.localStorage.setItem(key, id);
+            } catch (error) {
+                // ignore
+            }
+
+            return id;
+        }
+
+        setNote(message) {
+            if (this.noteEl) {
+                this.noteEl.textContent = message || '';
+            }
+        }
+
+        updateProgress() {
+            const percent = Math.round((this.index / QUESTIONS.length) * 100);
+
+            if (this.progressFill) {
+                this.progressFill.style.width = `${percent}%`;
+            }
+
+            if (this.progressTrack) {
+                this.progressTrack.setAttribute('aria-valuenow', String(percent));
+            }
+
+            if (this.stepCount) {
+                this.stepCount.textContent = `Câu ${Math.min(this.index + 1, QUESTIONS.length)}/${QUESTIONS.length}`;
+            }
+        }
+
+        renderQuestion(index) {
+            const question = QUESTIONS[index];
+            if (!question) {
+                return;
+            }
+
+            this.index = index;
+            this.isTransitioning = false;
+            this.updateProgress();
+
+            this.stage.innerHTML = `
+                <h3 class="quiz-question-title">${escapeHtml(question.title)}</h3>
+                <div class="quiz-options-grid">
+                    ${question.options.map(([value, label], optionIndex) => `
+                        <button type="button" class="quiz-option-btn" data-value="${escapeHtml(value)}">
+                            <span class="quiz-option-btn__badge">${LETTERS[optionIndex]}</span>
+                            <span>${escapeHtml(label)}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+
+            this.stage.querySelectorAll('.quiz-option-btn').forEach((button) => {
+                button.addEventListener('click', () => {
+                    if (this.isTransitioning || this.isSubmitting) {
+                        return;
+                    }
+                    this.selectOption(button, question);
+                });
+            });
+        }
+
+        selectOption(button, question) {
+            this.isTransitioning = true;
+
+            this.stage.querySelectorAll('.quiz-option-btn').forEach((item) => {
+                item.classList.remove('selected');
+            });
+
+            button.classList.add('selected');
+
+            const badge = button.querySelector('.quiz-option-btn__badge');
+            if (badge) {
+                badge.textContent = '✓';
+            }
+
+            this.answers[question.id] = button.getAttribute('data-value');
+
+            window.setTimeout(() => {
+                if (this.index < QUESTIONS.length - 1) {
+                    this.advance(this.index + 1);
+                    return;
+                }
+                this.finish();
+            }, 190);
+        }
+
+        advance(nextIndex) {
+            this.stage.classList.add('is-fading-out');
+
+            window.setTimeout(() => {
+                this.renderQuestion(nextIndex);
+                this.stage.classList.add('is-fading-in-prep');
+
+                window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(() => {
+                        this.stage.classList.remove('is-fading-out');
+                        this.stage.classList.remove('is-fading-in-prep');
+                        this.isTransitioning = false;
+                    });
+                });
+            }, 310);
+        }
+
+        finish() {
+            this.isTransitioning = false;
+            this.updateProgress();
+
+            const submitButton = document.createElement('button');
+            submitButton.type = 'button';
+            submitButton.id = 'quiz-submit-btn';
+            submitButton.className = 'quiz-submit-btn';
+            submitButton.textContent = 'XEM KẾT QUẢ PHÁC ĐỒ';
+            submitButton.addEventListener('click', () => this.submit());
+            this.stage.appendChild(submitButton);
+
+            if (this.consent && this.consent.checked) {
+                this.submit();
+                return;
+            }
+
+            this.setNote('Vui lòng đồng ý với Chính sách bảo mật để nhận phác đồ da cá nhân hóa.');
+        }
+
+        async submit() {
+            if (this.isSubmitting) {
+                return;
+            }
+
+            if (this.consent && !this.consent.checked) {
+                this.setNote('Vui lòng đồng ý với Chính sách bảo mật để nhận phác đồ da cá nhân hóa.');
+                this.consent.focus();
+                return;
+            }
+
+            this.isSubmitting = true;
+            this.setNote('Đang phân tích câu trả lời và xây dựng Routine phù hợp...');
+
+            const submitButton = document.getElementById('quiz-submit-btn');
+            if (submitButton) {
+                submitButton.disabled = true;
+            }
+
+            const payload = {
+                session_id: this.sessionId(),
+                consent: { policy_accepted: true, marketing_opt_in: false },
+                context: {
+                    locale: 'vi-VN',
+                    device: window.innerWidth < 768 ? 'mobile' : (window.innerWidth < 1024 ? 'tablet' : 'desktop'),
+                },
+                answers: QUESTIONS.map((question) => ({
+                    question_id: question.id,
+                    answer: this.answers[question.id],
+                })),
+            };
+
+            try {
+                const response = await fetch(this.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': this.cfg.rest_nonce || '',
+                        'X-KLEER-Session': payload.session_id,
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const json = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    const message = (json && json.message) || `Máy chủ trả về lỗi HTTP ${response.status}.`;
+                    throw new Error(message);
+                }
+
+                if (!json || json.status !== 'ok' || !json.data) {
+                    throw new Error('Dữ liệu phác đồ trả về không đúng định dạng.');
+                }
+
+                this.renderResult(json.data);
+            } catch (error) {
+                console.error('[KLEER] quiz submission failed:', error);
+                this.setNote(`${error.message} Vui lòng thử lại sau ít phút.`);
+
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'THỬ LẠI';
+                }
+            } finally {
+                this.isSubmitting = false;
+            }
+        }
+
+        renderResult(data) {
+            const profile = data.skin_profile || {};
+            const products = Array.isArray(data.recommended_products) ? data.recommended_products : [];
+            const warnings = Array.isArray(data.warnings) ? data.warnings : [];
+
+            if (!this.result) {
+                return;
+            }
+
+            this.stage.hidden = true;
+            this.result.hidden = false;
+            this.setNote('');
+
+            if (this.progressFill) {
+                this.progressFill.style.width = '100%';
+            }
+
+            const itemsHtml = products.length
+                ? products.map((product, index) => {
+                    const step = STEP_NAMES[product.routine_step] || product.routine_step || 'Chăm sóc da';
+                    const meta = [product.inciBadge, product.skinLabel].filter(Boolean).join(' · ');
+                    const price = Number(product.price) > 0 ? formatMoney(product.price) : '';
+                    return `
+                        <li class="quiz-result__item">
+                            <span class="quiz-result__step">Bước ${index + 1} · ${escapeHtml(step)}</span>
+                            <span class="quiz-result__name">${escapeHtml(product.name)}</span>
+                            <span class="quiz-result__price">${escapeHtml(price)}</span>
+                            ${meta ? `<span class="quiz-result__meta">${escapeHtml(meta)}</span>` : ''}
+                        </li>
+                    `;
+                }).join('')
+                : '<li class="quiz-result__item"><span class="quiz-result__name">Kho sản phẩm đang được cập nhật. Vui lòng quay lại sau ít phút.</span></li>';
+
+            const warningsHtml = warnings.length
+                ? `<div class="quiz-result__warn">${warnings.map((warning) => escapeHtml(warning)).join('<br>')}</div>`
+                : '';
+
+            this.result.innerHTML = `
+                <div class="quiz-result__head">
+                    <h3 class="quiz-result__title">Phác đồ dành riêng cho bạn</h3>
+                    <span class="quiz-result__label">${escapeHtml(profile.label || 'Hồ sơ làn da')}</span>
+                </div>
+                <ul class="quiz-result__list">${itemsHtml}</ul>
+                ${warningsHtml}
+                <div class="quiz-result__actions">
+                    <button type="button" class="quiz-submit-btn" id="quiz-add-bundle" ${products.length ? '' : 'disabled'}>
+                        THÊM TRỌN BỘ VÀO ROUTINE (1 CHẠM)
+                    </button>
+                    <a class="btn btn--white" href="${escapeHtml(this.cfg.shop_url || '/shop/')}">XEM TẤT CẢ SẢN PHẨM</a>
+                </div>
+                <p class="quiz-result__disclaimer">${escapeHtml(data.disclaimer || 'Vui lòng thử trước sản phẩm 24 giờ trên vùng da quai hàm.')}</p>
+            `;
+
+            const bundleButton = this.result.querySelector('#quiz-add-bundle');
+            if (bundleButton) {
+                bundleButton.addEventListener('click', () => {
+                    const ids = products
+                        .map((product) => parseInt(product.id, 10))
+                        .filter((id) => Number.isInteger(id) && id > 0);
+
+                    if (ids.length && window.KleerCart && typeof window.KleerCart.addBundle === 'function') {
+                        window.KleerCart.addBundle(ids);
+                    }
+                });
+            }
+
+            this.applySkinMatch(profile);
+
+            window.dispatchEvent(new CustomEvent('kleer:quizCompleted', { detail: data }));
+        }
+
+        applySkinMatch(profile) {
+            const slug = SKIN_SLUG_BY_TYPE[profile.primary_type] !== undefined
+                ? SKIN_SLUG_BY_TYPE[profile.primary_type]
+                : '';
+
+            document.querySelectorAll('.chapternav-pill[data-skin-filter]').forEach((pill) => {
+                const value = pill.getAttribute('data-skin-filter');
+                pill.classList.toggle('active', slug ? value === slug : value === 'all');
+            });
+
+            document.querySelectorAll('#shelf-sec .rf-recommcard-33, #bento-catalog-grid .product-card').forEach((card) => {
+                if (!slug) {
+                    card.classList.remove('product-card--dimmed');
+                    return;
+                }
+
+                const types = String(card.getAttribute('data-skin-types') || '').split(/\s+/).filter(Boolean);
+                const matched = types.length === 0 || types.includes(slug);
+                card.classList.toggle('product-card--dimmed', !matched);
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const root = document.getElementById('quiz-sanctuary');
+        if (!root) {
             return;
         }
+        new KleerQuiz(root).init();
+    });
 
-        mainCard
-            .querySelector('#btn-quiz-restart')
-            ?.addEventListener('click', () => {
-                this.resetQuiz();
-            });
-    }
-
-    resetQuiz() {
-        try {
-            localStorage.removeItem(this.storageKey);
-            localStorage.removeItem(this.sessionKey);
-        } catch (error) {
-            console.warn('Cannot clear quiz storage:', error);
-        }
-
-        window.location.reload();
-    }
-
-    getStepName(step) {
-        const stepNames = {
-            makeup_remover: 'Tẩy trang',
-            cleanser: 'Làm sạch',
-            toner: 'Toner',
-            serum: 'Serum',
-            treatment: 'Điều trị',
-            moisturizer: 'Dưỡng ẩm',
-            sunscreen: 'Chống nắng',
-        };
-
-        return stepNames[step] || step || 'Chăm sóc da';
-    }
-
-    escapeHtml(value) {
-        if (
-            value === null
-            || value === undefined
-        ) {
-            return '';
-        }
-
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;',
-        };
-
-        return String(value).replace(
-            /[&<>"']/g,
-            (character) => map[character]
-        );
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    new KleerQuizEngine();
-});
+    window.KleerQuizLeaves = buildAsymmetricWhiteLeavesHTML;
+})();
