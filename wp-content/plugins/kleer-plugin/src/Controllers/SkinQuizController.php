@@ -89,6 +89,7 @@ class SkinQuizController
             }
 
             $result = $this->quizEngineService->processSubmission($validatedPayload, $version);
+            $result = $this->presentRecommendedProducts($result);
             if (JsonSchema::validate($result, JsonSchema::fromFile('quiz-submission-response.schema.json'))->isInvalid()) {
                 throw new \RuntimeException('Invalid routine response contract.');
             }
@@ -110,6 +111,52 @@ class SkinQuizController
                 ]
             );
         }
+    }
+
+    /**
+     * Bổ sung dữ liệu thẻ sản phẩm Hai Tông (màu nền, ảnh, nhãn INCI) cho từng sản phẩm gợi ý.
+     * Chỉ thêm các khóa đã khai báo optional trong quiz-submission-response.schema.json.
+     *
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
+    private function presentRecommendedProducts(array $result): array
+    {
+        if (!function_exists('wc_get_product') || !class_exists('\WC_Product')) {
+            return $result;
+        }
+
+        $products = $result['data']['recommended_products'] ?? null;
+        if (!is_array($products)) {
+            return $result;
+        }
+
+        foreach ($products as $index => $product) {
+            $product_id = (int) ($product['id'] ?? 0);
+            if ($product_id <= 0) {
+                continue;
+            }
+
+            $wc_product = wc_get_product($product_id);
+            if (!$wc_product instanceof \WC_Product) {
+                continue;
+            }
+
+            $card = \Kleer\Support\ProductCardPresenter::present($wc_product);
+
+            $products[$index]['cardTopBg'] = $card['cardTopBg'];
+            $products[$index]['cardBottomBg'] = $card['cardBottomBg'];
+            $products[$index]['cardAccent'] = $card['cardAccent'];
+            $products[$index]['image'] = $card['image'];
+            $products[$index]['skinLabel'] = $card['skinLabel'];
+            $products[$index]['inciBadge'] = $card['inciBadge'];
+            $products[$index]['inciGroup'] = $card['inciGroup'];
+            $products[$index]['priceFormatted'] = $card['priceFormatted'];
+        }
+
+        $result['data']['recommended_products'] = $products;
+
+        return $result;
     }
 
     private function answerError(string $pointer, string $message): WP_Error

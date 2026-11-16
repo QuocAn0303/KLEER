@@ -13,7 +13,9 @@ class CartComboService
 {
     private const NONCE_ACTION = 'kleer_add_routine_to_cart';
     private const AJAX_ACTION = 'kleer_add_routine_to_cart';
-    private const ROUTINE_STEPS = ['cleanser', 'treatment', 'moisturizer', 'sunscreen'];
+    private const AJAX_MUTATE = 'kleer_cart_mutate';
+    public const AJAX_NONCE_ACTION = 'kleer_ajax_nonce';
+    private const ROUTINE_STEPS = ['makeup_remover', 'cleanser', 'toner', 'serum', 'treatment', 'moisturizer', 'sunscreen'];
     private const DISCOUNT_LABEL = 'Giảm 15% Combo Routine Unisex';
     private const DISCOUNT_RATE = 0.15;
 
@@ -41,8 +43,13 @@ class CartComboService
 
     public function register(): void
     {
+        add_filter('kleer_quiz_cart_enabled', '__return_true');
+
         add_action('wp_ajax_' . self::AJAX_ACTION, [$this, 'handleBulkAddRoutineAjax']);
         add_action('wp_ajax_nopriv_' . self::AJAX_ACTION, [$this, 'handleBulkAddRoutineAjax']);
+
+        add_action('wp_ajax_' . self::AJAX_MUTATE, [$this, 'handleCartMutateAjax']);
+        add_action('wp_ajax_nopriv_' . self::AJAX_MUTATE, [$this, 'handleCartMutateAjax']);
 
         add_action('woocommerce_cart_calculate_fees', [$this, 'applyRoutineBundleDiscount']);
 
@@ -149,6 +156,198 @@ class CartComboService
             'fragments' => function_exists('WC') && method_exists(WC()->cart, 'get_cart_fragments') ? WC()->cart->get_cart_fragments() : [],
             'cart_hash' => function_exists('WC') && method_exists(WC()->cart, 'get_cart_hash') ? WC()->cart->get_cart_hash() : '',
         ]);
+    }
+
+    /**
+     * AJAX mutation cho ngăn kéo giỏ hàng Liquid Glass (add / add_bundle / update_qty).
+     * Trả về toàn bộ trạng thái giỏ để Frontend cập nhật ngay, không tải lại trang.
+     */
+    public function handleCartMutateAjax(): void
+    {
+        $nonce = $_POST['nonce'] ?? ($_SERVER['HTTP_X_WP_NONCE'] ?? '');
+        $nonce = is_string($nonce) ? sanitize_text_field(wp_unslash($nonce)) : '';
+
+        if ($nonce === '' || (!wp_verify_nonce($nonce, self::AJAX_NONCE_ACTION) && !wp_verify_nonce($nonce, self::NONCE_ACTION))) {
+            wp_send_json_error(['message' => __('Phiên làm việc đã hết hạn. Vui lòng tải lại trang.', 'kleer-plugin')], 403);
+            return;
+        }
+
+        if (!function_exists('WC') || !WC()->cart) {
+            wp_send_json_error(['message' => __('Giỏ hàng không khả dụng.', 'kleer-plugin')], 400);
+            return;
+        }
+
+        $cart = WC()->cart;
+        $op = isset($_POST['op']) ? sanitize_key(wp_unslash((string) $_POST['op'])) : 'add';
+
+        if ($op === 'update_qty') {
+            $cart_item_key = isset($_POST['cart_item_key']) ? sanitize_text_field(wp_unslash((string) $_POST['cart_item_key'])) : '';
+            $qty = isset($_POST['qty']) ? max(0, absint($_POST['qty'])) : 0;
+            if ($cart_item_key !== '') {
+                $cart->set_quantity($cart_item_key, $qty, true);
+            }
+        } elseif ($op === 'add_bundle') {
+            foreach ($this->normaliseProductIds($_POST['product_ids'] ?? []) as $product_id) {
+                $cart->add_to_cart($product_id, 1);
+            }
+        } else {
+            $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+            $qty = isset($_POST['qty']) ? max(1, absint($_POST['qty'])) : 1;
+            if ($product_id > 0) {
+                $cart->add_to_cart($product_id, $qty);
+            }
+        }
+
+        if (method_exists($cart, 'calculate_totals')) {
+            $cart->calculate_totals();
+        }
+
+        wp_send_json_success($this->buildCartState());
+    }
+
+    /**
+     * Quét xung đột AHA/BHA + Retinoids trên danh sách cart item.
+     * Không chặn thanh toán, chỉ trả về cảnh báo da liễu thân thiện.
+     *
+     * @param array<int|string, array<string, mixed>> $cart_items
+     * @return array{has_conflict: bool, message: string}
+     */
+    public function scanIngredientConflicts(array $cart_items): array
+    {
+        $has_acid = false;
+        $has_retinoid = false;
+
+        foreach ($cart_items as $cart_item) {
+            if (!is_array($cart_item)) {
+                continue;
+            }
+
+            $product_id = absint($cart_item['product_id'] ?? ($cart_item['variation_id'] ?? 0));
+            if ($product_id <= 0) {
+                continue;
+            }
+
+            if ($this->productHasAcid($product_id)) {
+                $has_acid = true;
+            }
+
+            if ($this->productHasRetinoid($product_id)) {
+                $has_retinoid = true;
+            }
+
+            if ($has_acid && $has_retinoid) {
+                break;
+            }
+        }
+
+        if (!$has_acid || !$has_retinoid) {
+            return ['has_conflict' => false, 'message' => ''];
+        }
+
+        return [
+            'has_conflict' => true,
+            'message' => __('Lưu ý từ chuyên gia da liễu KLEER: Giỏ hàng của bạn đang có cả BHA/AHA và Retinol thực vật. Bạn vẫn có thể đặt mua bình thường, nhưng hãy dùng cách ngày (chẵn/lẻ) hoặc khác buổi để tránh quá tải màng ẩm nhé.', 'kleer-plugin'),
+        ];
+    }
+
+    /**
+     * Ảnh chụp trạng thái giỏ hàng cho ngăn kéo Liquid Glass.
+     *
+     * @return array<string, mixed>
+     */
+    public function buildCartState(): array
+    {
+        $empty = [
+            'items' => [],
+            'item_count' => 0,
+            'subtotal' => 0.0,
+            'discount_amount' => 0.0,
+            'discount_label' => self::DISCOUNT_LABEL,
+            'discount_active' => false,
+            'total' => 0.0,
+            'conflict' => ['has_conflict' => false, 'message' => ''],
+            'cart_url' => function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/'),
+            'checkout_url' => function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : home_url('/checkout/'),
+        ];
+
+        if (!function_exists('WC') || !WC()->cart) {
+            return $empty;
+        }
+
+        $cart = WC()->cart;
+        $items = [];
+        $unique_steps = [];
+
+        foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
+            $product_id = absint($cart_item['product_id'] ?? 0);
+            $product = function_exists('wc_get_product') ? wc_get_product($product_id) : null;
+            $step = $this->getRoutineStepsForProduct($product_id);
+            foreach ($step as $step_slug) {
+                $unique_steps[strtolower(sanitize_key($step_slug))] = true;
+            }
+
+            $image_id = $product && method_exists($product, 'get_image_id') ? (int) $product->get_image_id() : 0;
+            $image = $image_id > 0 ? wp_get_attachment_image_url($image_id, 'thumbnail') : wc_placeholder_img_src('thumbnail');
+
+            $items[] = [
+                'key' => (string) $cart_item_key,
+                'product_id' => $product_id,
+                'name' => $product ? $product->get_name() : __('Sản phẩm KLEER', 'kleer-plugin'),
+                'qty' => (int) ($cart_item['quantity'] ?? 0),
+                'line_total' => (float) ($cart_item['line_total'] ?? 0),
+                'image' => (string) $image,
+                'permalink' => $product && method_exists($product, 'get_permalink') ? (string) $product->get_permalink() : '',
+                'step' => $step[0] ?? '',
+            ];
+        }
+
+        $discount = 0.0;
+        if (method_exists($cart, 'get_fees')) {
+            foreach ((array) $cart->get_fees() as $fee) {
+                $name = is_object($fee) ? ($fee->name ?? '') : ($fee['name'] ?? '');
+                $amount = is_object($fee) ? (float) ($fee->amount ?? 0) : (float) ($fee['amount'] ?? 0);
+                if ($name === self::DISCOUNT_LABEL) {
+                    $discount += abs($amount);
+                }
+            }
+        }
+
+        $state = $empty;
+        $state['items'] = $items;
+        $state['item_count'] = (int) $cart->get_cart_contents_count();
+        $state['subtotal'] = (float) $cart->get_subtotal();
+        $state['discount_amount'] = round($discount, 2);
+        $state['discount_active'] = $discount > 0 || count(array_intersect(array_keys($unique_steps), self::ROUTINE_STEPS)) >= 3;
+        $state['total'] = method_exists($cart, 'get_total') ? (float) $cart->get_total('edit') : 0.0;
+        $state['conflict'] = $this->scanIngredientConflicts($cart->get_cart_contents());
+
+        return $state;
+    }
+
+    /**
+     * @param mixed $raw
+     * @return list<int>
+     */
+    private function normaliseProductIds(mixed $raw): array
+    {
+        if (is_string($raw)) {
+            $decoded = json_decode(stripslashes($raw), true);
+            $raw = is_array($decoded) ? $decoded : explode(',', $raw);
+        }
+
+        if (!is_array($raw)) {
+            return [];
+        }
+
+        $ids = [];
+        foreach ($raw as $value) {
+            $id = absint($value);
+            if ($id > 0) {
+                $ids[$id] = $id;
+            }
+        }
+
+        return array_values($ids);
     }
 
     public function applyRoutineBundleDiscount(\WC_Cart $cart): void
@@ -272,7 +471,7 @@ class CartComboService
         if ($hasAcid && $hasRetinoid) {
             return [
                 'has_conflict' => true,
-                'message' => __('Không dùng chồng lớp AHA/BHA và Retinol trong cùng 1 buổi tối', 'kleer-plugin'),
+                'message' => __('Lưu ý từ chuyên gia da liễu KLEER: Giỏ hàng của bạn đang có cả BHA/AHA và Retinol thực vật. Bạn vẫn có thể đặt mua bình thường, nhưng hãy dùng cách ngày (chẵn/lẻ) hoặc khác buổi để tránh quá tải màng ẩm nhé.', 'kleer-plugin'),
             ];
         }
 

@@ -1,0 +1,333 @@
+<mxfile host="app.diagrams.net" modified="2026-11-14T14:00:00.000Z" agent="Mozilla/5.0" version="24.0.0" type="device">
+  <diagram name="L09 - Database ERD 3NF and HPOS" id="L09-ERD-HPOS">
+    <mxGraphModel dx="2200" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="1860" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ================= HEADER BANNER ================= -->
+        <mxCell id="header_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#1E3A2F;strokeColor=#0F291E;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="2520" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="KLEER — SƠ ĐỒ ERD CƠ SỞ DỮ LIỆU QUAN HỆ CHUẨN HÓA 3NF &amp; ÁNH XẠ VẬT LÝ WOOCOMMERCE HPOS" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#FFFFFF;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="26" width="2480" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Mục 4.2 Thiết kế Cơ sở dữ liệu (EC312)  |  Tầng 1: Mô hình Quan hệ Luận lý Chuẩn hóa 3NF (8 Thực thể)   •   Tầng 2: Ánh xạ Vật lý sang Kiến trúc Bảng phẳng WooCommerce HPOS &amp; WordPress Schema (MariaDB 10.11 + Redis)" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=13;fontStyle=0;fontColor=#D1FAE5;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="60" y="62" width="2480" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- ================= LAYER 1: LOGICAL 3NF SCHEMA ================= -->
+        <mxCell id="layer1" value="TẦNG 1 — MÔ HÌNH DỮ LIỆU QUAN HỆ LUẬN LÝ CHUẨN HÓA 3NF (LOGICAL 3NF ERD — 8 THỰC THỂ CỐT LÕI)" style="swimlane;whiteSpace=wrap;html=1;startSize=38;fontStyle=1;fontSize=15;fontColor=#FFFFFF;fillColor=#1B5E20;strokeColor=#1B5E20;strokeWidth=2;swimlaneFillColor=#F4FAF6;rounded=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="2520" height="900" as="geometry" />
+        </mxCell>
+
+        <!-- Legend Box inside Layer 1 (Top Right) -->
+        <mxCell id="legend_box" value="&lt;div style=&quot;line-height:1.5;&quot;&gt;&lt;b style=&quot;color:#1B5E20;font-size:13px;&quot;&gt;CHÚ GIẢI KÝ HIỆU SƠ ĐỒ ERD (CROW'S FOOT NOTATION)&lt;/b&gt;&lt;hr style=&quot;border-color:#A7F3D0;margin:4px 0;&quot;&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;[PK]&lt;/b&gt; Primary Key (Khóa chính) &amp;nbsp;|&amp;nbsp; &lt;b style=&quot;color:#1D4ED8;&quot;&gt;[FK]&lt;/b&gt; Foreign Key (Khóa ngoại) &amp;nbsp;|&amp;nbsp; &lt;b style=&quot;color:#047857;&quot;&gt;[PK, FK]&lt;/b&gt; Khóa chính ghép (Bảng trung gian M-N) &amp;nbsp;|&amp;nbsp; &lt;b style=&quot;color:#6D28D9;&quot;&gt;UQ&lt;/b&gt; Unique &amp;nbsp;|&amp;nbsp; &lt;b&gt;AI&lt;/b&gt; Auto Increment&lt;br&gt;&lt;b style=&quot;color:#1B5E20;&quot;&gt;──||──────|&amp;lt;&lt;/b&gt; Quan hệ 1 - Nhiều bắt buộc (1 : N) &amp;nbsp;&amp;nbsp;|&amp;nbsp;&amp;nbsp; &lt;b style=&quot;color:#1565C0;&quot;&gt;──o|──────|&amp;lt;&lt;/b&gt; Quan hệ 0..1 - Nhiều tùy chọn (Guest Checkout) &amp;nbsp;&amp;nbsp;|&amp;nbsp;&amp;nbsp; &lt;b style=&quot;color:#6A1B9A;&quot;&gt;──||──────o|&lt;/b&gt; Quan hệ 1 - 0..1 (Giao dịch / Hoàn tiền)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontColor=#1F2937;fillColor=#FFFFFF;strokeColor=#059669;strokeWidth=1.5;align=left;spacingLeft=14;spacingRight=14;spacingTop=6;spacingBottom=6;" vertex="1" parent="layer1">
+          <mxGeometry x="40" y="52" width="1360" height="68" as="geometry" />
+        </mxCell>
+
+        <mxCell id="domain_badge" value="&lt;div style=&quot;line-height:1.45;&quot;&gt;&lt;b style=&quot;color:#1E3A8A;font-size:13px;&quot;&gt;PHÂN VÙNG NGHIỆP VỤ TRÊN TẦNG 1:&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#047857;&quot;&gt;■&lt;/span&gt; &lt;b&gt;Nhánh Trái:&lt;/b&gt; Danh mục Sản phẩm (≥ 500 SKU) &amp;amp; Từ điển Da liễu INCI (4 trục Taxonomy)&lt;br&gt;&lt;span style=&quot;color:#1D4ED8;&quot;&gt;■&lt;/span&gt; &lt;b&gt;Nhánh Giữa:&lt;/b&gt; Tài khoản Khách hàng, Đơn hàng HPOS (Combo Routine -15%) &amp;amp; Chi tiết dòng đơn&lt;br&gt;&lt;span style=&quot;color:#6D28D9;&quot;&gt;■&lt;/span&gt; &lt;b&gt;Nhánh Phải:&lt;/b&gt; Giao dịch Thanh toán (COD / VietQR / VNPay HMAC-SHA512) &amp;amp; Hoàn tiền Store Credit&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontColor=#1F2937;fillColor=#FFFFFF;strokeColor=#2563EB;strokeWidth=1.5;align=left;spacingLeft=14;spacingRight=14;spacingTop=6;spacingBottom=6;" vertex="1" parent="layer1">
+          <mxGeometry x="1430" y="52" width="1050" height="68" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TABLE 1: Products (Top Left) ================= -->
+        <mxCell id="tbl_products" value="1. BẢNG Products (Sản phẩm Chăm sóc Da ≥ 500 SKU)" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#047857;strokeColor=#065F46;strokeWidth=2;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=4;" vertex="1" parent="layer1">
+          <mxGeometry x="50" y="145" width="490" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_products_body" value="&lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;color:#111827;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr style=&quot;background:#ECFDF5;border-bottom:1.5px solid #047857;font-weight:bold;color:#065F46;&quot;&gt;&lt;td width=&quot;16%&quot;&gt;Khóa&lt;/td&gt;&lt;td width=&quot;36%&quot;&gt;Tên trường (Field)&lt;/td&gt;&lt;td width=&quot;28%&quot;&gt;Kiểu dữ liệu&lt;/td&gt;&lt;td width=&quot;20%&quot;&gt;Ràng buộc&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;PK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;product_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;NOT NULL, AI&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#6D28D9;&quot;&gt;UQ&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;sku&lt;/b&gt;&lt;/td&gt;&lt;td&gt;VARCHAR(50)&lt;/td&gt;&lt;td&gt;UNIQUE, NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;product_name&lt;/td&gt;&lt;td&gt;VARCHAR(255)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;regular_price&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL (VNĐ)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;stock_quantity&lt;/td&gt;&lt;td&gt;INT&lt;/td&gt;&lt;td&gt;NOT NULL, DEF 0&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;stock_status&lt;/td&gt;&lt;td&gt;ENUM('instock','outofstock')&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;full_inci_list&lt;/td&gt;&lt;td&gt;TEXT&lt;/td&gt;&lt;td&gt;NULL (Bảng INCI)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;is_strong_active&lt;/td&gt;&lt;td&gt;TINYINT(1)&lt;/td&gt;&lt;td&gt;NOT NULL, DEF 0&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;is_gentle_fallback&lt;/td&gt;&lt;td&gt;TINYINT(1)&lt;/td&gt;&lt;td&gt;NOT NULL, DEF 0&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;div style=&quot;font-size:11px;color:#065F46;padding-top:4px;&quot;&gt;&lt;i&gt;• SKU chuẩn KLR-{hash8}; cờ _kleer_strong_active &amp;amp; _kleer_gentle_fallback lọc da nhạy cảm.&lt;/i&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=2;" vertex="1" parent="tbl_products">
+          <mxGeometry x="0" y="34" width="490" height="276" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TABLE 4: Product_Taxonomies (Middle Left) ================= -->
+        <mxCell id="tbl_product_tax" value="4. BẢNG Product_Taxonomies (Liên kết Đa-Đa M:N)" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#0D9488;strokeColor=#0F766E;strokeWidth=2;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=4;" vertex="1" parent="layer1">
+          <mxGeometry x="50" y="510" width="490" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_product_tax_body" value="&lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;color:#111827;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr style=&quot;background:#CCFBF1;border-bottom:1.5px solid #0F766E;font-weight:bold;color:#115E59;&quot;&gt;&lt;td width=&quot;18%&quot;&gt;Khóa&lt;/td&gt;&lt;td width=&quot;32%&quot;&gt;Tên trường&lt;/td&gt;&lt;td width=&quot;28%&quot;&gt;Kiểu dữ liệu&lt;/td&gt;&lt;td width=&quot;22%&quot;&gt;Tham chiếu FK&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#047857;&quot;&gt;PK, FK1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;product_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;→ Products.product_id&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#047857;&quot;&gt;PK, FK2&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;term_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;→ Taxonomy_Terms.term_id&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;div style=&quot;font-size:11px;color:#0F766E;padding-top:6px;&quot;&gt;&lt;i&gt;• Khóa chính ghép (product_id, term_id) chuẩn hóa 1NF: tách các thuộc tính đa trị khỏi bảng Products.&lt;/i&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=2;" vertex="1" parent="tbl_product_tax">
+          <mxGeometry x="0" y="34" width="490" height="116" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TABLE 3: Taxonomy_Terms (Bottom Left) ================= -->
+        <mxCell id="tbl_taxonomy" value="3. BẢNG Taxonomy_Terms (Từ điển Da liễu &amp; Hoạt chất)" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#047857;strokeColor=#065F46;strokeWidth=2;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=4;" vertex="1" parent="layer1">
+          <mxGeometry x="50" y="705" width="490" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_taxonomy_body" value="&lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;color:#111827;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr style=&quot;background:#ECFDF5;border-bottom:1.5px solid #047857;font-weight:bold;color:#065F46;&quot;&gt;&lt;td width=&quot;16%&quot;&gt;Khóa&lt;/td&gt;&lt;td width=&quot;34%&quot;&gt;Tên trường (Field)&lt;/td&gt;&lt;td width=&quot;28%&quot;&gt;Kiểu dữ liệu&lt;/td&gt;&lt;td width=&quot;22%&quot;&gt;Ràng buộc&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;PK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;term_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;NOT NULL, AI&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;taxonomy_group&lt;/td&gt;&lt;td&gt;VARCHAR(50)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;term_slug&lt;/td&gt;&lt;td&gt;VARCHAR(100)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;term_name&lt;/td&gt;&lt;td&gt;VARCHAR(150)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;div style=&quot;font-size:11px;color:#065F46;padding-top:4px;&quot;&gt;&lt;i&gt;• 5 nhóm: pa_skin_type (oily, sensitive...), pa_skin_concern (acne...), pa_routine_step (cleanser, serum...), pa_active_ingredient (retinol, bha...), pa_brand.&lt;/i&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=2;" vertex="1" parent="tbl_taxonomy">
+          <mxGeometry x="0" y="34" width="490" height="141" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TABLE 2: Users (Top Center-Left) ================= -->
+        <mxCell id="tbl_users" value="2. BẢNG Users (Khách hàng &amp; Quản trị viên)" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#1D4ED8;strokeColor=#1E40AF;strokeWidth=2;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=4;" vertex="1" parent="layer1">
+          <mxGeometry x="680" y="145" width="470" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_users_body" value="&lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;color:#111827;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr style=&quot;background:#EFF6FF;border-bottom:1.5px solid #1D4ED8;font-weight:bold;color:#1E3A8A;&quot;&gt;&lt;td width=&quot;16%&quot;&gt;Khóa&lt;/td&gt;&lt;td width=&quot;34%&quot;&gt;Tên trường (Field)&lt;/td&gt;&lt;td width=&quot;28%&quot;&gt;Kiểu dữ liệu&lt;/td&gt;&lt;td width=&quot;22%&quot;&gt;Ràng buộc&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;PK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;user_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;NOT NULL, AI&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#6D28D9;&quot;&gt;UQ&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;email&lt;/b&gt;&lt;/td&gt;&lt;td&gt;VARCHAR(100)&lt;/td&gt;&lt;td&gt;UNIQUE, NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;password_hash&lt;/td&gt;&lt;td&gt;VARCHAR(255)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;full_name&lt;/td&gt;&lt;td&gt;VARCHAR(150)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;phone&lt;/td&gt;&lt;td&gt;VARCHAR(20)&lt;/td&gt;&lt;td&gt;NULL (SĐT giao hàng)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;role&lt;/td&gt;&lt;td&gt;ENUM('customer','admin')&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;created_at&lt;/td&gt;&lt;td&gt;DATETIME&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;div style=&quot;font-size:11px;color:#1E40AF;padding-top:4px;&quot;&gt;&lt;i&gt;• Lưu định danh người dùng; tách biệt khỏi Orders để đạt chuẩn 3NF.&lt;/i&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=2;" vertex="1" parent="tbl_users">
+          <mxGeometry x="0" y="34" width="470" height="216" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TABLE 6: Order_Items (Bottom Center-Left) ================= -->
+        <mxCell id="tbl_order_items" value="6. BẢNG Order_Items (Chi tiết Dòng sản phẩm trong Đơn)" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#0D9488;strokeColor=#0F766E;strokeWidth=2;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=4;" vertex="1" parent="layer1">
+          <mxGeometry x="680" y="510" width="470" height="245" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_order_items_body" value="&lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;color:#111827;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr style=&quot;background:#CCFBF1;border-bottom:1.5px solid #0F766E;font-weight:bold;color:#115E59;&quot;&gt;&lt;td width=&quot;16%&quot;&gt;Khóa&lt;/td&gt;&lt;td width=&quot;34%&quot;&gt;Tên trường (Field)&lt;/td&gt;&lt;td width=&quot;28%&quot;&gt;Kiểu dữ liệu&lt;/td&gt;&lt;td width=&quot;22%&quot;&gt;Ràng buộc / FK&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;PK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;order_item_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;NOT NULL, AI&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#DBEAFE;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;FK1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;order_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;→ Orders.order_id&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#DBEAFE;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;FK2&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;product_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;→ Products.product_id&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;quantity&lt;/td&gt;&lt;td&gt;INT UNSIGNED&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;unit_price&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;line_total&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;div style=&quot;font-size:11px;color:#0F766E;padding-top:4px;&quot;&gt;&lt;i&gt;• Đạt chuẩn 2NF: lưu giá chốt tại thời điểm mua (unit_price), tách product_name về bảng Products.&lt;/i&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=2;" vertex="1" parent="tbl_order_items">
+          <mxGeometry x="0" y="34" width="470" height="211" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TABLE 5: Orders (Center Hub) ================= -->
+        <mxCell id="tbl_orders" value="5. BẢNG Orders (Đơn hàng Trung tâm — Lưu trữ trên Bảng phẳng HPOS)" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#1D4ED8;strokeColor=#1E40AF;strokeWidth=2.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=4;" vertex="1" parent="layer1">
+          <mxGeometry x="1290" y="145" width="540" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_orders_body" value="&lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;color:#111827;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr style=&quot;background:#EFF6FF;border-bottom:1.5px solid #1D4ED8;font-weight:bold;color:#1E3A8A;&quot;&gt;&lt;td width=&quot;14%&quot;&gt;Khóa&lt;/td&gt;&lt;td width=&quot;38%&quot;&gt;Tên trường (Field)&lt;/td&gt;&lt;td width=&quot;26%&quot;&gt;Kiểu dữ liệu&lt;/td&gt;&lt;td width=&quot;22%&quot;&gt;Ràng buộc / FK&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;PK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;order_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;NOT NULL, AI&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#DBEAFE;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;FK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;customer_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;NULL (→ Users.user_id)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;billing_email&lt;/td&gt;&lt;td&gt;VARCHAR(100)&lt;/td&gt;&lt;td&gt;NOT NULL (Nhận QR)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;shipping_address&lt;/td&gt;&lt;td&gt;VARCHAR(500)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;order_status&lt;/td&gt;&lt;td&gt;VARCHAR(40)&lt;/td&gt;&lt;td&gt;NOT NULL (8 trạng thái)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;subtotal_amount&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;b style=&quot;color:#047857;&quot;&gt;bundle_discount_amount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL, DEF 0 (-15%)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;shipping_fee&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL, DEF 0&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;total_amount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;return_reason&lt;/td&gt;&lt;td&gt;VARCHAR(255)&lt;/td&gt;&lt;td&gt;NULL (Lý do đổi trả)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;b style=&quot;color:#6D28D9;&quot;&gt;return_tracking_code&lt;/b&gt;&lt;/td&gt;&lt;td&gt;VARCHAR(100)&lt;/td&gt;&lt;td&gt;NULL (Mã vận đơn trả)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;created_at&lt;/td&gt;&lt;td&gt;DATETIME&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;div style=&quot;font-size:11px;color:#1E40AF;padding-top:4px;&quot;&gt;&lt;i&gt;• Trạng thái: pending, on-hold, processing, completed, cancelled, return-requested, return-approved, refunded.&lt;/i&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=2;" vertex="1" parent="tbl_orders">
+          <mxGeometry x="0" y="34" width="540" height="376" as="geometry" />
+        </mxCell>
+
+        <!-- Note box under Orders for Order Lifecycle & Instant Refund trigger -->
+        <mxCell id="orders_lifecycle_note" value="&lt;div style=&quot;line-height:1.45;&quot;&gt;&lt;b style=&quot;color:#1E3A8A;&quot;&gt;QUY TẮC NGHIỆP VỤ ĐƠN HÀNG HPOS (KLEER):&lt;/b&gt;&lt;br&gt;1. &lt;b&gt;Combo Routine Bundle (-15%):&lt;/b&gt; Khi giỏ hàng có đủ ≥ 3 bước chăm sóc da khác nhau (&lt;i&gt;pa_routine_step&lt;/i&gt;), &lt;code&gt;CartComboService&lt;/code&gt; tự động tính &lt;code&gt;bundle_discount_amount = 15% × subtotal_amount&lt;/code&gt;.&lt;br&gt;2. &lt;b&gt;Instant Refund (Nhánh 1):&lt;/b&gt; Ngay khi khách nhập &lt;code&gt;return_tracking_code&lt;/code&gt; hợp lệ cho đơn lỗi/kích ứng, &lt;code&gt;InstantRefundService&lt;/code&gt; chuyển trạng thái đơn và tự động sinh bản ghi &lt;b&gt;Store_Credits&lt;/b&gt; (= 100% &lt;code&gt;total_amount&lt;/code&gt;) gửi qua Email mà không bắt khách chờ hàng về kho.&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fontColor=#1F2937;fillColor=#EFF6FF;strokeColor=#3B82F6;strokeWidth=1.5;align=left;spacingLeft=12;spacingRight=12;spacingTop=6;spacingBottom=6;" vertex="1" parent="layer1">
+          <mxGeometry x="1290" y="695" width="540" height="185" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TABLE 7: Payment_Transactions (Top Right) ================= -->
+        <mxCell id="tbl_payment" value="7. BẢNG Payment_Transactions (Giao dịch COD / VietQR / VNPay)" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#6D28D9;strokeColor=#5B21B6;strokeWidth=2;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=4;" vertex="1" parent="layer1">
+          <mxGeometry x="1970" y="145" width="510" height="295" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_payment_body" value="&lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;color:#111827;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr style=&quot;background:#F5F3FF;border-bottom:1.5px solid #6D28D9;font-weight:bold;color:#4C1D95;&quot;&gt;&lt;td width=&quot;14%&quot;&gt;Khóa&lt;/td&gt;&lt;td width=&quot;36%&quot;&gt;Tên trường (Field)&lt;/td&gt;&lt;td width=&quot;28%&quot;&gt;Kiểu dữ liệu&lt;/td&gt;&lt;td width=&quot;22%&quot;&gt;Ràng buộc / FK&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;PK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;transaction_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;NOT NULL, AI&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#DBEAFE;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;FK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;order_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;→ Orders.order_id&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;payment_method&lt;/td&gt;&lt;td&gt;ENUM('cod','vietqr','vnpay')&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;gateway_txn_ref&lt;/td&gt;&lt;td&gt;VARCHAR(100)&lt;/td&gt;&lt;td&gt;NULL (vnp_TxnNo)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;amount&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;signature_verified&lt;/td&gt;&lt;td&gt;TINYINT(1)&lt;/td&gt;&lt;td&gt;NOT NULL, DEF 0&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;payment_status&lt;/td&gt;&lt;td&gt;ENUM('pending','paid','failed')&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;paid_at&lt;/td&gt;&lt;td&gt;DATETIME&lt;/td&gt;&lt;td&gt;NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;div style=&quot;font-size:11px;color:#5B21B6;padding-top:4px;&quot;&gt;&lt;i&gt;• Xác thực chữ ký số HMAC-SHA512 từ VNPay Sandbox &amp;amp; tạo QR Napas VietQR động.&lt;/i&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=2;" vertex="1" parent="tbl_payment">
+          <mxGeometry x="0" y="34" width="510" height="261" as="geometry" />
+        </mxCell>
+
+        <!-- ================= TABLE 8: Store_Credits (Bottom Right) ================= -->
+        <mxCell id="tbl_store_credits" value="8. BẢNG Store_Credits (Mã Hoàn tiền nhanh Store Credit)" style="swimlane;whiteSpace=wrap;html=1;startSize=34;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#6D28D9;strokeColor=#5B21B6;strokeWidth=2;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=4;" vertex="1" parent="layer1">
+          <mxGeometry x="1970" y="510" width="510" height="275" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_store_credits_body" value="&lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;color:#111827;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr style=&quot;background:#F5F3FF;border-bottom:1.5px solid #6D28D9;font-weight:bold;color:#4C1D95;&quot;&gt;&lt;td width=&quot;16%&quot;&gt;Khóa&lt;/td&gt;&lt;td width=&quot;34%&quot;&gt;Tên trường (Field)&lt;/td&gt;&lt;td width=&quot;26%&quot;&gt;Kiểu dữ liệu&lt;/td&gt;&lt;td width=&quot;24%&quot;&gt;Ràng buộc / FK&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#FEF3C7;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;PK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;credit_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;NOT NULL, AI&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#6D28D9;&quot;&gt;UQ&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;coupon_code&lt;/b&gt;&lt;/td&gt;&lt;td&gt;VARCHAR(64)&lt;/td&gt;&lt;td&gt;UNIQUE, NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;background:#DBEAFE;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;FK, UQ&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;source_order_id&lt;/b&gt;&lt;/td&gt;&lt;td&gt;BIGINT UNSIGNED&lt;/td&gt;&lt;td&gt;UNIQUE → Orders.order_id&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;customer_email&lt;/td&gt;&lt;td&gt;VARCHAR(100)&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;credit_amount&lt;/td&gt;&lt;td&gt;DECIMAL(12,2)&lt;/td&gt;&lt;td&gt;NOT NULL (= 100% đơn)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;is_redeemed&lt;/td&gt;&lt;td&gt;TINYINT(1)&lt;/td&gt;&lt;td&gt;NOT NULL, DEF 0 (0/1)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr style=&quot;border-bottom:1px solid #E5E7EB;&quot;&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;issued_at&lt;/td&gt;&lt;td&gt;DATETIME&lt;/td&gt;&lt;td&gt;NOT NULL&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;div style=&quot;font-size:11px;color:#5B21B6;padding-top:4px;&quot;&gt;&lt;i&gt;• Mã chuẩn KLR-CREDIT-{ORDER_ID}-{HASH}; phát hành tức thì khi có mã vận đơn trả hàng.&lt;/i&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=2;" vertex="1" parent="tbl_store_credits">
+          <mxGeometry x="0" y="34" width="510" height="241" as="geometry" />
+        </mxCell>
+
+        <!-- ================= RELATIONSHIP EDGES (NON-OVERLAPPING CROW'S FOOT) ================= -->
+        <!-- 1. Products (1) ──< Product_Taxonomies (N) -->
+        <mxCell id="e_products_tax" value="1 : N (Gán thuộc tính)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#047857;strokeWidth=2.2;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;fontStyle=1;fontColor=#065F46;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="layer1" source="tbl_products" target="tbl_product_tax">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 2. Taxonomy_Terms (1) ──< Product_Taxonomies (N) -->
+        <mxCell id="e_tax_tax" value="1 : N (Phân loại da liễu)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#047857;strokeWidth=2.2;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;fontStyle=1;fontColor=#065F46;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="layer1" source="tbl_taxonomy" target="tbl_product_tax">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 3. Products (1) ──< Order_Items (N) -->
+        <mxCell id="e_products_items" value="1 : N (product_id)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0D9488;strokeWidth=2.2;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;fontStyle=1;fontColor=#0F766E;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;" edge="1" parent="layer1" source="tbl_products" target="tbl_order_items">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="610" y="378" />
+              <mxPoint x="610" y="596" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 4. Users (0..1) ──< Orders (N) -->
+        <mxCell id="e_users_orders" value="0..1 : N (customer_id)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1D4ED8;strokeWidth=2.2;startArrow=ERzeroToOne;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;fontStyle=1;fontColor=#1E40AF;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.21;entryDx=0;entryDy=0;" edge="1" parent="layer1" source="tbl_users" target="tbl_orders">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 5. Orders (1) ──< Order_Items (N) -->
+        <mxCell id="e_orders_items" value="1 : N (order_id)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0D9488;strokeWidth=2.2;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;fontStyle=1;fontColor=#0F766E;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.35;entryDx=0;entryDy=0;" edge="1" parent="layer1" source="tbl_orders" target="tbl_order_items">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1220" y="453" />
+              <mxPoint x="1220" y="596" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 6. Orders (1) ── Payment_Transactions (1) -->
+        <mxCell id="e_orders_payment" value="1 : 1 (order_id)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6D28D9;strokeWidth=2.2;startArrow=ERmandOne;startFill=0;endArrow=ERone;endFill=0;fontSize=11;fontStyle=1;fontColor=#5B21B6;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;" edge="1" parent="layer1" source="tbl_orders" target="tbl_payment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 7. Orders (1) ── Store_Credits (0..1) -->
+        <mxCell id="e_orders_store" value="1 : 0..1 (source_order_id UQ)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6D28D9;strokeWidth=2.2;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToOne;endFill=0;fontSize=11;fontStyle=1;fontColor=#5B21B6;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.38;entryDx=0;entryDy=0;" edge="1" parent="layer1" source="tbl_orders" target="tbl_store_credits">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1900" y="453" />
+              <mxPoint x="1900" y="615" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+
+        <!-- ================= LAYER 2: PHYSICAL HPOS & WORDPRESS SCHEMA MAPPING ================= -->
+        <mxCell id="layer2" value="TẦNG 2 — ÁNH XẠ VẬT LÝ SANG KIẾN TRÚC BẢNG PHẲNG WOOCOMMERCE HPOS &amp; WORDPRESS TAXONOMY SCHEMA (MariaDB 10.11 + Redis)" style="swimlane;whiteSpace=wrap;html=1;startSize=38;fontStyle=1;fontSize=15;fontColor=#FFFFFF;fillColor=#1565C0;strokeColor=#0D47A1;strokeWidth=2;swimlaneFillColor=#F0F7FF;rounded=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1045" width="2520" height="460" as="geometry" />
+        </mxCell>
+
+        <mxCell id="layer2_sub" value="&lt;b style=&quot;color:#0D47A1;&quot;&gt;Cơ chế Ánh xạ Vật lý (Physical Schema Mapping — Mục 4.2.2):&lt;/b&gt; Giải quyết triệt để điểm nghẽn hiệu năng của bảng &lt;code&gt;wp_postmeta&lt;/code&gt; truyền thống bằng cách tách đơn hàng sang hệ thống 4 bảng phẳng &lt;b&gt;WooCommerce HPOS&lt;/b&gt; (&lt;code&gt;HposService.php&lt;/code&gt;), đánh chỉ mục bảng tra cứu sản phẩm (&lt;code&gt;wp_wc_product_meta_lookup&lt;/code&gt;) và đệm truy vấn qua &lt;b&gt;Redis In-Memory Cache&lt;/b&gt; (&lt;code&gt;KleerCache&lt;/code&gt;)." style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fontColor=#1E293B;fillColor=#FFFFFF;strokeColor=#93C5FD;strokeWidth=1.5;align=left;spacingLeft=14;spacingRight=14;" vertex="1" parent="layer2">
+          <mxGeometry x="40" y="50" width="2440" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- Row 1 of Layer 2: 3 Cards -->
+        <!-- Card 1: Users -->
+        <mxCell id="map1" value="1. ÁNH XẠ BẢNG Users" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=12.5;fontColor=#FFFFFF;fillColor=#1E40AF;strokeColor=#1E3A8A;strokeWidth=1.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="layer2">
+          <mxGeometry x="40" y="110" width="580" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="map1_body" value="&lt;div style=&quot;line-height:1.45;font-size:12px;color:#1F2937;&quot;&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;• Bảng Luận lý 3NF:&lt;/b&gt; &lt;code&gt;Users&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#047857;&quot;&gt;• Bảng Vật lý MariaDB:&lt;/b&gt; &lt;code&gt;wp_users&lt;/code&gt; &amp;amp; &lt;code&gt;wp_usermeta&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;• Cơ chế lưu trữ &amp;amp; Lợi ích hiệu năng:&lt;/b&gt;&lt;br&gt;Lưu thông tin định danh tài khoản (&lt;code&gt;ID, user_email, user_pass&lt;/code&gt; băm bảo mật) trong &lt;code&gt;wp_users&lt;/code&gt;; lưu họ tên, số điện thoại giao hàng và phân quyền vai trò (&lt;code&gt;customer / admin&lt;/code&gt;) trong &lt;code&gt;wp_usermeta&lt;/code&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingRight=10;spacingTop=6;" vertex="1" parent="map1">
+          <mxGeometry x="0" y="30" width="580" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Card 2: Products -->
+        <mxCell id="map2" value="2. ÁNH XẠ BẢNG Products (≥ 500 SKU)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=12.5;fontColor=#FFFFFF;fillColor=#047857;strokeColor=#065F46;strokeWidth=1.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="layer2">
+          <mxGeometry x="650" y="110" width="610" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="map2_body" value="&lt;div style=&quot;line-height:1.45;font-size:12px;color:#1F2937;&quot;&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;• Bảng Luận lý 3NF:&lt;/b&gt; &lt;code&gt;Products&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#047857;&quot;&gt;• Bảng Vật lý MariaDB:&lt;/b&gt; &lt;code&gt;wp_posts (post_type='product')&lt;/code&gt; &amp;amp; &lt;b&gt;&lt;code&gt;wp_wc_product_meta_lookup&lt;/code&gt;&lt;/b&gt;&lt;br&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;• Cơ chế lưu trữ &amp;amp; Lợi ích hiệu năng:&lt;/b&gt;&lt;br&gt;Sử dụng bảng phẳng &lt;code&gt;wp_wc_product_meta_lookup&lt;/code&gt; đánh chỉ mục (Index) trực tiếp cho &lt;code&gt;sku, min_price, max_price, stock_status, stock_quantity&lt;/code&gt; giúp lọc AJAX &amp;amp; chấm điểm Quiz cực nhanh mà không cần JOIN nhiều lần vào &lt;code&gt;wp_postmeta&lt;/code&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingRight=10;spacingTop=6;" vertex="1" parent="map2">
+          <mxGeometry x="0" y="30" width="610" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Card 3: Taxonomy_Terms & Product_Taxonomies -->
+        <mxCell id="map3" value="3. ÁNH XẠ Taxonomy_Terms &amp; Product_Taxonomies" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=12.5;fontColor=#FFFFFF;fillColor=#047857;strokeColor=#065F46;strokeWidth=1.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="layer2">
+          <mxGeometry x="1290" y="110" width="610" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="map3_body" value="&lt;div style=&quot;line-height:1.45;font-size:12px;color:#1F2937;&quot;&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;• Bảng Luận lý 3NF:&lt;/b&gt; &lt;code&gt;Taxonomy_Terms&lt;/code&gt; &amp;amp; &lt;code&gt;Product_Taxonomies&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#047857;&quot;&gt;• Bảng Vật lý MariaDB:&lt;/b&gt; &lt;code&gt;wp_terms&lt;/code&gt;, &lt;code&gt;wp_term_taxonomy&lt;/code&gt;, &lt;code&gt;wp_term_relationships&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;• Cơ chế lưu trữ &amp;amp; Lợi ích hiệu năng:&lt;/b&gt;&lt;br&gt;Hệ thống 3 bảng quan hệ chuẩn hóa của WordPress lưu toàn bộ 4 trục thuộc tính da liễu (&lt;code&gt;pa_skin_type, pa_skin_concern, pa_routine_step, pa_active_ingredient&lt;/code&gt;), đánh Index phức hợp trên &lt;code&gt;(object_id, term_taxonomy_id)&lt;/code&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingRight=10;spacingTop=6;" vertex="1" parent="map3">
+          <mxGeometry x="0" y="30" width="610" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Card 4 (Top Right): Redis In-Memory Cache -->
+        <mxCell id="map_redis" value="7. TẦNG ĐỆM REDIS IN-MEMORY CACHE (KleerCache)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=12.5;fontColor=#FFFFFF;fillColor=#B91C1C;strokeColor=#991B1B;strokeWidth=1.5;swimlaneFillColor=#FFFBEB;rounded=1;arcSize=5;" vertex="1" parent="layer2">
+          <mxGeometry x="1930" y="110" width="550" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="map_redis_body" value="&lt;div style=&quot;line-height:1.45;font-size:12px;color:#1F2937;&quot;&gt;&lt;b style=&quot;color:#B91C1C;&quot;&gt;• Container vật lý:&lt;/b&gt; &lt;code&gt;redis:alpine&lt;/code&gt; (Tầng 3 Data &amp;amp; Caching Tier)&lt;br&gt;&lt;b style=&quot;color:#047857;&quot;&gt;• Nhóm khóa đệm (Cache Groups):&lt;/b&gt; &lt;code&gt;kleer_products&lt;/code&gt;, &lt;code&gt;kleer_quiz&lt;/code&gt;, &lt;code&gt;kleer_api&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;• Cơ chế vận hành &amp;amp; Lợi ích hiệu năng:&lt;/b&gt;&lt;br&gt;Đệm kết quả truy vấn danh mục sản phẩm, từ điển Taxonomy INCI và kết quả chấm điểm Routine v4 trên RAM; tự động xóa cache (Cache Invalidation) khi cập nhật tồn kho HPOS, giảm tải truy vấn SQL xuống đĩa cứng.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingRight=10;spacingTop=6;" vertex="1" parent="map_redis">
+          <mxGeometry x="0" y="30" width="550" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Row 2 of Layer 2: 3 Cards -->
+        <!-- Card 5: Orders & Payment_Transactions (HPOS Core) -->
+        <mxCell id="map4" value="4. ÁNH XẠ Orders &amp; Payment_Transactions → KIẾN TRÚC BẢNG PHẲNG WOOCOMMERCE HPOS CHUYÊN BIỆT" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=12.5;fontColor=#FFFFFF;fillColor=#1D4ED8;strokeColor=#1E3A8A;strokeWidth=2;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="layer2">
+          <mxGeometry x="40" y="280" width="1220" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="map4_body" value="&lt;div style=&quot;line-height:1.45;font-size:12px;color:#1F2937;&quot;&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;• Bảng Luận lý 3NF:&lt;/b&gt; &lt;code&gt;Orders&lt;/code&gt; &amp;amp; &lt;code&gt;Payment_Transactions&lt;/code&gt; &amp;nbsp;&amp;nbsp;|&amp;nbsp;&amp;nbsp; &lt;b style=&quot;color:#047857;&quot;&gt;• 4 Bảng Vật lý HPOS MariaDB:&lt;/b&gt; &lt;b&gt;&lt;code&gt;wp_wc_orders&lt;/code&gt;&lt;/b&gt;, &lt;b&gt;&lt;code&gt;wp_wc_order_addresses&lt;/code&gt;&lt;/b&gt;, &lt;b&gt;&lt;code&gt;wp_wc_order_operational_data&lt;/code&gt;&lt;/b&gt;, &lt;b&gt;&lt;code&gt;wp_wc_orders_meta&lt;/code&gt;&lt;/b&gt;&lt;br&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;• Phân tách lưu trữ HPOS (&lt;code&gt;HposService.php&lt;/code&gt;):&lt;/b&gt; Tách hoàn toàn dữ liệu đơn hàng ra khỏi bảng bài viết &lt;code&gt;wp_posts&lt;/code&gt; để tăng tốc độ xử lý giao dịch đồng thời:&lt;br&gt;1. &lt;b&gt;&lt;code&gt;wp_wc_orders&lt;/code&gt;:&lt;/b&gt; Lưu phẳng các trường cốt lõi có đánh Index (&lt;code&gt;id, status, total_amount, customer_id, billing_email, payment_method, transaction_id, date_created_gmt&lt;/code&gt;).&lt;br&gt;2. &lt;b&gt;&lt;code&gt;wp_wc_order_addresses&lt;/code&gt;:&lt;/b&gt; Lưu tách biệt địa chỉ &lt;code&gt;billing&lt;/code&gt; và &lt;code&gt;shipping&lt;/code&gt; có đánh chỉ mục tìm kiếm nhanh theo khách hàng.&lt;br&gt;3. &lt;b&gt;&lt;code&gt;wp_wc_order_operational_data&lt;/code&gt; &amp;amp; &lt;code&gt;wp_wc_orders_meta&lt;/code&gt;:&lt;/b&gt; Lưu cờ vận hành, &lt;code&gt;_kleer_return_reason&lt;/code&gt;, &lt;code&gt;_kleer_return_tracking_code&lt;/code&gt; và trạng thái xác thực chữ ký &lt;code&gt;HMAC-SHA512&lt;/code&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingRight=10;spacingTop=6;" vertex="1" parent="map4">
+          <mxGeometry x="0" y="30" width="1220" height="125" as="geometry" />
+        </mxCell>
+
+        <!-- Card 6: Order_Items -->
+        <mxCell id="map5" value="5. ÁNH XẠ BẢNG Order_Items (Chi tiết đơn &amp; Phí Combo)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=12.5;fontColor=#FFFFFF;fillColor=#0D9488;strokeColor=#0F766E;strokeWidth=1.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="layer2">
+          <mxGeometry x="1290" y="280" width="610" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="map5_body" value="&lt;div style=&quot;line-height:1.45;font-size:12px;color:#1F2937;&quot;&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;• Bảng Luận lý 3NF:&lt;/b&gt; &lt;code&gt;Order_Items&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#047857;&quot;&gt;• Bảng Vật lý MariaDB:&lt;/b&gt; &lt;code&gt;wp_woocommerce_order_items&lt;/code&gt; &amp;amp; &lt;code&gt;wp_wc_order_product_lookup&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;• Cơ chế lưu trữ &amp;amp; Lợi ích hiệu năng:&lt;/b&gt;&lt;br&gt;Lưu chi tiết từng dòng sản phẩm (&lt;code&gt;order_item_type = 'line_item'&lt;/code&gt;) và khoản chiết khấu tự động &lt;b&gt;Giảm 15% Combo Routine&lt;/b&gt; (&lt;code&gt;order_item_type = 'fee'&lt;/code&gt;); bảng phẳng &lt;code&gt;wp_wc_order_product_lookup&lt;/code&gt; hỗ trợ thống kê doanh thu/sản lượng theo SKU tức thì.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingRight=10;spacingTop=6;" vertex="1" parent="map5">
+          <mxGeometry x="0" y="30" width="610" height="125" as="geometry" />
+        </mxCell>
+
+        <!-- Card 7: Store_Credits -->
+        <mxCell id="map6" value="6. ÁNH XẠ BẢNG Store_Credits (Instant Refund Coupon)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fontStyle=1;fontSize=12.5;fontColor=#FFFFFF;fillColor=#6D28D9;strokeColor=#5B21B6;strokeWidth=1.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="layer2">
+          <mxGeometry x="1930" y="280" width="550" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="map6_body" value="&lt;div style=&quot;line-height:1.45;font-size:12px;color:#1F2937;&quot;&gt;&lt;b style=&quot;color:#1D4ED8;&quot;&gt;• Bảng Luận lý 3NF:&lt;/b&gt; &lt;code&gt;Store_Credits&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#047857;&quot;&gt;• Bảng Vật lý MariaDB:&lt;/b&gt; &lt;code&gt;wp_posts (post_type='shop_coupon')&lt;/code&gt; &amp;amp; &lt;code&gt;wp_postmeta&lt;/code&gt;&lt;br&gt;&lt;b style=&quot;color:#B45309;&quot;&gt;• Cơ chế lưu trữ &amp;amp; Lợi ích hiệu năng:&lt;/b&gt;&lt;br&gt;Lưu mã Store Credit (&lt;code&gt;KLR-CREDIT-{ORDER_ID}-{HASH}&lt;/code&gt;) với &lt;code&gt;discount_type = 'fixed_cart'&lt;/code&gt;, &lt;code&gt;coupon_amount&lt;/code&gt;, giới hạn theo &lt;code&gt;customer_email&lt;/code&gt; và &lt;code&gt;usage_limit = 1&lt;/code&gt;, tương thích 100% với bộ tính tiền tại trang Checkout của WooCommerce.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingRight=10;spacingTop=6;" vertex="1" parent="map6">
+          <mxGeometry x="0" y="30" width="550" height="125" as="geometry" />
+        </mxCell>
+
+
+        <!-- ================= LAYER 3: NORMALIZATION PROOF (1NF - 2NF - 3NF) ================= -->
+        <mxCell id="norm_layer" value="GIẢI TRÌNH TÍNH CHUẨN HÓA CƠ SỞ DỮ LIỆU QUAN HỆ (DATABASE NORMALIZATION: 1NF — 2NF — 3NF)" style="swimlane;whiteSpace=wrap;html=1;startSize=38;fontStyle=1;fontSize=15;fontColor=#FFFFFF;fillColor=#C2410C;strokeColor=#9A3412;strokeWidth=2;swimlaneFillColor=#FFF7ED;rounded=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1530" width="2520" height="290" as="geometry" />
+        </mxCell>
+
+        <!-- 1NF Card -->
+        <mxCell id="norm1" value="ĐẠT CHUẨN 1NF (FIRST NORMAL FORM — GIÁ TRỊ NGUYÊN TỐ / ATOMICITY)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#D97706;strokeColor=#B45309;strokeWidth=1.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="norm_layer">
+          <mxGeometry x="40" y="55" width="780" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="norm1_body" value="&lt;div style=&quot;line-height:1.5;font-size:12.5px;color:#1F2937;&quot;&gt;• &lt;b style=&quot;color:#B45309;&quot;&gt;Nguyên tắc chuẩn 1NF:&lt;/b&gt; Mọi thuộc tính trong cả 8 bảng quan hệ đều chỉ chứa &lt;b&gt;giá trị đơn / nguyên tố (Atomic Value)&lt;/b&gt;, không có nhóm lặp (Repeating Groups) và không lưu mảng phân cách bằng dấu phẩy.&lt;br&gt;• &lt;b style=&quot;color:#047857;&quot;&gt;Áp dụng thực tế trong KLEER:&lt;/b&gt;&lt;br&gt;+ Một sản phẩm chăm sóc da có thể phù hợp với nhiều &lt;i&gt;Loại da&lt;/i&gt; (&lt;code&gt;pa_skin_type&lt;/code&gt;), giải quyết nhiều &lt;i&gt;Vấn đề da&lt;/i&gt; (&lt;code&gt;pa_skin_concern&lt;/code&gt;) và chứa nhiều &lt;i&gt;Hoạt chất chính&lt;/i&gt; (&lt;code&gt;pa_active_ingredient&lt;/code&gt;).&lt;br&gt;+ Thay vì lưu chuỗi đa trị trong bảng &lt;code&gt;Products&lt;/code&gt;, hệ thống tách hoàn toàn ra bảng liên kết trung gian &lt;b&gt;&lt;code&gt;Product_Taxonomies(product_id, term_id)&lt;/code&gt;&lt;/b&gt; và bảng &lt;b&gt;&lt;code&gt;Order_Items&lt;/code&gt;&lt;/b&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=8;" vertex="1" parent="norm1">
+          <mxGeometry x="0" y="32" width="780" height="178" as="geometry" />
+        </mxCell>
+
+        <!-- 2NF Card -->
+        <mxCell id="norm2" value="ĐẠT CHUẨN 2NF (SECOND NORMAL FORM — PHỤ THUỘC HÀM ĐẦY ĐỦ)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#EA580C;strokeColor=#C2410C;strokeWidth=1.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="norm_layer">
+          <mxGeometry x="870" y="55" width="780" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="norm2_body" value="&lt;div style=&quot;line-height:1.5;font-size:12.5px;color:#1F2937;&quot;&gt;• &lt;b style=&quot;color:#C2410C;&quot;&gt;Nguyên tắc chuẩn 2NF:&lt;/b&gt; Đã đạt 1NF và mọi thuộc tính không khóa (Non-key attributes) trong các bảng có khóa chính ghép phải &lt;b&gt;phụ thuộc hàm đầy đủ (Full Functional Dependency)&lt;/b&gt; vào toàn bộ khóa chính, không phụ thuộc bộ phận.&lt;br&gt;• &lt;b style=&quot;color:#047857;&quot;&gt;Áp dụng thực tế trong KLEER:&lt;/b&gt;&lt;br&gt;+ Trong bảng &lt;b&gt;&lt;code&gt;Order_Items&lt;/code&gt;&lt;/b&gt;, các thuộc tính &lt;code&gt;quantity&lt;/code&gt;, &lt;code&gt;unit_price&lt;/code&gt; và &lt;code&gt;line_total&lt;/code&gt; phụ thuộc đồng thời vào cả &lt;code&gt;order_id&lt;/code&gt; lẫn &lt;code&gt;product_id&lt;/code&gt;.&lt;br&gt;+ Các thuộc tính chỉ phụ thuộc vào riêng mã sản phẩm như &lt;code&gt;product_name&lt;/code&gt;, &lt;code&gt;sku&lt;/code&gt;, &lt;code&gt;regular_price&lt;/code&gt; gốc hay &lt;code&gt;full_inci_list&lt;/code&gt; đã được tách triệt để về bảng &lt;b&gt;&lt;code&gt;Products&lt;/code&gt;&lt;/b&gt;; tên thuộc tính &lt;code&gt;term_name&lt;/code&gt; được tách về bảng &lt;b&gt;&lt;code&gt;Taxonomy_Terms&lt;/code&gt;&lt;/b&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=8;" vertex="1" parent="norm2">
+          <mxGeometry x="0" y="32" width="780" height="178" as="geometry" />
+        </mxCell>
+
+        <!-- 3NF Card -->
+        <mxCell id="norm3" value="ĐẠT CHUẨN 3NF (THIRD NORMAL FORM — TRIỆT TIÊU PHỤ THUỘC BẮC CẦU)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=13;fontColor=#FFFFFF;fillColor=#C2410C;strokeColor=#9A3412;strokeWidth=1.5;swimlaneFillColor=#FFFFFF;rounded=1;arcSize=5;" vertex="1" parent="norm_layer">
+          <mxGeometry x="1700" y="55" width="780" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="norm3_body" value="&lt;div style=&quot;line-height:1.5;font-size:12.5px;color:#1F2937;&quot;&gt;• &lt;b style=&quot;color:#9A3412;&quot;&gt;Nguyên tắc chuẩn 3NF:&lt;/b&gt; Đã đạt 2NF và &lt;b&gt;không tồn tại phụ thuộc bắc cầu (No Transitive Dependency)&lt;/b&gt; giữa các thuộc tính không khóa (&lt;code&gt;A → B → C&lt;/code&gt;).&lt;br&gt;• &lt;b style=&quot;color:#047857;&quot;&gt;Áp dụng thực tế trong KLEER:&lt;/b&gt;&lt;br&gt;+ Hồ sơ định danh khách hàng (&lt;code&gt;full_name, password_hash, phone, role&lt;/code&gt;) tách riêng ở bảng &lt;b&gt;&lt;code&gt;Users&lt;/code&gt;&lt;/b&gt;, bảng &lt;code&gt;Orders&lt;/code&gt; chỉ tham chiếu qua khóa ngoại &lt;code&gt;customer_id&lt;/code&gt;.&lt;br&gt;+ Chi tiết đối soát cổng thanh toán (&lt;code&gt;gateway_txn_ref, signature_verified, paid_at&lt;/code&gt;) tách sang bảng &lt;b&gt;&lt;code&gt;Payment_Transactions&lt;/code&gt;&lt;/b&gt;; thông tin vòng đời mã hoàn tiền nhanh tách sang bảng &lt;b&gt;&lt;code&gt;Store_Credits&lt;/code&gt;&lt;/b&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=12;spacingRight=12;spacingTop=8;" vertex="1" parent="norm3">
+          <mxGeometry x="0" y="32" width="780" height="178" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

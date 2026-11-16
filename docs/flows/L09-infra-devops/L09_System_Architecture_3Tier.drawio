@@ -1,0 +1,299 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="L09 - System Architecture 3Tier (Optimized)" id="L09-3Tier-Clean">
+    <mxGraphModel dx="1800" dy="1050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2300" pageHeight="1620" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE & SUBTITLE -->
+        <mxCell id="title" value="KLEER — Sơ đồ Kiến trúc Triển khai Vật lý 3 Tầng trên Docker Compose (3-Tier Deployment Architecture)" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=22;strokeColor=none;fillColor=none;fontStyle=1;fontColor=#1A252F;" vertex="1" parent="1">
+          <mxGeometry x="50" y="20" width="2200" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Kiến trúc Phân tầng Vật lý 3 Tầng (3-Tier Docker) kết hợp Microkernel / Plugin-based &amp; Layered OOP trên nền WordPress 6.x + WooCommerce 8.x (HPOS)" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;fontSize=14;strokeColor=none;fillColor=none;fontColor=#34495E;" vertex="1" parent="1">
+          <mxGeometry x="50" y="58" width="2200" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== EXTERNAL SERVICES LAYER ==================== -->
+        <mxCell id="ext_tier" value="DỊCH VỤ NGOÀI HỆ THỐNG (EXTERNAL SERVICES &amp; INTERNET)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#F8F9F9;strokeColor=#566573;strokeWidth=2;swimlaneFillColor=#F8F9F9;dashed=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="2200" height="145" as="geometry" />
+        </mxCell>
+
+        <mxCell id="client" value="&lt;b&gt;Khách hàng &amp;amp; Admin&lt;/b&gt;&lt;br/&gt;(Web / Mobile Browser)" style="shape=actor;html=1;whiteSpace=wrap;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=13;fillColor=#D6EAF8;strokeColor=#1B4F72;strokeWidth=2;" vertex="1" parent="ext_tier">
+          <mxGeometry x="250" y="38" width="55" height="68" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_acme" value="&lt;b style=&quot;font-size:13px;&quot;&gt;Let's Encrypt CA&lt;/b&gt;&lt;br/&gt;• ACME HTTP-01 API&lt;br/&gt;• Cấp &amp;amp; gia hạn TLS tự động" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#EBDEF0;strokeColor=#7D3C98;strokeWidth=2;align=left;spacingLeft=14;" vertex="1" parent="ext_tier">
+          <mxGeometry x="960" y="45" width="250" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_vnpay" value="&lt;b style=&quot;font-size:13px;&quot;&gt;VNPay Sandbox Gateway&lt;/b&gt;&lt;br/&gt;• Payment Page &amp;amp; IPN Callback&lt;br/&gt;• Chuẩn ký số HMAC-SHA512" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FDEBD0;strokeColor=#D35400;strokeWidth=2;align=left;spacingLeft=14;" vertex="1" parent="ext_tier">
+          <mxGeometry x="1260" y="45" width="270" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_vietqr" value="&lt;b style=&quot;font-size:13px;&quot;&gt;Ngân hàng / Napas 247&lt;/b&gt;&lt;br/&gt;• Chuyển khoản VietQR động&lt;br/&gt;• Chuẩn EMVCo Payload" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FDEBD0;strokeColor=#D35400;strokeWidth=2;align=left;spacingLeft=14;" vertex="1" parent="ext_tier">
+          <mxGeometry x="1580" y="45" width="270" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_smtp" value="&lt;b style=&quot;font-size:13px;&quot;&gt;SMTP Mail Server (Prod)&lt;/b&gt;&lt;br/&gt;• Giao thức SMTP / TLS (465/587)&lt;br/&gt;• Gửi Email Hóa đơn &amp;amp; Voucher" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fillColor=#FADBD8;strokeColor=#C0392B;strokeWidth=2;align=left;spacingLeft=14;" vertex="1" parent="ext_tier">
+          <mxGeometry x="1900" y="45" width="260" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== DOCKER HOST CONTAINER ==================== -->
+        <mxCell id="docker_host" value="DOCKER HOST / VPS — ISOLATED BRIDGE NETWORK (kleer-net)" style="swimlane;whiteSpace=wrap;html=1;startSize=36;fontStyle=1;fontSize=15;fillColor=#FBFCFC;strokeColor=#2C3E50;strokeWidth=3;swimlaneFillColor=#FBFCFC;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="280" width="2200" height="1290" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== TIER 1: PRESENTATION & WEB PROXY ==================== -->
+        <mxCell id="tier1" value="TIER 1 — PRESENTATION &amp; WEB PROXY TIER (Container: kleer-nginx | nginx:1.25-alpine)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#EBF5FB;strokeColor=#2E86C1;strokeWidth=2;swimlaneFillColor=#EBF5FB;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="85" y="335" width="1790" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="nginx_proxy" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Nginx Reverse Proxy (kleer-nginx)&lt;/b&gt;&lt;br/&gt;• Lắng nghe HTTP (80) &amp;amp; HTTPS (443, TLS 1.2/1.3, HSTS)&lt;br/&gt;• Redirect HTTP → HTTPS &amp;amp; nạp SSL (/etc/letsencrypt)&lt;br/&gt;• Phân luồng: Tĩnh (Static Files) vs Động (FastCGI PHP)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#AED6F1;strokeColor=#1B4F72;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="tier1">
+          <mxGeometry x="35" y="50" width="420" height="155" as="geometry" />
+        </mxCell>
+
+        <mxCell id="nginx_static" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Static Assets &amp;amp; File Uploads&lt;/b&gt;&lt;br/&gt;• Volume: &lt;i&gt;./:/var/www/html:cached&lt;/i&gt;&lt;br/&gt;• Theme Assets: Ảnh .webp, CSS BEM, Vanilla JS&lt;br/&gt;• Plugin Assets: qrcode.min.js, kleer-qr.js" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#D5F5E3;strokeColor=#1E8449;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="tier1">
+          <mxGeometry x="525" y="50" width="380" height="155" as="geometry" />
+        </mxCell>
+
+        <mxCell id="nginx_fcgi" value="&lt;b style=&quot;font-size:14px;&quot;&gt;FastCGI Pass Gateway&lt;/b&gt;&lt;br/&gt;• Giao thức: FastCGI qua TCP (&lt;b&gt;php:9000&lt;/b&gt;)&lt;br/&gt;• Chuyển tiếp PHP, WooCommerce &amp;amp; REST API&lt;br/&gt;• Truyền Env Vars, Session &amp;amp; Nonce Headers" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#FCF3CF;strokeColor=#B7950B;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="tier1">
+          <mxGeometry x="965" y="50" width="380" height="155" as="geometry" />
+        </mxCell>
+
+        <mxCell id="certbot" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Certbot Container (Production)&lt;/b&gt;&lt;br/&gt;• Tự động gia hạn SSL Let's Encrypt&lt;br/&gt;• Chạy định kỳ mỗi 12h (&lt;i&gt;--webroot&lt;/i&gt;)&lt;br/&gt;• Shared Volumes: &lt;i&gt;letsencrypt, certbot_www&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#E8DAEF;strokeColor=#7D3C98;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="tier1">
+          <mxGeometry x="1400" y="50" width="355" height="155" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== TIER 2: APPLICATION & BUSINESS LOGIC ==================== -->
+        <mxCell id="tier2" value="TIER 2 — APPLICATION &amp; BUSINESS LOGIC TIER (Container: kleer-php | php:8.2-fpm — WordPress + Microkernel Architecture)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#EAF2F8;strokeColor=#2874A6;strokeWidth=2;swimlaneFillColor=#EAF2F8;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="85" y="615" width="2130" height="580" as="geometry" />
+        </mxCell>
+
+        <!-- Row 1: WordPress & WooCommerce Core -->
+        <mxCell id="wp_core" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Nhân Nền Tảng (WordPress 6.x Kernel &amp;amp; WooCommerce 8.x Platform)&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;WordPress Core:&lt;/b&gt; WP REST API, Hooks (Actions/Filters), WP-Cron, Session &amp;amp; Nonce Security&lt;br/&gt;• &lt;b&gt;WooCommerce Core:&lt;/b&gt; HPOS Order Tables, Product Lookup Tables, Cart &amp;amp; Checkout Engine, WC REST API v3" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;fillColor=#D4E6F1;strokeColor=#1A5276;strokeWidth=2;align=left;spacingLeft=18;lineHeight=1.35;" vertex="1" parent="tier2">
+          <mxGeometry x="35" y="48" width="2060" height="82" as="geometry" />
+        </mxCell>
+
+        <!-- Row 2: 4 Microkernel Modules -->
+        <mxCell id="mod_theme" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Module 1: kleer-theme (Presentation)&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;Templates:&lt;/b&gt; PHP thuần (front-page, catalog, single)&lt;br/&gt;• &lt;b&gt;Frontend:&lt;/b&gt; CSS BEM + Vanilla JS ES6 (Zero Builder)&lt;br/&gt;• &lt;b&gt;SPA Modules:&lt;/b&gt;&lt;br/&gt;  - &lt;i&gt;quiz.js:&lt;/i&gt; 6 bước chẩn đoán da&lt;br/&gt;  - &lt;i&gt;catalog-filter.js:&lt;/i&gt; Lọc AJAX đa tiêu chí&lt;br/&gt;  - &lt;i&gt;routine-cart.js:&lt;/i&gt; Giỏ hàng &amp;amp; cảnh báo xung đột" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#D5F5E3;strokeColor=#1E8449;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.3;" vertex="1" parent="tier2">
+          <mxGeometry x="35" y="175" width="420" height="190" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_plugin" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Module 2: kleer-plugin (Core Business &amp;amp; REST API — PSR-4)&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;REST Endpoints:&lt;/b&gt; &lt;i&gt;/kleer/v1/skin-quiz&lt;/i&gt;, &lt;i&gt;/health&lt;/i&gt; (JSON Schema Validation)&lt;br/&gt;• &lt;b&gt;Domain Services:&lt;/b&gt;&lt;br/&gt;  - &lt;i&gt;QuizEngineService:&lt;/i&gt; Thuật toán chấm điểm Routine v4&lt;br/&gt;  - &lt;i&gt;CartComboService:&lt;/i&gt; Giảm 15% (≥3 bước) &amp;amp; chặn xung đột AHA/BHA + Retinol&lt;br/&gt;  - &lt;i&gt;HposService &amp;amp; InstantRefundService:&lt;/i&gt; Đồng bộ đơn &amp;amp; hoàn tiền Store Credit&lt;br/&gt;• &lt;b&gt;Repositories &amp;amp; Cache:&lt;/b&gt; Product/Routine Repo, &lt;i&gt;KleerCache&lt;/i&gt;, HPOS Compatibility" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#AED6F1;strokeColor=#1B4F72;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.3;" vertex="1" parent="tier2">
+          <mxGeometry x="515" y="175" width="590" height="190" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_payments" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Module 3: kleer-payments (Payment Gateways)&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;VNPay Sandbox:&lt;/b&gt;&lt;br/&gt;  - Tạo URL thanh toán &amp;amp; ký số HMAC-SHA512&lt;br/&gt;  - Xử lý Webhook IPN (Server-to-Server) &amp;amp; Return URL&lt;br/&gt;• &lt;b&gt;VietQR / Napas 247:&lt;/b&gt;&lt;br/&gt;  - Sinh mã QR động chuẩn EMVCo tại Checkout&lt;br/&gt;• &lt;b&gt;Phương thức hỗ trợ:&lt;/b&gt; COD, VietQR, VNPay" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#FDEBD0;strokeColor=#B9770E;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.3;" vertex="1" parent="tier2">
+          <mxGeometry x="1165" y="175" width="445" height="190" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mod_mailer" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Module 4: kleer-mailer (Transactional Email)&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;Email Hóa đơn:&lt;/b&gt; HTML đính kèm mã QR PNG tra cứu đơn hàng (&lt;i&gt;woocommerce_order_email&lt;/i&gt;)&lt;br/&gt;• &lt;b&gt;Email Hoàn tiền:&lt;/b&gt; Cấp mã Coupon Store Credit tự động ngay khi kích hoạt hoàn tiền nhanh&lt;br/&gt;• &lt;b&gt;Transport:&lt;/b&gt; Cấu hình SMTP TLS / Mailpit Sink" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#FADBD8;strokeColor=#A93226;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.3;" vertex="1" parent="tier2">
+          <mxGeometry x="1665" y="175" width="430" height="190" as="geometry" />
+        </mxCell>
+
+        <!-- Row 3: Routers, Background Workers & Dev Tools -->
+        <mxCell id="support_label" value="Dịch vụ Định tuyến, Tác vụ Nền &amp; Công cụ Kiểm thử Nội bộ (kleer-net)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#1A5276;" vertex="1" parent="tier2">
+          <mxGeometry x="35" y="395" width="600" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rest_router" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;WP REST API &amp;amp; WooCommerce Router&lt;/b&gt;&lt;br/&gt;• Custom API: &lt;i&gt;/wp-json/kleer/v1/*&lt;/i&gt;&lt;br/&gt;• Store &amp;amp; Cart API: &lt;i&gt;/wp-json/wc/v3/*&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#D6EAF8;strokeColor=#2874A6;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="tier2">
+          <mxGeometry x="35" y="425" width="420" height="125" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cron_worker" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;WP-Cron &amp;amp; Background Workers&lt;/b&gt;&lt;br/&gt;• Xử lý bất đồng bộ: Gửi佇 email SMTP, đối soát IPN trễ&lt;br/&gt;• Dọn dẹp Session hết hạn &amp;amp; làm mới Cache (Cache Warmer)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#D6EAF8;strokeColor=#2874A6;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="tier2">
+          <mxGeometry x="515" y="425" width="590" height="125" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mailpit" value="&lt;b style=&quot;font-size:13.5px;&quot;&gt;Mailpit Container (Dev / QA SMTP Sink)&lt;/b&gt;&lt;br/&gt;• Bắt toàn bộ SMTP nội bộ cổng &lt;b&gt;:1025&lt;/b&gt; (Không cần xác thực)&lt;br/&gt;• Web UI kiểm thử Hóa đơn QR &amp;amp; Store Credit tại &lt;b&gt;localhost:8025&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#FDEBD0;strokeColor=#AF601A;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;dashed=1;" vertex="1" parent="tier2">
+          <mxGeometry x="1555" y="425" width="540" height="125" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== TIER 3: DATA & CACHING TIER ==================== -->
+        <mxCell id="tier3" value="TIER 3 — DATA &amp; CACHING TIER (Containers: kleer-mariadb [10.11] | kleer-redis [7-alpine] | kleer-phpmyadmin)" style="swimlane;whiteSpace=wrap;html=1;startSize=32;fontStyle=1;fontSize=14;fillColor=#E8F8F5;strokeColor=#117864;strokeWidth=2;swimlaneFillColor=#E8F8F5;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="85" y="1265" width="2130" height="270" as="geometry" />
+        </mxCell>
+
+        <mxCell id="phpmyadmin" value="&lt;b style=&quot;font-size:14px;&quot;&gt;phpMyAdmin Container&lt;/b&gt;&lt;br/&gt;(&lt;i&gt;kleer-phpmyadmin:8080&lt;/i&gt;)&lt;br/&gt;• Giao diện Web quản trị DB&lt;br/&gt;• Kiểm tra bảng HPOS &amp;amp; 3NF&lt;br/&gt;• Kết nối nội bộ qua TCP 3306" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#D5F5E3;strokeColor=#196F3D;strokeWidth=2;align=left;spacingLeft=14;lineHeight=1.35;" vertex="1" parent="tier3">
+          <mxGeometry x="35" y="50" width="330" height="195" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mariadb" value="&lt;b style=&quot;font-size:14px;&quot;&gt;MariaDB 10.11 Container (kleer-mariadb — Persistent Volume: kleer-mariadb-data)&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;HPOS Order Tables:&lt;/b&gt; &lt;i&gt;wp_wc_orders, wp_wc_order_addresses, wp_wc_order_operational_data, wp_wc_orders_meta&lt;/i&gt;&lt;br/&gt;• &lt;b&gt;Lookup &amp;amp; Line Items:&lt;/b&gt; &lt;i&gt;wp_woocommerce_order_items, wp_wc_order_product_lookup, wp_wc_product_meta_lookup&lt;/i&gt;&lt;br/&gt;• &lt;b&gt;WP Core &amp;amp; Store Credit:&lt;/b&gt; &lt;i&gt;wp_posts, wp_postmeta (shop_coupon), wp_users, wp_usermeta, wp_options&lt;/i&gt;&lt;br/&gt;• &lt;b&gt;4 Trục Thuộc tính Da liễu (3NF):&lt;/b&gt; &lt;i&gt;pa_skin_type, pa_skin_concern, pa_routine_step, pa_active_ingredient&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#D1F2EB;strokeColor=#0E6655;strokeWidth=2;align=left;spacingLeft=16;lineHeight=1.38;" vertex="1" parent="tier3">
+          <mxGeometry x="455" y="50" width="960" height="195" as="geometry" />
+        </mxCell>
+
+        <mxCell id="redis" value="&lt;b style=&quot;font-size:14px;&quot;&gt;Redis 7 In-Memory Cache (kleer-redis — 256MB, allkeys-lru)&lt;/b&gt;&lt;br/&gt;• &lt;b&gt;Driver:&lt;/b&gt; Drop-in &lt;i&gt;object-cache.php&lt;/i&gt; &amp;amp; &lt;i&gt;KleerCache&lt;/i&gt; Service&lt;br/&gt;• &lt;b&gt;Group kleer_products:&lt;/b&gt; Đệm truy vấn sản phẩm &amp;amp; thuộc tính Taxonomy&lt;br/&gt;• &lt;b&gt;Group kleer_quiz:&lt;/b&gt; Đệm hồ sơ da &amp;amp; kết quả Skin Quiz theo Session&lt;br/&gt;• &lt;b&gt;Group kleer_api:&lt;/b&gt; Đệm JSON Response REST API, giảm tải I/O đĩa cứng" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12.5;fillColor=#D4E6F1;strokeColor=#1B4F72;strokeWidth=2;align=left;spacingLeft=16;lineHeight=1.38;" vertex="1" parent="tier3">
+          <mxGeometry x="1485" y="50" width="610" height="195" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== CLEAN ORTHOGONAL EDGES ==================== -->
+
+        <!-- 1. Client -> Nginx -->
+        <mxCell id="e_client_nginx" value="HTTP / HTTPS (80 / 443)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.45;entryY=0;entryDx=0;entryDy=0;strokeColor=#1B4F72;strokeWidth=2.5;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="client" target="nginx_proxy">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 2. Nginx <-> Static Assets -->
+        <mxCell id="e_nginx_static" value="Đọc file tĩnh" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#1E8449;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="nginx_proxy" target="nginx_static">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 3. Nginx -> FastCGI Gateway -->
+        <mxCell id="e_nginx_to_fcgi" value="Yêu cầu động (.php / API)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;strokeColor=#B7950B;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="nginx_proxy" target="nginx_fcgi">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="330" y="555" />
+              <mxPoint x="1145" y="555" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 4. FastCGI Gateway -> WP Core -->
+        <mxCell id="e_fcgi_wpcore" value="FastCGI (php:9000)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.563;entryY=0;entryDx=0;entryDy=0;strokeColor=#B7950B;strokeWidth=2.5;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="nginx_fcgi" target="wp_core">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 5. Certbot -> Let's Encrypt -->
+        <mxCell id="e_certbot_acme" value="ACME HTTP-01 Challenge" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#7D3C98;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="certbot" target="ext_acme">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1662" y="260" />
+              <mxPoint x="1135" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 6. WP Core <-> Module 1 (Theme) -->
+        <mxCell id="e_core_theme" value="Render Templates" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#1E8449;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="wp_core" target="mod_theme">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 7. WP Core <-> Module 2 (Plugin) -->
+        <mxCell id="e_core_plugin" value="Hooks / Actions / Filters" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.38;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#1B4F72;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="wp_core" target="mod_plugin">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 8. WP Core <-> Module 3 (Payments) -->
+        <mxCell id="e_core_payments" value="WC Payment Hooks" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.665;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#B9770E;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="wp_core" target="mod_payments">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 9. WP Core -> Module 4 (Mailer) -->
+        <mxCell id="e_core_mailer" value="Email Trigger Hooks" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.9;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#A93226;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="wp_core" target="mod_mailer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 10. Module 1 (Theme) -> REST Router -->
+        <mxCell id="e_theme_rest" value="AJAX / Fetch API" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#2874A6;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_theme" target="rest_router">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 11. REST Router -> Module 2 (Plugin) -->
+        <mxCell id="e_rest_plugin" value="Kleer/v1 Dispatch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.12;entryY=1;entryDx=0;entryDy=0;strokeColor=#1B4F72;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="rest_router" target="mod_plugin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="570" y="1102" />
+              <mxPoint x="570" y="1005" />
+              <mxPoint x="670" y="1005" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 12. Module 2 (Plugin) <-> WP-Cron -->
+        <mxCell id="e_plugin_cron" value="Async Jobs / Cache Warmer" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#2874A6;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;dashed=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_plugin" target="cron_worker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 13. Module 2 <-> Module 3 (Payments) -->
+        <mxCell id="e_plugin_payments" value="IPN Sync" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#B9770E;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=10.5;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_plugin" target="mod_payments">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 14. Module 4 (Mailer) -> Mailpit (Dev/QA) -->
+        <mxCell id="e_mailer_mailpit" value="SMTP :1025 (Dev/QA)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.6;entryY=0;entryDx=0;entryDy=0;strokeColor=#AF601A;strokeWidth=2;endArrow=block;endFill=1;dashed=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_mailer" target="mailpit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 15. Module 3 (Payments) <-> External VNPay (Routed via clean Right Corridor) -->
+        <mxCell id="e_payments_vnpay" value="HTTPS Redirect &amp; IPN (HMAC-SHA512)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#D35400;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_payments" target="ext_vnpay">
+          <mxGeometry x="0.65" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1583" y="1005" />
+              <mxPoint x="1930" y="1005" />
+              <mxPoint x="1930" y="390" />
+              <mxPoint x="1445" y="390" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 16. Module 3 (Payments) <-> External VietQR (Routed via clean Right Corridor) -->
+        <mxCell id="e_payments_vietqr" value="VietQR Dynamic Payload" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.88;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#D35400;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_payments" target="ext_vietqr">
+          <mxGeometry x="0.72" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1641" y="990" />
+              <mxPoint x="1965" y="990" />
+              <mxPoint x="1965" y="360" />
+              <mxPoint x="1765" y="360" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 17. Module 4 (Mailer) -> External SMTP (Routed via Far Right Corridor) -->
+        <mxCell id="e_mailer_smtp_ext" value="SMTP / TLS (Production)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#C0392B;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_mailer" target="ext_smtp">
+          <mxGeometry x="0.55" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2230" y="885" />
+              <mxPoint x="2230" y="330" />
+              <mxPoint x="2080" y="330" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 18. Tier 2 -> Tier 3: Module 2 (Plugin) <-> MariaDB -->
+        <mxCell id="e_plugin_mariadb" value="TCP 3306 — SQL Queries (WPDB &amp; HPOS)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.32;entryY=0;entryDx=0;entryDy=0;strokeColor=#0E6655;strokeWidth=2.5;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_plugin" target="mariadb">
+          <mxGeometry x="0.35" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="747" y="1020" />
+              <mxPoint x="565" y="1020" />
+              <mxPoint x="565" y="1230" />
+              <mxPoint x="847" y="1230" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 19. Tier 2 -> Tier 3: Module 3 (Payments) <-> MariaDB -->
+        <mxCell id="e_payments_mariadb" value="Ghi Giao dịch Thanh toán &amp; Trạng thái HPOS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeColor=#0E6655;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_payments" target="mariadb">
+          <mxGeometry x="0.2" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1361" y="1230" />
+              <mxPoint x="1260" y="1230" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 20. Tier 2 -> Tier 3: Module 2 (Plugin) <-> Redis -->
+        <mxCell id="e_plugin_redis" value="TCP 6379 — Object Cache (KleerCache)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.82;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#1B4F72;strokeWidth=2.5;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="mod_plugin" target="redis">
+          <mxGeometry x="0.3" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1084" y="1020" />
+              <mxPoint x="1500" y="1020" />
+              <mxPoint x="1500" y="1230" />
+              <mxPoint x="1875" y="1230" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 21. Tier 3 Internal: phpMyAdmin <-> MariaDB -->
+        <mxCell id="e_phpmyadmin_mariadb" value="TCP 3306" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#196F3D;strokeWidth=2;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="phpmyadmin" target="mariadb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
